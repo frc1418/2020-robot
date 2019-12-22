@@ -1,0 +1,3 @@
+python37-robotpy-ctre
+python37-robotpy-pathfinder
+python37-robotpy-cscore
