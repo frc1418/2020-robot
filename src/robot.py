@@ -1,6 +1,7 @@
 import magicbot
 import wpilib
 
+
 class Robot(magicbot.MagicRobot):
     pass
 

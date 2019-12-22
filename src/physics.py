@@ -1,4 +1,3 @@
-import math
 from pyfrc.physics import drivetrains
 
 
