@@ -1,9 +1,9 @@
-# 2019 Robot Code
+# 2020 Robot Code
 **Robot Code** | [Dashboard](https://github.com/frc1418/2020-dashboard) | [Vision](https://github.com/frc1418/2020-vision)
 
-[![Build Status](https://travis-ci.com/frc1418/2019-robot.svg?token=VDF6qgkKLeZhHqMRYJnC&branch=master)](https://travis-ci.com/frc1418/2020-robot)
+[![Build Status](https://api.travis-ci.com/frc1418/2020-robot.svg?token=ZK21meVwhYyzjksNsTST&branch=master)](https://travis-ci.com/frc1418/2020-robot)
 
-> Code for Team 1418's 2019 competition robot, which is so far unnamed.
+> Code for Team 1418's 2020 competition robot, which is so far unnamed.
 
 ## Deploying onto the robot
 Before deploying, you must [install robotpy](http://robotpy.readthedocs.io/en/stable/install/robot.html#install-robotpy) on your robot.
