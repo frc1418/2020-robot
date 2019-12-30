@@ -12,7 +12,7 @@ You may then deploy code at any time:
 
 	python3 src/robot.py deploy
 
-During development of last year's robot code, we created a Bash script `deploy.sh` to automate some tasks related to code deploy. You can find that tool, `dep`, [here](https://github.com/frc1418/dep). We recommend that you make use of it to simplify your deploy process and remove pesky steps like manually changing your WiFi network.
+We recommend using our tool, `dep`, [here](https://github.com/frc1418/dep). It simplifies your deploy process and removes pesky steps like manually changing your WiFi network.
 
 ## Testing/Simulation
 You may run the `pyfrc` simulator to test this code thus:
@@ -39,17 +39,13 @@ This will set up hooks to run tests before committing to help avoid easy-to-fix 
 
 ## Installing Dependencies
 
-The `requirements.txt` file holds all of the programs and their versions needed to run this code. After cloning, run
+The `requirements.txt` file holds all of the programs and their versions needed to run this code. After activating your virtual environment with run
 
 	pip3 install -r requirements.txt
-
-Add `--user` at the end of that command if you do not have admin privileges.
 
 In the `tests` folder there is another requirements file that needs to be run. To do so, run
 
 	pip3 install -r tests/requirements.txt
-
-Add `--user` at the end of that command if you do not have admin privileges.
 
 ## Setting up entry points
 
@@ -66,7 +62,7 @@ These entry points can be run like so
 
 ## Changing your `$PATH`
 
-Your `$PATH` is a variable that contains a bunch of different directories that are searched through when the computer is searching for an executable file. To run this robot code, `$HOME/Library/Python/3.6/bin` needs to be added to your `$PATH`. To do so, first run
+Your `$PATH` is a variable that contains a bunch of different directories that are searched through when the computer is searching for an executable file. To run this robot code, `$HOME/Library/Python/3.7/bin` needs to be added to your `$PATH`. To do so, first run
 
 	cd ~/
 
@@ -76,7 +72,7 @@ This will bring you to your home directory. If you want to open up your `.bash_p
 
 Once you have done one of these, add the following line of code to `.bash_profile.`
 
-  	PATH=$PATH:$HOME/Library/Python/3.6/bin
+  	export PATH=$PATH:$HOME/Library/Python/3.7/bin
 
 This will save your changes. If you used nano, save your changes and exit with
 
@@ -90,7 +86,7 @@ To see if the changes took place, run
 
 	echo $PATH
 
-When this is run, you should see the addition of `Library/Python/3.6/bin` at the end of your `$PATH`.
+When this is run, you should see the addition of `Library/Python/3.7/bin` at the end of your `$PATH`.
 
 ## File Structure
 
