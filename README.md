@@ -60,33 +60,29 @@ These entry points can be run like so
 
     python3 src/robot.py <entry_point_name>
 
-## Changing your `$PATH`
+## Using a virtual environment
 
-Your `$PATH` is a variable that contains a bunch of different directories that are searched through when the computer is searching for an executable file. To run this robot code, `$HOME/Library/Python/3.7/bin` needs to be added to your `$PATH`. To do so, first run
+A virtual environment allows you to store dependencies in a project folder, meaning that they do not affect your computer's python installation. To create a virtual environment, first install the virtualenv package
 
-	cd ~/
+	pip3 install virtualenv --user
 
-This will bring you to your home directory. If you want to open up your `.bash_profile` (where the `$PATH` is stored, NOTE: The name of this file will likely change depending one's platform, chosen shell, terminal settings, etc.) using nano, run
+Now, to create a virtual environment in a project folder, navigate into the folder and run
 
-	nano .bash_profile
+	python3 -m virtualenv venv
 
-Once you have done one of these, add the following line of code to `.bash_profile.`
+After this command, your virtual environment  will have been created. It now resides in the "venv" folder inside of your project. However, it is not "enabled" by default, meaning any packages you install right now will still go to your global python install. To activate the environment, run
 
-  	export PATH=$PATH:$HOME/Library/Python/3.7/bin
+  	. venv/bin/activate
 
-This will save your changes. If you used nano, save your changes and exit with
+You will be able to tell that it worked by looking at the additional prefix that should appear before your main bash prefix. It should look something like
 
-	ctrl + x
+	(venv)
 
-Next, activate your changes in nano with
+After you're done working on a specific project, and want to use your global python installation or activate a different virtual environment, you can type
 
-	source .bash_profile
+	deactivate
 
-To see if the changes took place, run
-
-	echo $PATH
-
-When this is run, you should see the addition of `Library/Python/3.7/bin` at the end of your `$PATH`.
+This command will deactivate your current virtual environment from any location in the terminal.
 
 ## File Structure
 
