@@ -20,8 +20,8 @@ class TestRobot(magicbot.MagicRobot):
         self.right_joystick = wpilib.Joystick(1)
         self.alt_joystick = wpilib.Joystick(2)
 
-        self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushed), CANSparkMax(20, MotorType.kBrushed))
-        self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(30, MotorType.kBrushed), CANSparkMax(40, MotorType.kBrushed))
+        self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushed), CANSparkMax(30, MotorType.kBrushed))
+        self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(20, MotorType.kBrushed), CANSparkMax(40, MotorType.kBrushed))
 
         self.drive = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
 
