@@ -22,13 +22,13 @@ class PhysicsEngine:
                         time that this function was called
         """
         # Invert right side because it is inverted in the mecanum drive method
-        lf_motor = hal_data['CAN'][10]['value']
-        lr_motor = hal_data['CAN'][15]['value']
-        rf_motor = -hal_data['CAN'][20]['value']
-        rr_motor = -hal_data['CAN'][25]['value']
+        # lf_motor = hal_data['CAN'][10]['value']
+        # lr_motor = hal_data['CAN'][15]['value']
+        # rf_motor = -hal_data['CAN'][20]['value']
+        # rr_motor = -hal_data['CAN'][25]['value']
 
-        vx, vy, vw = drivetrains.four_motor_swerve_drivetrain(
-            lr_motor, rr_motor, lf_motor, rf_motor
-        )
+        # vx, vy, vw = drivetrains.four_motor_swerve_drivetrain(
+        #     lr_motor, rr_motor, lf_motor, rf_motor
+        # )
 
-        self.physics_controller.vector_drive(vx, vy, vw, tm_diff)
+        # self.physics_controller.vector_drive(vx, vy, vw, tm_diff)
