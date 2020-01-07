@@ -5,6 +5,7 @@ import math
 
 from rev import CANSparkMax, MotorType
 
+
 class TestRobot(magicbot.MagicRobot):
 
     def createObjects(self):
