@@ -7,6 +7,7 @@ from wpilib.drive import DifferentialDrive
 from ctre import WPI_TalonSRX
 from networktables.networktables import NetworkTables, NetworkTablesInstance
 from networktables.util import ntproperty
+from magicbot import tunable
 
 
 class Robot(magicbot.MagicRobot):
@@ -14,11 +15,16 @@ class Robot(magicbot.MagicRobot):
     ENCODER_PULSE_PER_REV = 1024
 
     autoSpeedEntry = ntproperty('/robot/autospeed', 0.0)
-    telemetryEntry = ntproperty('/robot/telemetry', [0.0], writeDefault=False)
+    telemetry_entry = ntproperty('/robot/telemetry', [0.0], writeDefault=False)
     rotateEntry = ntproperty('/robot/rotate', False)
 
+    l_encoder_pos = tunable(0)
+    l_encoder_rate = tunable(0)
+    r_encoder_pos = tunable(0)
+    r_encoder_rate = tunable(0)
+
+
     def createObjects(self):
-        self.numberArray = [0.0] * 10
         self.prior_autospeed = 0
 
         self.joystick = wpilib.Joystick(0)
@@ -59,10 +65,10 @@ class Robot(magicbot.MagicRobot):
 
     def robotPeriodic(self):
         # feedback for users, but not used by the control program
-        NetworkTables.putNumber('l_encoder_pos', self.left_encoder.get())
-        NetworkTables.putNumber('l_encoder_rate', self.left_encoder.getRate())
-        NetworkTables.putNumber('r_encoder_pos', self.right_encoder.get())
-        NetworkTables.putNumber('r_encoder_rate', self.right_encoder.getRate())
+        self.l_encoder_pos = self.left_encoder.get()
+        self.l_encoder_rate = self.left_encoder.getRate()
+        self.r_encoder_pos = self.right_encoder.get()
+        self.r_encoder_rate = self.right_encoder.getRate()
 
     def teleopInit(self):
         print('Robot in operator control mode')
@@ -104,15 +110,13 @@ class Robot(magicbot.MagicRobot):
         self.drive.tankDrive((-1 if self.rotateEntry else 1) * autospeed, autospeed, False)
 
         # send telemetry data array back to NT
-        self.numberArray[0] = now
-        self.numberArray[1] = battery
-        self.numberArray[2] = autospeed
-        self.numberArray[3] = leftMotorVolts
-        self.numberArray[4] = rightMotorVolts
-        self.numberArray[5] = leftPosition
-        self.numberArray[6] = rightPosition
-        self.numberArray[7] = leftRate
-        self.numberArray[8] = rightRate
-        self.numberArray[9] = math.radians(-self.gyro.getAngle())
+        number_array = [
+            now, battery, autospeed, leftMotorVolts, rightMotorVolts,
+            leftPosition, rightPosition, leftRate, rightRate,
+            math.radians(-self.gyro.getAngle())
+        ]
 
-        self.telemetryEntry = self.numberArray
+        self.telemetry_entry = number_array
+
+if __name__ == '__main__':
+    wpilib.run(Robot)
