@@ -113,6 +113,6 @@ class Robot(magicbot.MagicRobot):
         self.numberArray[6] = rightPosition
         self.numberArray[7] = leftRate
         self.numberArray[8] = rightRate
-        self.numberArray[9] = -math.radians(self.gyro.getAngle())
+        self.numberArray[9] = math.radians(-self.gyro.getAngle())
 
         self.telemetryEntry = self.numberArray
