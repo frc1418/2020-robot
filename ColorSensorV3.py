@@ -1,15 +1,12 @@
-
 # TODO: Import from Hal
 import struct
 from wpilib import DriverStation
 from wpilib import I2C
 
-#import edu.wpi.first.wpilibj.util.Color
 class Color:
     pass
 
 from enum import IntEnum
-
 
 class ColorSensorV3:
     kAddress = 82
@@ -17,18 +14,8 @@ class ColorSensorV3:
     kPartID = -62
 
     def __init__(self, port: I2C.Port):
-        self.m_i2c = I2C(port, 82)
-        """
-        self.m_simDevice = SimDevice.create(
-            "REV Color Sensor V3", port.value, 82)
-        if self.m_simDevice is not None:
-            self.m_simR=self.m_simDevice.createDouble("Red", False, 0.0)
-            self.m_simG=self.m_simDevice.createDouble("Green", False, 0.0)
-            self.m_simB=self.m_simDevice.createDouble("Blue", False, 0.0)
-            self.m_simIR=self.m_simDevice.createDouble("IR", False, 0.0)
-            self.m_simProx=self.m_simDevice.createDouble("Proximity", False, 0.0)
-            return
-        """
+        self.i2c = I2C(port, self.kAddress)
+        
         if (not self.checkDeviceID()):
             return
         self.initializeDevice()
@@ -137,68 +124,44 @@ class ColorSensorV3:
         g = self.getGreen()
         b = self.getBlue()
         mag = r + g + b
-        return ColorShim(r / mag, g / mag, b / mag)
+        return self.RawColor(r / mag, g / mag, b / mag, 0)
     
     def getProximity(self):
-        """
-        if self.m_simDevice is not None:
-            return self.m_simProx.get()
-        """
+        
         return self.read11BitRegister(self.Register.kProximityData)
 
     def getRawColor(self):
-        return RawColor(self.getRed(), self.getGreen(), self.getBlue(), self.getIR())
+        return self.RawColor(self.getRed(), self.getGreen(), self.getBlue(), self.getIR())
 
 
     def getRed(self):
-        """
-        if self.m_simDevice is not None:
-            return self.m_simR.get()
-        """
+        
         return self.read20BitRegister(self.Register.kDataRed)
 
 
     def getGreen(self):
-        """
-        if self.m_simDevice is not None:
-            return self.m_simG.get()
-        """
+        
         return self.read20BitRegister(self.Register.kDataGreen)
 
 
     def getBlue(self):
-        """
-        if self.m_simDevice is not None:
-            return self.m_simB.get()
-        """
+        
         return self.read20BitRegister(self.Register.kDataBlue)
 
 
     def getIR(self):
-        """
-        if self.m_simDevice is not None:
-            return self.m_simIR.get()
-        """
+        
         return self.read20BitRegister(self.Register.kDataInfrared)
 
     def hasReset(self):
-        #raw = ByteBuffer.allocate(1)
-        raw = self.m_i2c.read(self.Register.kMainStatus, 1)
-        #raw.order(ByteOrder.LITTLE_ENDIAN)
-        raw = struct.pack('<', raw)
-        return (raw.get() & 0x20) != 0
+        
+        raw = self.i2c.read(self.Register.kMainStatus, 1)
+        return (raw[0] & 0x20) != 0
     
     def checkDeviceID(self):
-        #raw = ByteBuffer.allocate(1)
-
-        """ java code: read doesn't return bool, so I used exception handling instead
-        if self.m_i2c.read(self.Register.kPartID, 1):
-            DriverStation.reportError(
-                "Could not find REV color sensor", False)
-            return False
-        """
+        
         try:
-            raw = self.m_i2c.read(self.Register.kPartID, 1)
+            raw = self.i2c.read(self.Register.kPartID, 1)
         except:
             DriverStation.reportError(
                 "Could not find REV color sensor", False)
@@ -224,38 +187,25 @@ class ColorSensorV3:
         self.write8(self.Register.kProximitySensorPulses, 32)
     
     def read11BitRegister(self, reg: Register):
-        #raw = ByteBuffer.allocate(2)
+        
+        raw = self.i2c.read(reg.bVal, 2)
 
-        raw = self.m_i2c.read(reg.bVal, 2)
-
-        #raw.order(ByteOrder.LITTLE_ENDIAN)
-        raw = struct.pack('<', raw)
-        return raw.getShort() & 0x7FF
+        short = struct.unpack('<h', raw)
+        return short[0] & 0x7FF
     
     def read20BitRegister(self, reg: Register):
-        #raw = ByteBuffer.allocate(4)
 
-        raw = self.m_i2c.read(reg.bVal, 3)
+        raw = self.i2c.read(reg.bVal, 3)
 
-        #raw.order(ByteOrder.LITTLE_ENDIAN)
-        raw = struct.pack('<', raw)
-        return raw.getInt() & 0x03FFFF
+        integer = struct.unpack('<i', raw)
+        return integer[0] & 0x03FFFF
     
     def write8(self, reg: Register, data: int):
-        self.m_i2c.write(reg.bVal, data)
+        self.i2c.write(reg.bVal, data)
     
-
-
-class ColorShim:
-    def __init__(self, r, g, b):
-        super(self, r, g, b)
-
-
-class RawColor:
-    
-    def __init__(self, r: int, g: int, b: int, _ir: int):
-        self.red = r
-        self.green = g
-        self.blue = b
-        self.ir = _ir
-    
+    class RawColor:
+        def __init__(self, r: int, g: int, b: int, _ir: int):
+            self.red = r
+            self.green = g
+            self.blue = b
+            self.ir = _ir
