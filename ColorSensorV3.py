@@ -16,9 +16,9 @@ class ColorSensorV3:
     def __init__(self, port: I2C.Port):
         self.i2c = I2C(port, self.kAddress)
         
-        if (not self.checkDeviceID()):
+        if (not self._checkDeviceID()):
             return
-        self.initializeDevice()
+        self._initializeDevice()
         self.hasReset()
     
     class Register(IntEnum):
@@ -109,15 +109,15 @@ class ColorSensorV3:
 
 
     def configureProximitySensorLED(self, freq: LEDPulseFrequency, curr: LEDCurrent, pulses: int):
-        self.write8(self.Register.kProximitySensorLED, freq.bVal | curr.bVal)
-        self.write8(self.Register.kProximitySensorPulses, pulses)
+        self._write8(self.Register.kProximitySensorLED, freq.bVal | curr.bVal)
+        self._write8(self.Register.kProximitySensorPulses, pulses)
 
     def configureProximitySensor(self, res: ProximitySensorResolution, rate: ProximitySensorMeasurementRate):
-        self.write8(self.Register.kProximitySensorRate, res.bVal | rate.bVal)
+        self._write8(self.Register.kProximitySensorRate, res.bVal | rate.bVal)
 
     def configureColorSensor(self, res: ColorSensorResolution, rate: ColorSensorMeasurementRate, gain: GainFactor):
-        self.write8(self.Register.kLightSensorMeasurementRate, res.bVal | rate.bVal)
-        self.write8(self.Register.kLightSensorGain, gain.bVal)
+        self._write8(self.Register.kLightSensorMeasurementRate, res.bVal | rate.bVal)
+        self._write8(self.Register.kLightSensorGain, gain.bVal)
 
     def getColor(self):
         r = self.getRed()
@@ -128,7 +128,7 @@ class ColorSensorV3:
     
     def getProximity(self):
         
-        return self.read11BitRegister(self.Register.kProximityData)
+        return self._read11BitRegister(self.Register.kProximityData)
 
     def getRawColor(self):
         return self.RawColor(self.getRed(), self.getGreen(), self.getBlue(), self.getIR())
@@ -136,71 +136,71 @@ class ColorSensorV3:
 
     def getRed(self):
         
-        return self.read20BitRegister(self.Register.kDataRed)
+        return self._read20BitRegister(self.Register.kDataRed)
 
 
     def getGreen(self):
         
-        return self.read20BitRegister(self.Register.kDataGreen)
+        return self._read20BitRegister(self.Register.kDataGreen)
 
 
     def getBlue(self):
         
-        return self.read20BitRegister(self.Register.kDataBlue)
+        return self._read20BitRegister(self.Register.kDataBlue)
 
 
     def getIR(self):
         
-        return self.read20BitRegister(self.Register.kDataInfrared)
+        return self._read20BitRegister(self.Register.kDataInfrared)
 
     def hasReset(self):
         
         raw = self.i2c.read(self.Register.kMainStatus, 1)
         return (raw[0] & 0x20) != 0
     
-    def checkDeviceID(self):
+    def _checkDeviceID(self):
         
         try:
             raw = self.i2c.read(self.Register.kPartID, 1)
-        except:
+        except IOError:
             DriverStation.reportError(
                 "Could not find REV color sensor", False)
             return False
 
         if self.kPartID != raw.get():
             DriverStation.reportError(
-                "Unknown device found with same I2C addres as REV color sensor", False)
+                "Unknown device found with same I2C address as REV color sensor", False)
             return False
         
         return True
 
-    def initializeDevice(self):
-        self.write8(self.Register.kMainCtrl,
+    def _initializeDevice(self):
+        self._write8(self.Register.kMainCtrl,
                self.MainControl.kRGBMode |
                self.MainControl.kLightSensorEnable |
                self.MainControl.kProximitySensorEnable)
 
-        self.write8(self.Register.kProximitySensorRate,
+        self._write8(self.Register.kProximitySensorRate,
                self.ProximitySensorResolution.kProxRes11bit |
                self.ProximitySensorMeasurementRate.kProxRate100ms)
 
-        self.write8(self.Register.kProximitySensorPulses, 32)
+        self._write8(self.Register.kProximitySensorPulses, 32)
     
-    def read11BitRegister(self, reg: Register):
+    def _read11BitRegister(self, reg: Register):
         
         raw = self.i2c.read(reg.bVal, 2)
 
         short = struct.unpack('<h', raw)
         return short[0] & 0x7FF
     
-    def read20BitRegister(self, reg: Register):
+    def _read20BitRegister(self, reg: Register):
 
         raw = self.i2c.read(reg.bVal, 3)
 
         integer = struct.unpack('<i', raw)
         return integer[0] & 0x03FFFF
     
-    def write8(self, reg: Register, data: int):
+    def _write8(self, reg: Register, data: int):
         self.i2c.write(reg.bVal, data)
     
     class RawColor:
