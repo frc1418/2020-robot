@@ -20,8 +20,8 @@ class TestRobot(magicbot.MagicRobot):
         self.right_joystick = wpilib.Joystick(1)
         self.alt_joystick = wpilib.Joystick(2)
 
-        self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushed), CANSparkMax(30, MotorType.kBrushed))
-        self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(20, MotorType.kBrushed), CANSparkMax(40, MotorType.kBrushed))
+        self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushless), CANSparkMax(30, MotorType.kBrushless))
+        self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(20, MotorType.kBrushless), CANSparkMax(40, MotorType.kBrushless))
 
         self.drive = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
 
@@ -31,6 +31,7 @@ class TestRobot(magicbot.MagicRobot):
         self.red = self.colorSensor.getRed()
         self.green = self.colorSensor.getGreen()
         self.blue = self.colorSensor.getBlue()
+
 
 if __name__ == '__main__':
     wpilib.run(TestRobot)
