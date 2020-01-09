@@ -1,6 +1,3 @@
-from pyfrc.physics import drivetrains
-
-
 class PhysicsEngine:
     """
     Simulates a 4-wheel robot using Swerve Drive joystick control
