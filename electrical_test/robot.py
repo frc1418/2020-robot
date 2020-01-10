@@ -2,12 +2,17 @@ import magicbot
 import wpilib
 import wpilib.drive
 import math
+from magicbot import tunable
 
 from rev import CANSparkMax, MotorType
 from ColorSensorV3 import ColorSensorV3
 
 
 class TestRobot(magicbot.MagicRobot):
+
+    red = tunable(0, writeDefault=False)
+    green = tunable(0, writeDefault=False)
+    blue = tunable(0, writeDefault=False)
 
     def createObjects(self):
 
@@ -23,9 +28,9 @@ class TestRobot(magicbot.MagicRobot):
         self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
     def teleopPeriodic(self):
         self.drive.arcadeDrive(-self.left_joystick.getY(), self.left_joystick.getX())
-        print("Red: "+ str(self.colorSensor.getRed()))
-        print("Green: " + str(self.colorSensor.getGreen()))
-        print("Blue: " + str(self.colorSensor.getBlue()))
+        self.red = self.colorSensor.getRed()
+        self.green = self.colorSensor.getGreen()
+        self.blue = self.colorSensor.getBlue()
 
 if __name__ == '__main__':
     wpilib.run(TestRobot)
