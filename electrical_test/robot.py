@@ -16,22 +16,21 @@ class TestRobot(magicbot.MagicRobot):
 
     def createObjects(self):
 
-        self.left_joystick = wpilib.Joystick(0)
-        self.right_joystick = wpilib.Joystick(1)
-        self.alt_joystick = wpilib.Joystick(2)
+        # self.left_joystick = wpilib.Joystick(0)
+        # self.right_joystick = wpilib.Joystick(1)
+        # self.alt_joystick = wpilib.Joystick(2)
 
-        self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushless), CANSparkMax(30, MotorType.kBrushless))
-        self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(20, MotorType.kBrushless), CANSparkMax(40, MotorType.kBrushless))
+        # self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushed), CANSparkMax(20, MotorType.kBrushed))
+        # self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(30, MotorType.kBrushed), CANSparkMax(40, MotorType.kBrushed))
 
-        self.drive = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
+        # self.drive = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
 
         self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
     def teleopPeriodic(self):
-        self.drive.arcadeDrive(-self.left_joystick.getY(), self.left_joystick.getX())
+        # self.drive.arcadeDrive(-self.left_joystick.getY(), self.left_joystick.getX())
         self.red = self.colorSensor.getRed()
         self.green = self.colorSensor.getGreen()
         self.blue = self.colorSensor.getBlue()
-
 
 if __name__ == '__main__':
     wpilib.run(TestRobot)

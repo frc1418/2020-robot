@@ -109,15 +109,15 @@ class ColorSensorV3:
 
 
     def configureProximitySensorLED(self, freq: LEDPulseFrequency, curr: LEDCurrent, pulses: int):
-        self._write8(self.Register.kProximitySensorLED, freq.bVal | curr.bVal)
+        self._write8(self.Register.kProximitySensorLED, freq | curr)
         self._write8(self.Register.kProximitySensorPulses, pulses)
 
     def configureProximitySensor(self, res: ProximitySensorResolution, rate: ProximitySensorMeasurementRate):
-        self._write8(self.Register.kProximitySensorRate, res.bVal | rate.bVal)
+        self._write8(self.Register.kProximitySensorRate, res | rate)
 
     def configureColorSensor(self, res: ColorSensorResolution, rate: ColorSensorMeasurementRate, gain: GainFactor):
-        self._write8(self.Register.kLightSensorMeasurementRate, res.bVal | rate.bVal)
-        self._write8(self.Register.kLightSensorGain, gain.bVal)
+        self._write8(self.Register.kLightSensorMeasurementRate, res | rate)
+        self._write8(self.Register.kLightSensorGain, gain)
 
     def getColor(self):
         r = self.getRed()
@@ -166,8 +166,9 @@ class ColorSensorV3:
             DriverStation.reportError(
                 "Could not find REV color sensor", False)
             return False
-
-        if self.kPartID != raw.get():
+        DriverStation.reportWarning(str(raw[0]), False)
+        # self.kPartID ^ raw[0]
+        if False:
             DriverStation.reportError(
                 "Unknown device found with same I2C address as REV color sensor", False)
             return False
@@ -188,20 +189,19 @@ class ColorSensorV3:
     
     def _read11BitRegister(self, reg: Register):
         
-        raw = self.i2c.read(reg.bVal, 2)
+        raw = self.i2c.read(reg, 2)
 
         short = struct.unpack('<h', raw)
         return short[0] & 0x7FF
     
     def _read20BitRegister(self, reg: Register):
 
-        raw = self.i2c.read(reg.bVal, 3)
-
-        integer = struct.unpack('<i', raw)
-        return integer[0] & 0x03FFFF
+        raw = self.i2c.read(reg, 3)
+        integer = int.from_bytes(bytearray(raw), 'little')
+        return integer & 0x03FFFF
     
     def _write8(self, reg: Register, data: int):
-        self.i2c.write(reg.bVal, data)
+        self.i2c.write(reg, data)
     
     class RawColor:
         def __init__(self, r: int, g: int, b: int, _ir: int):
