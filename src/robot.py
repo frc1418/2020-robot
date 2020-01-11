@@ -3,6 +3,25 @@ import wpilib
 import navx
 
 
+r"""
+/ \                / \
+\ /       (+)      \ /
+           |
+           |X
+(+) -------|--Y----  (-)
+           |
+           |
+/ \       (-)      / \
+\ /                \ /
+
+Counter-Clockwise is Positive
+   /-\ ^
+   |X| | (+)
+   \-/ |
+   -->
+"""
+
+
 class Robot(magicbot.MagicRobot):
     def createObjects(self):
         self.navx = navx.AHRS.create_spi()
