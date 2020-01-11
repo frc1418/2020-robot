@@ -11,7 +11,7 @@ from enum import IntEnum
 class ColorSensorV3:
     kAddress = 82
 
-    kPartID = -62
+    kPartID = 0b10111110  # -62
 
     def __init__(self, port: I2C.Port):
         self.i2c = I2C(port, self.kAddress)
@@ -166,9 +166,10 @@ class ColorSensorV3:
             DriverStation.reportError(
                 "Could not find REV color sensor", False)
             return False
-        DriverStation.reportWarning(str(raw[0]), False)
-        # self.kPartID ^ raw[0]
-        if False:
+        DriverStation.reportWarning('READ: ' + str(raw[0]), False)
+        flipped = self.kPartID ^ 0xFF
+        DriverStation.reportWarning('FLIPPED: ' + str(flipped + 129), False)
+        if raw[0] != flipped + 129:
             DriverStation.reportError(
                 "Unknown device found with same I2C address as REV color sensor", False)
             return False
