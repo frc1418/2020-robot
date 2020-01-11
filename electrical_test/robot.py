@@ -15,7 +15,6 @@ class TestRobot(magicbot.MagicRobot):
     blue = tunable(0, writeDefault=False)
 
     def createObjects(self):
-
         # self.left_joystick = wpilib.Joystick(0)
         # self.right_joystick = wpilib.Joystick(1)
         # self.alt_joystick = wpilib.Joystick(2)
