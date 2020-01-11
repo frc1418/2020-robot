@@ -25,9 +25,8 @@ class Robot(magicbot.MagicRobot):
        # TODO: decide what buttons should do. Need to talk to drivers
 
         # Set up Speed Controller Groups
-        #TODO: Add third motor for each side
-        self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushless), CANSparkMax(20, MotorType.kBrushless))
-        self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(30, MotorType.kBrushless), CANSparkMax(40, MotorType.kBrushless))
+        self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushless), CANSparkMax(20, MotorType.kBrushless), CANSparkMax(30, MotorType.kBrushless))
+        self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(40, MotorType.kBrushless), CANSparkMax(50, MotorType.kBrushless), CANSparkMax(60, MotorType.kBrushless))
 
         # Drivetrain
         self.train = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
