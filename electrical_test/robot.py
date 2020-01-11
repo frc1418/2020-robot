@@ -6,13 +6,19 @@ from magicbot import tunable
 
 from rev import CANSparkMax, MotorType
 from ColorSensorV3 import ColorSensorV3
+from ColorMatch import ColorMatch
 
 
 class TestRobot(magicbot.MagicRobot):
 
-    red = tunable(0, writeDefault=False)
-    green = tunable(0, writeDefault=False)
-    blue = tunable(0, writeDefault=False)
+    
+    colorString = tunable("", writeDefault=False)
+    colorMatcher = ColorMatch()
+
+    BlueTarget = ColorSensorV3.RawColor(0, 255, 255, 0)
+    GreenTarget = ColorSensorV3.RawColor(0, 255, 0, 0)
+    RedTarget = ColorSensorV3.RawColor(255, 0, 0, 0)
+    YellowTarget = ColorSensorV3.RawColor(0, 255, 255, 0)
 
     def createObjects(self):
         # self.left_joystick = wpilib.Joystick(0)
@@ -25,11 +31,25 @@ class TestRobot(magicbot.MagicRobot):
         # self.drive = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
 
         self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
+
+        self.colorMatcher.addColorMatch(self.BlueTarget)
+        self.colorMatcher.addColorMatch(self.GreenTarget)
+        self.colorMatcher.addColorMatch(self.RedTarget)
+        self.colorMatcher.addColorMatch(self.YellowTarget)
     def teleopPeriodic(self):
-        # self.drive.arcadeDrive(-self.left_joystick.getY(), self.left_joystick.getX())
-        self.red = self.colorSensor.getRed()
-        self.green = self.colorSensor.getGreen()
-        self.blue = self.colorSensor.getBlue()
+        detectedColor = self.colorSensor.getColor()
+
+        match = self.colorMatcher.matchClosestColor(detectedColor)
+        if match.color == self.BlueTarget:
+            self.colorString = "Blue"
+        elif match.color == self.RedTarget:
+            self.colorString = "Red"
+        elif match.color == self.GreenTarget:
+            self.colorString = "Green"
+        elif match.color == self.YellowTarget:
+            self.colorString = "Yellow"
+        else:
+            self.colorString = "Unknown"
 
 if __name__ == '__main__':
     wpilib.run(TestRobot)
