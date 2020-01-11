@@ -1,12 +1,21 @@
-# TODO: Import from Hal
 import struct
 from wpilib import DriverStation
 from wpilib import I2C
+from hal_impl.i2c_helpers import I2CSimBase
 
 class Color:
     pass
 
 from enum import IntEnum
+
+class FakeI2CSimBase(I2CSimBase):
+    def readI2C(self, port, deviceAddress, buffer, count):
+        buffer[:] = b'0'
+        return len(buffer)
+
+    def transactionI2C(self, port, deviceAddress, dataToSend, sendSize, dataReceived, receiveSize):
+        dataReceived[:] = b'0'
+        return len(dataReceived)
 
 class ColorSensorV3:
     kAddress = 82
@@ -14,7 +23,7 @@ class ColorSensorV3:
     kPartID = 0b10111110  # -62
 
     def __init__(self, port: I2C.Port):
-        self.i2c = I2C(port, self.kAddress)
+        self.i2c = I2C(port, self.kAddress, simPort=FakeI2CSimBase())
         
         if (not self._checkDeviceID()):
             return
