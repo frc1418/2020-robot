@@ -57,7 +57,7 @@ class Robot(magicbot.MagicRobot):
     def teleopInit(self):
         self.drive.squared_inputs = True
         self.drive.rotational_constant = 0.5
-        drive.train.setDeadband(0.1)
+        self.train.setDeadband(0.1)
 
     def teleopPeriodic(self):
         self.drive.move(-self.joystick_left.getY(),
