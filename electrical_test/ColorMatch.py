@@ -6,7 +6,7 @@ from ColorSensorV3 import ColorSensorV3
 #import edu.wpi.first.wpilibj.util.ColorShim
 
 class ColorMatch:
-    def CalculateDistance(self, color1: ColorSensorV3.RawColor, color2: ColorSensorV3.RawColor):
+    def calculateDistance(self, color1: ColorSensorV3.RawColor, color2: ColorSensorV3.RawColor):
         redDiff = color1.red - color2.red
         greenDiff = color1.green - color2.green
         blueDiff = color1.blue - color2.blue
@@ -50,7 +50,7 @@ class ColorMatch:
             idx = 0
 
             for i in range(len(self.colorsToMatch)):
-                targetDistance = self.CalculateDistance(self.colorsToMatch[i], normalized)
+                targetDistance = self.calculateDistance(self.colorsToMatch[i], normalized)
 
                 if targetDistance < minDistance:
                     minDistance = targetDistance
