@@ -57,13 +57,14 @@ class Robot(magicbot.MagicRobot):
     def teleopInit(self):
         self.drive.squared_inputs = True
         self.drive.rotational_constant = 0.5
+        drive.train.setDeadband(0.1)
 
     def teleopPeriodic(self):
         self.drive.move(-self.joystick_left.getY(),
                         self.joystick_right.getX())
         
         # Checks whether or not the FMS has sent what color the color wheel needs to be spun to
-        if self.ds.getGameSpecificMessage().length > 0 and self.getColor == True:
+        if len(self.ds.getGameSpecificMessage()) > 0 and self.getColor == True:
             self.color = self.ds.getGameSpecificMessage()
             if self.color == 'R':
                 # red color
