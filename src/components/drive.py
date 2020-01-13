@@ -18,11 +18,10 @@ class Drive:
     rotational_constant = tunable(0.5)
     squared_inputs = tunable(False)
 
-    def __init__(self):
-        pass
-
     def setup(self):
-        pass
+        """
+        Run setup code on the injected variables (train)
+        """
 
     def move(self, y: float, rot: float):
         """

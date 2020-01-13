@@ -3,8 +3,6 @@ import wpilib
 from magicbot import tunable
 from rev import CANSparkMax, MotorType
 import navx
-from robotpy_ext.control.button_debouncer import ButtonDebouncer
-from wpilib.buttons import JoystickButton
 
 from components.drive import Drive
 
@@ -37,12 +35,12 @@ class Robot(magicbot.MagicRobot):
     getColor = True
 
     def createObjects(self):
-         # Joysticks
+        # Joysticks
         self.joystick_left = wpilib.Joystick(0)
         self.joystick_right = wpilib.Joystick(1)
         self.joystick_alt = wpilib.Joystick(2)
-       
-       # TODO: decide what buttons should do. Need to talk to drivers
+
+        # TODO: decide what buttons should do. Need to talk to drivers
 
         # Set up Speed Controller Groups
         self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushless), CANSparkMax(20, MotorType.kBrushless), CANSparkMax(30, MotorType.kBrushless))
@@ -55,22 +53,22 @@ class Robot(magicbot.MagicRobot):
         self.navx = navx.AHRS.create_spi()
         self.navx.reset()
 
-        #Utility
+        # Utility
         self.ds = wpilib.DriverStation.getInstance()
         self.timer = wpilib.Timer()
         self.pdp = wpilib.PowerDistributionPanel(0)
-    
+
     def robotPeriodic(self):
         self.time = int(self.timer.getMatchTime())
         self.voltage = self.pdp.getVoltage()
         self.rotation = self.navx.getAngle() % 360
-    
+
     def autonomous(self):
         pass
 
     def disabledInit(self):
         self.navx.reset()
-    
+
     def disabledPeriodic(self):
         pass
 
@@ -82,9 +80,9 @@ class Robot(magicbot.MagicRobot):
     def teleopPeriodic(self):
         self.drive.move(-self.joystick_left.getY(),
                         self.joystick_right.getX())
-        
+
         # Checks whether or not the FMS has sent what color the color wheel needs to be spun to
-        if len(self.ds.getGameSpecificMessage()) > 0 and self.getColor == True:
+        if len(self.ds.getGameSpecificMessage()) > 0 and self.getColor is True:
             self.color = self.ds.getGameSpecificMessage()
             if self.color == 'R':
                 # red color
@@ -99,6 +97,7 @@ class Robot(magicbot.MagicRobot):
                 # yellow color
                 pass
             self.getColor = False
+
 
 if __name__ == '__main__':
     wpilib.run(Robot)
