@@ -53,6 +53,9 @@ class Robot(magicbot.MagicRobot):
         self.navx = navx.AHRS.create_spi()
         self.navx.reset()
 
+        # Launcher
+        self.launcher_motor = CANSparkMax(25, MotorType.kBrushless)
+
         # Utility
         self.ds = wpilib.DriverStation.getInstance()
         self.timer = wpilib.Timer()
