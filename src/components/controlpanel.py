@@ -24,7 +24,6 @@ class ControlPanel:
     turnToColorString = tunable("No message from field", writeDefault=True)
     fmsColorString = tunable("No message from field", writeDefault=True)
 
-
     cp_motor: CANSparkMax
 
     speed = will_reset_to(0)
@@ -42,7 +41,6 @@ class ControlPanel:
             self.colorMatcher.addColorMatch(color)
 
 
-    @state(first=True)
     def spin(self, spin):
         if speed > 1 or speed < -1:
             raise Exception('you have acheived speeds not possible for a mere mortal')
@@ -79,7 +77,7 @@ class ControlPanel:
             self.green = detectedColor.green
 
             self.currentColorString = self.colorToString(detectedColor)
-        
+            
         self.cp_motor.set(self.speed)
 
     def colorToString(self, color: ColorSensorV3.RawColor):
