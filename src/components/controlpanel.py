@@ -1,10 +1,12 @@
 import wpilib
 import wpilib.drive
-from rev import CANSparkMax, MotorType
+from rev import CANSparkMax
 from magicbot import will_reset_to
 from magicbot import tunable
 from electrical_test.ColorSensorV3 import ColorSensorV3
+from electrical_test.ColorMatch import ColorMatch
 from enum import Enum
+
 
 class Colors(Enum):
     Blue = ColorSensorV3.RawColor(
@@ -16,8 +18,9 @@ class Colors(Enum):
     Yellow = ColorSensorV3.RawColor(
         0.317, 0.557, 0.124, 0)  # default color
 
+
 class ControlPanel:
-    
+
     red = tunable(0, writeDefault=False)
     green = tunable(0, writeDefault=False)
     blue = tunable(0, writeDefault=False)
@@ -41,12 +44,11 @@ class ControlPanel:
         for color in self.colors:
             self.colorMatcher.addColorMatch(color)
 
-
     def spin(self, spin):
-        if speed > 1 or speed < -1:
+        if self.speed > 1 or self.speed < -1:
             raise Exception('you have acheived speeds not possible for a mere mortal')
 
-    self.speed = speed
+    speed = speed
 
     def execute(self):
 
@@ -66,7 +68,6 @@ class ControlPanel:
             colorInt = self.colors.index(self.fmsColor)
             self.turnToColorString = self.colorToString(
                 self.colors[(colorInt + 2) % 4])
-
 
         try:
             detectedColor = self.colorSensor.getColor()
