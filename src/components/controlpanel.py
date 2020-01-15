@@ -4,6 +4,7 @@ from rev import CANSparkMax, MotorType
 from magicbot import will_reset_to
 from magicbot import tunable
 from electrical_test.ColorSensorV3 import ColorSensorV3
+from enum import Enum
 
 class Colors(Enum):
     Blue = ColorSensorV3.RawColor(
@@ -44,7 +45,7 @@ class ControlPanel:
     def spin(self, spin):
         if speed > 1 or speed < -1:
             raise Exception('you have acheived speeds not possible for a mere mortal')
-    
+
     self.speed = speed
 
     def execute(self):
@@ -77,7 +78,7 @@ class ControlPanel:
             self.green = detectedColor.green
 
             self.currentColorString = self.colorToString(detectedColor)
-            
+
         self.cp_motor.set(self.speed)
 
     def colorToString(self, color: ColorSensorV3.RawColor):
