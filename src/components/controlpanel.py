@@ -16,7 +16,7 @@ class Colors(Enum):
         0.317, 0.557, 0.124, 0)  # default color
 
 class ControlPanel:
-   
+    
     red = tunable(0, writeDefault=False)
     green = tunable(0, writeDefault=False)
     blue = tunable(0, writeDefault=False)
