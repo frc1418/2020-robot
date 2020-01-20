@@ -1,10 +1,9 @@
 import wpilib
-import wpilib.drive
 from rev import CANSparkMax
 from magicbot import will_reset_to
 from magicbot import tunable
-from electrical_test.ColorSensorV3 import ColorSensorV3
-from electrical_test.ColorMatch import ColorMatch
+from ColorSensorV3 import ColorSensorV3
+from ColorMatch import ColorMatch
 from enum import Enum
 
 
@@ -35,6 +34,8 @@ class ControlPanel:
     def createObjects(self):
         self.getColor = True
 
+        self.ds = wpilib.DriverStation.getInstance()
+
         self.colors = [val for val in Colors.__members__.values()]
         self.fmsColor = ColorSensorV3.RawColor(0, 0, 0, 0)
 
@@ -45,29 +46,27 @@ class ControlPanel:
             self.colorMatcher.addColorMatch(color)
 
     def spin(self, spin):
-        if self.speed > 1 or self.speed < -1:
-            raise Exception('you have acheived speeds not possible for a mere mortal')
-
-    speed = speed
+        if abs(spin) > 1:
+            raise Exception('Speed not valid.')
+        self.speed = spin
 
     def execute(self):
-
         if len(self.ds.getGameSpecificMessage()) > 0 and self.getColor is True:
             self.fmsColorString = self.ds.getGameSpecificMessage()
-            if self.color == 'R':
+            if self.fmsColorString == 'R':
                 self.fmsColor = Colors.Red
-            elif self.color == 'G':
+            elif self.fmsColorString == 'G':
                 self.fmsColor = Colors.Green
-            elif self.color == 'B':
+            elif self.fmsColorString == 'B':
                 self.fmsColor = Colors.Blue
-            elif self.color == 'Y':
+            elif self.fmsColorString == 'Y':
                 self.fmsColor = Colors.Yellow
             self.getColor = False
 
-            self.fmsColorString = self.colorToString(self.fmsColor)
+            self.fmsColorString = Colors(self.fmsColor).name
             colorInt = self.colors.index(self.fmsColor)
-            self.turnToColorString = self.colorToString(
-                self.colors[(colorInt + 2) % 4])
+            self.turnToColorString = Colors(
+                self.colors[(colorInt + 2) % 4]).name
 
         try:
             detectedColor = self.colorSensor.getColor()
@@ -78,10 +77,6 @@ class ControlPanel:
             self.blue = detectedColor.blue
             self.green = detectedColor.green
 
-            self.currentColorString = self.colorToString(detectedColor)
+            self.currentColorString = Colors(detectedColor).name
 
         self.cp_motor.set(self.speed)
-
-    def colorToString(self, color: ColorSensorV3.RawColor):
-        match = self.colorMatcher.matchClosestColor(color)
-        return Colors(match.color).name
