@@ -50,23 +50,26 @@ class ControlPanel:
             raise Exception('Speed not valid.')
         self.speed = spin
 
+    def getFMSColor(self):
+        self.fmsColorString = self.ds.getGameSpecificMessage()
+        if self.fmsColorString == 'R':
+            self.fmsColor = Colors.Red
+        elif self.fmsColorString == 'G':
+            self.fmsColor = Colors.Green
+        elif self.fmsColorString == 'B':
+            self.fmsColor = Colors.Blue
+        elif self.fmsColorString == 'Y':
+            self.fmsColor = Colors.Yellow
+        self.getColor = False
+
+        self.fmsColorString = Colors(self.fmsColor).name
+        colorInt = self.colors.index(self.fmsColor)
+        self.turnToColorString = Colors(
+            self.colors[(colorInt + 2) % 4]).name
+
     def execute(self):
         if len(self.ds.getGameSpecificMessage()) > 0 and self.getColor is True:
-            self.fmsColorString = self.ds.getGameSpecificMessage()
-            if self.fmsColorString == 'R':
-                self.fmsColor = Colors.Red
-            elif self.fmsColorString == 'G':
-                self.fmsColor = Colors.Green
-            elif self.fmsColorString == 'B':
-                self.fmsColor = Colors.Blue
-            elif self.fmsColorString == 'Y':
-                self.fmsColor = Colors.Yellow
-            self.getColor = False
-
-            self.fmsColorString = Colors(self.fmsColor).name
-            colorInt = self.colors.index(self.fmsColor)
-            self.turnToColorString = Colors(
-                self.colors[(colorInt + 2) % 4]).name
+            self.getFMSColor()
 
         try:
             detectedColor = self.colorSensor.getColor()
