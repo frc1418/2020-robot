@@ -1,4 +1,4 @@
-from wpilip import Spark
+from wpilib import Spark
 
 class BlinkinLED(Spark):
     RAINBOW = -0.89
