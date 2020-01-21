@@ -65,6 +65,10 @@ class TestRobot(magicbot.MagicRobot):
 
         # for color in self.colors:
         #     self.colorMatcher.addColorMatch(color)
+    
+    def setup(self):
+        # Set period to 3 seconds, set bypass_level to WARN
+        self.logger.addFilter(PeriodicFilter(1, bypass_level=logging.WARN))
 
     def teleopPeriodic(self):
     #     try:
@@ -78,12 +82,8 @@ class TestRobot(magicbot.MagicRobot):
 
     #         self.currentColorString = self.colorToString(detectedColor)
         self.launcher_motor.set(-1)
-        print(self.encoder.getVelocity())
-        if (self.i == 20):
-            print(self.encoder.getVelocity())
-            self.i = 0
-        else:
-            self.i += 1
+        self.logger.info(self.encoder.getVelocity())
+
 
         
         
