@@ -6,6 +6,8 @@ import time
 import random
 from magicbot import tunable
 
+from robotpy_ext.misc.periodic_filter import PeriodicFilter, logging
+
 from rev import CANSparkMax, MotorType
 # from ColorSensorV3 import ColorSensorV3
 # from ColorMatch import ColorMatch
