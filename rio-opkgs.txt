@@ -1,6 +1,6 @@
-python37-robotpy-ctre
-python37-robotpy-cscore
-python37-robotpy-rev
-python37-robotpy-rev-color
-python37-robotpy-navx
-python37-numpy
+python38-robotpy-ctre
+python38-robotpy-cscore
+python38-robotpy-rev
+python38-robotpy-rev-color
+python38-robotpy-navx
+python38-numpy
