@@ -1,1 +1,2 @@
 pyfrc==2020.0.0
+robotpy-navx==2020.0.1
