@@ -1,5 +1,6 @@
 import magicbot
 import wpilib
+from common.differential import DifferentialDriveKinematics
 from magicbot import tunable
 from rev import CANSparkMax, MotorType
 import navx
@@ -28,11 +29,8 @@ Counter-Clockwise is Positive
 
 class Robot(magicbot.MagicRobot):
     drive: Drive
-    time = tunable(0)
-    voltage = tunable(0)
-    rotation = tunable(0)
-    color = tunable('')
-    getColor = True
+
+    TRACK_WIDTH = 0.43  # Units: Meters
 
     def createObjects(self):
         # Joysticks
@@ -53,24 +51,8 @@ class Robot(magicbot.MagicRobot):
         self.navx = navx.AHRS.create_spi()
         self.navx.reset()
 
-        # Utility
-        self.ds = wpilib.DriverStation.getInstance()
-        self.timer = wpilib.Timer()
-        self.pdp = wpilib.PowerDistributionPanel(0)
-
-    def robotPeriodic(self):
-        self.time = int(self.timer.getMatchTime())
-        self.voltage = self.pdp.getVoltage()
-        self.rotation = self.navx.getAngle() % 360
-
-    def autonomous(self):
-        pass
-
-    def disabledInit(self):
-        self.navx.reset()
-
-    def disabledPeriodic(self):
-        pass
+        # Kinematics
+        self.kinematics = DifferentialDriveKinematics(self.TRACK_WIDTH)  # Track width in meters
 
     def teleopInit(self):
         self.drive.squared_inputs = True
@@ -79,24 +61,7 @@ class Robot(magicbot.MagicRobot):
 
     def teleopPeriodic(self):
         self.drive.move(-self.joystick_left.getY(),
-                        self.joystick_right.getX())
-
-        # Checks whether or not the FMS has sent what color the color wheel needs to be spun to
-        if len(self.ds.getGameSpecificMessage()) > 0 and self.getColor is True:
-            self.color = self.ds.getGameSpecificMessage()
-            if self.color == 'R':
-                # red color
-                pass
-            elif self.color == 'G':
-                # green color
-                pass
-            elif self.color == 'B':
-                # blue color
-                pass
-            elif self.color == 'Y':
-                # yellow color
-                pass
-            self.getColor = False
+                        self.joystick_right.getX()) 
 
 
 if __name__ == '__main__':
