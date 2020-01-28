@@ -8,6 +8,7 @@ from common.limelight import Limelight
 from robotpy_ext.control.toggle import Toggle
 from components.drive import Drive
 from components.align import Align
+from components.controlpanel import ControlPanel
 
 
 r"""
