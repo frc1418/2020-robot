@@ -5,6 +5,7 @@ from magicbot import tunable
 from ColorSensorV3 import ColorSensorV3
 from ColorMatch import ColorMatch
 from enum import Enum
+from magicbot import state
 
 
 class Colors(Enum):
@@ -40,10 +41,11 @@ class ControlPanel:
         for color in self.colors:
             self.colorMatcher.addColorMatch(color)
 
-    def spin(self, spin):
-        if abs(spin) > 1:
-            raise Exception('Speed not valid.')
-        self.speed = spin
+    def spin(self, position=False):
+        self.engage('positionControl' if position else 'rotationControl')
+
+    def stop(self):
+        self.done()
 
     def getFMSColor(self):
         self.fmsColorString = self.ds.getGameSpecificMessage()
@@ -78,3 +80,26 @@ class ControlPanel:
             self.currentColorString = Colors(detectedColor).name
 
         self.cp_motor.set(self.speed)
+
+    @state
+    def rotationControl(self, initial_call):
+        if initial_call:
+            self.rotations = 0
+            self.onColor = True
+            self.startingColorString = self.currentColorString
+
+        if not self.onColor and self.currentColorString == self.startingColorString:
+            self.rotations += 0.5
+            self.onColor == True
+        elif self.currentColorString != self.startingColorString:
+            self.onColor = False
+        self.cp_motor.set(0.5)
+        if self.rotations >= 3:
+            self.done()
+
+    @state
+    def positionControl(self):
+        if self.currentColorString != self.turnToColorString:
+            self.cp_motor.set(0.5)
+        else:
+            self.done()
