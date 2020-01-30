@@ -8,18 +8,13 @@ from enum import Enum
 
 
 class Colors(Enum):
-    Blue = ColorSensorV3.RawColor(
-        0.187, 0.457, 0.376, 0)  # accurate from ~16.2 cm
-    Green = ColorSensorV3.RawColor(
-        0.178, 0.573, 0.252, 0)  # accurate from ~12.7 cm
-    Red = ColorSensorV3.RawColor(
-        0.497, 0.365, 0.143, 0)  # accurate from ~12.2 cm
-    Yellow = ColorSensorV3.RawColor(
-        0.317, 0.557, 0.124, 0)  # default color
+    Blue = wpilib.Color(0.187, 0.457, 0.376, 0)  # accurate from ~16.2 cm
+    Green = wpilib.Color(0.178, 0.573, 0.252, 0)  # accurate from ~12.7 cm
+    Red = wpilib.Color(0.497, 0.365, 0.143, 0)  # accurate from ~12.2 cm
+    Yellow = wpilib.Color(0.317, 0.557, 0.124, 0)  # accurate from ~20 cm
 
 
 class ControlPanel:
-
     red = tunable(0, writeDefault=False)
     green = tunable(0, writeDefault=False)
     blue = tunable(0, writeDefault=False)
@@ -37,7 +32,7 @@ class ControlPanel:
         self.ds = wpilib.DriverStation.getInstance()
 
         self.colors = [val for val in Colors.__members__.values()]
-        self.fmsColor = ColorSensorV3.RawColor(0, 0, 0, 0)
+        self.fmsColor = wpilib.Color(0, 0, 0, 0)
 
         self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
         self.colorMatcher = ColorMatch()
@@ -64,8 +59,8 @@ class ControlPanel:
 
         self.fmsColorString = Colors(self.fmsColor).name
         colorInt = self.colors.index(self.fmsColor)
-        self.turnToColorString = Colors(
-            self.colors[(colorInt + 2) % 4]).name
+        # Get the color two sectors after the one the FMS wants to see
+        self.turnToColorString = Colors(self.colors[(colorInt + 2) % 4]).name
 
     def execute(self):
         if len(self.ds.getGameSpecificMessage()) > 0 and self.getColor is True:
