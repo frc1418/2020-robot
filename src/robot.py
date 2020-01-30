@@ -36,6 +36,8 @@ class Robot(magicbot.MagicRobot):
 
     TRACK_WIDTH = 0.43  # Units: Meters
 
+    control_panel: ControlPanel
+
     def createObjects(self):
         # Joysticks
         self.joystick_left = wpilib.Joystick(0)
@@ -55,8 +57,28 @@ class Robot(magicbot.MagicRobot):
         self.navx = navx.AHRS.create_spi()
         self.navx.reset()
 
-        # Kinematics
-        self.kinematics = DifferentialDriveKinematics(self.TRACK_WIDTH)  # Track width in meters
+        # Utility
+        self.ds = wpilib.DriverStation.getInstance()
+        self.timer = wpilib.Timer()
+        self.pdp = wpilib.PowerDistributionPanel(0)
+
+        #Control Panel Component
+        self.cp_motor = CANSparkMax(10, MotorType.kBrushless)
+        
+
+    def robotPeriodic(self):
+        self.time = int(self.timer.getMatchTime())
+        self.voltage = self.pdp.getVoltage()
+        self.rotation = self.navx.getAngle() % 360
+
+    def autonomous(self):
+        pass
+
+    def disabledInit(self):
+        self.navx.reset()
+
+    def disabledPeriodic(self):
+        pass
 
         # Limelight
         self.limelight = Limelight()
