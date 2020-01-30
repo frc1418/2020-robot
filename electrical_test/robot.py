@@ -12,11 +12,6 @@ from robotpy_ext.misc.periodic_filter import PeriodicFilter, logging
 # from limelight.py import Limelight
 from networktables.util import ntproperty
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> add limelight code
 # from ColorSensorV3 import ColorSensorV3
 # from ColorMatch import ColorMatch
 # from enum import Enum
@@ -32,70 +27,10 @@ from networktables.util import ntproperty
 #         0.497, 0.365, 0.143, 0)  # accurate from ~12.2 cm
 #     Yellow = ColorSensorV3.RawColor(
 #         0.317, 0.557, 0.124, 0)  # default color
-<<<<<<< HEAD
->>>>>>> add limelight code
-=======
->>>>>>> add limelight code
 
 
 class TestRobot(magicbot.MagicRobot):
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    red = tunable(0, writeDefault=False)
-    green = tunable(0, writeDefault=False)
-    blue = tunable(0, writeDefault=False)
-    currentColorString = tunable("", writeDefault=False)
-    turnToColorString = tunable("", writeDefault=False)
-    fmsColorString = tunable("", writeDefault=False)
-    pot_angle = ntproperty('/robot/pot_angle', 0)
-=======
-#     red = tunable(0, writeDefault=False)
-#     green = tunable(0, writeDefault=False)
-#     blue = tunable(0, writeDefault=False)
-#     currentColorString = tunable("", writeDefault=False)
-#     turnToColorString = tunable("", writeDefault=False)
-#     fmsColorString = tunable("", writeDefault=False)
->>>>>>> add limelight code
-    
-    def createObjects(self):
-        # self.LED = wpilib.Spark(8)
-        # self.RAINBOW = -0.89
-        # self.HEARTBEAT_RED = -0.35
-        # self.GREEN = 0.71
-        self.limelight = Limelight()
-        self.i = 0
-
-        # self.leds = BlinkinLED(3)
-
-        # self.left_joystick = wpilib.Joystick(0)
-        # self.right_joystick = wpilib.Joystick(1)
-        # self.alt_joystick = wpilib.Joystick(2)
-
-        # self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushed), CANSparkMax(20, MotorType.kBrushed))
-        # self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(30, MotorType.kBrushed), CANSparkMax(40, MotorType.kBrushed))
-
-        # self.drive = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
-        # self.last_time = time.time()
-
-        # self.colors = [val for val in Colors.__members__.values()]
-        # self.fmsColor = random.choice(self.colors).value
-
-        # self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
-
-        # self.colorMatcher = ColorMatch()
-        
-        # self.LED = BlinkinLED(8)
-        # self.i = 0
-
-        # for color in self.colors:
-        #     self.colorMatcher.addColorMatch(color)
-    
-
-    def teleopPeriodic(self):
-<<<<<<< HEAD
-        self.pot_angle = self.pot.getVoltage()
-=======
 #     red = tunable(0, writeDefault=False)
 #     green = tunable(0, writeDefault=False)
 #     blue = tunable(0, writeDefault=False)
@@ -138,8 +73,6 @@ class TestRobot(magicbot.MagicRobot):
     
 
     def teleopPeriodic(self):
-=======
->>>>>>> add limelight code
         # self.leds.set(0.71)
         # print(self.limelight.findPlaneDistance())
        
@@ -178,10 +111,10 @@ class Limelight():
     camera_mode = ntproperty('limelight/camMode', 0)
 
     # change with new robot; UNIT = inches
-    CAMERA_HEIGHT = 43 
+    CAMERA_HEIGHT = 12 
     TARGET_HEIGHT = 98.25
     # UNIT = degrees
-    CAMERA_ANGLE = 10
+    CAMERA_ANGLE = 20
 
     def findPlaneDistance(self):
         if self.valid_target == 0:
@@ -213,10 +146,6 @@ class Limelight():
         self.camera_mode = int(mode)
 
     
-<<<<<<< HEAD
->>>>>>> add limelight code
-=======
->>>>>>> add limelight code
 
 if __name__ == '__main__':
     wpilib.run(TestRobot)
