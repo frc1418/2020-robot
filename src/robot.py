@@ -69,7 +69,7 @@ class Robot(magicbot.MagicRobot):
         self.drive.move(-self.joystick_left.getY(),
                         self.joystick_right.getX()) 
        
-        if self.align_button:
+        if self.align_button.get():
             self.align.execute()
 
 
