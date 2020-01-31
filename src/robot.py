@@ -70,7 +70,7 @@ class Robot(magicbot.MagicRobot):
                         self.joystick_right.getX()) 
        
         if self.align_button.get():
-            self.align.execute()
+            self.align.align(self.limelight.getYaw())
 
 
 if __name__ == '__main__':
