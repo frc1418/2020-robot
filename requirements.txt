@@ -1,3 +1,4 @@
-pyfrc==2020.0.0
+pyfrc
 wpilib.kinematics
-robotpy-navx==2020.0.1
+robotpy-navx
+robotpy-commands-v1
