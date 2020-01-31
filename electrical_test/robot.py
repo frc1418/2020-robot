@@ -4,11 +4,14 @@ import wpilib.drive
 import math
 import time
 import random
+from networktables.util import ntproperty
 from magicbot import tunable
-
+from wpilib import Spark
+# from electrical_test.blinkinLED import BlinkinLED
 from robotpy_ext.misc.periodic_filter import PeriodicFilter, logging
+# from limelight.py import Limelight
 
-from rev import CANSparkMax, MotorType
+
 # from ColorSensorV3 import ColorSensorV3
 # from ColorMatch import ColorMatch
 # from enum import Enum
@@ -28,23 +31,23 @@ from rev import CANSparkMax, MotorType
 
 class TestRobot(magicbot.MagicRobot):
 
-    red = tunable(0, writeDefault=False)
-    green = tunable(0, writeDefault=False)
-    blue = tunable(0, writeDefault=False)
-    currentColorString = tunable("", writeDefault=False)
-    turnToColorString = tunable("", writeDefault=False)
-    fmsColorString = tunable("", writeDefault=False)
+#     red = tunable(0, writeDefault=False)
+#     green = tunable(0, writeDefault=False)
+#     blue = tunable(0, writeDefault=False)
+#     currentColorString = tunable("", writeDefault=False)
+#     turnToColorString = tunable("", writeDefault=False)
+#     fmsColorString = tunable("", writeDefault=False)
     
     def createObjects(self):
         # self.LED = wpilib.Spark(8)
         # self.RAINBOW = -0.89
         # self.HEARTBEAT_RED = -0.35
         # self.GREEN = 0.71
-        self.launcher_motor = CANSparkMax(7, MotorType.kBrushless)
-        self.launcher_motor.restoreFactoryDefaults()
-        self.launcher_motor.setOpenLoopRampRate(0)
-        self.encoder = self.launcher_motor.getEncoder()
+        self.limelight = Limelight()
         self.i = 0
+
+        # self.leds = BlinkinLED(3)
+
         # self.left_joystick = wpilib.Joystick(0)
         # self.right_joystick = wpilib.Joystick(1)
         # self.alt_joystick = wpilib.Joystick(2)
@@ -62,52 +65,87 @@ class TestRobot(magicbot.MagicRobot):
 
         # self.colorMatcher = ColorMatch()
         
-       # self.LED = BlinkinLED(8)
+        # self.LED = BlinkinLED(8)
         # self.i = 0
 
         # for color in self.colors:
         #     self.colorMatcher.addColorMatch(color)
     
-    def setup(self):
-        # Set period to 3 seconds, set bypass_level to WARN
-        self.logger.addFilter(PeriodicFilter(1, bypass_level=logging.WARN))
 
     def teleopPeriodic(self):
-    #     try:
-    #         detectedColor = self.colorSensor.getColor()
-    #     except IOError:
-    #         pass
-    #     else:
-    #         self.red = detectedColor.red
-    #         self.blue = detectedColor.blue
-    #         self.green = detectedColor.green
-
-    #         self.currentColorString = self.colorToString(detectedColor)
-        self.launcher_motor.set(-1)
-        self.logger.info(self.encoder.getVelocity())
-
-
-        
-        
-    #     self.fmsColorString = self.colorToString(self.fmsColor)
-    #     colorInt = self.colors.index(self.fmsColor)
-    #     self.turnToColorString = self.colorToString(
-    #         self.colors[(colorInt + 2) % 4])
-        # if self.i <= 50:
-        #     self.LED.set(self.RAINBOW)
-        # elif self.i <= 100:
-        #     self.LED.set(self.HEARTBEAT_RED)
-        # elif self.i <= 150:
-        #     self.LED.set(self.GREEN)
-        # else:
-        #     self.LED.set(0)
-        # self.i += 1
+        # self.leds.set(0.71)
+        # print(self.limelight.findPlaneDistance())
+       
+        # 0: LED mode in pipeline
+        # 1: force off
+        # 2: force blink
+        # 3: force on
+        if (self.i <= 30):
+            self.limelight.setLightMode(3)
+        else:
+            self.limelight.setLightMode(1)
+        self.i += 1
 
 
-    # def colorToString(self, color: ColorSensorV3.RawColor):
-    #     match = self.colorMatcher.matchClosestColor(color)
-    #     return Colors(match.color).name
-    def disabledInit(self):
-        self.launcher_motor.set(0)
+
+
+class BlinkinLED(Spark):
+    RAINBOW = -0.89
+    HEARTBEAT_RED = -0.35
+    GREEN = 0.71
+
+    def __init__(self, channel: int) -> None:
+        super().__init__(channel)
+  
+        # full of balls = heartbeat red (-.35)
+        # able to pick up balls = lawn green (.71)
+        # climbing = rainbow with glitter (-.89)
+        # color scanning = OFF
+
+
+class Limelight():
+    yaw_angle = ntproperty('/limelight/tx',0)
+    pitch_angle = ntproperty('/limelight/ty',0)
+    light_mode = ntproperty('/limelight/ledMode', 0)
+    valid_target = ntproperty('limelight/tv', 0)
+    camera_mode = ntproperty('limelight/camMode', 0)
+
+    # change with new robot; UNIT = inches
+    CAMERA_HEIGHT = 12 
+    TARGET_HEIGHT = 98.25
+    # UNIT = degrees
+    CAMERA_ANGLE = 20
+
+    def findPlaneDistance(self):
+        if self.valid_target == 0:
+            return 0
+        else:
+            plane_distance = (self.TARGET_HEIGHT - self.CAMERA_HEIGHT) / math.tan(math.radians(self.CAMERA_ANGLE + self.pitch_angle))
+            return plane_distance
+
+    def findDirectDistance(self):
+        if valid_target == 0:
+            return 0
+        else:
+            direct_distance = (self.TARGET_HEIGHT - self.CAMERA_HEIGHT)/math.sin(math.radians(self.CAMERA_ANGLE + self.pitch_angle))
+            return direct_distance
+
+    def getYaw(self):
+        return self.yaw_angle
+
+    def setLightMode(self, mode: int):
+        # 0: LED mode in pipeline
+        # 1: force off
+        # 2: force blink
+        # 3: force on
+        self.light_mode = mode
+
+    def setCamMode(self, mode: bool):
+        # true: Driver Camera
+        # false: Vision Processor
+        self.camera_mode = int(mode)
+
+    
+
 if __name__ == '__main__':
     wpilib.run(TestRobot)
