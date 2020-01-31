@@ -1,12 +1,17 @@
 from drive import Drive
 from common.limelight import Limelight
-
+from magicbot import will_reset_to
 class Align():
-    def createObjects(self):
-        self.limelight = Limelight()
-        self.drive = Drive()
-    
+    limelight: Limelight
+    drive: Drive
+    aligning = will_reset_to(False)
+    angle = will_reset_to(0)
+
     def execute(self):
-        angle = limelight.getYaw()
-        self.drive.align(angle, True)
+        if self.aligning == True:
+            self.drive.align(self.angle, True)
+
+    def align(self, angle):
+        self.aligning = True
+        self.angle = angle
         
