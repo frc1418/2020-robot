@@ -4,7 +4,7 @@ from common.differential import DifferentialDriveKinematics
 from magicbot import tunable
 from rev import CANSparkMax, MotorType
 import navx
-
+from common.limelight import Limelight
 from components.drive import Drive
 
 
@@ -53,6 +53,9 @@ class Robot(magicbot.MagicRobot):
 
         # Kinematics
         self.kinematics = DifferentialDriveKinematics(self.TRACK_WIDTH)  # Track width in meters
+
+        # Limelight
+        self.limelight = Limelight()
 
     def teleopInit(self):
         self.drive.squared_inputs = True
