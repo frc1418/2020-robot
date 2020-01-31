@@ -5,7 +5,9 @@ from magicbot import tunable
 from rev import CANSparkMax, MotorType
 import navx
 from common.limelight import Limelight
+from robotpy_ext.control.toggle import Toggle
 from components.drive import Drive
+from components.align import Align
 
 
 r"""
@@ -29,6 +31,7 @@ Counter-Clockwise is Positive
 
 class Robot(magicbot.MagicRobot):
     drive: Drive
+    align: Align
 
     TRACK_WIDTH = 0.43  # Units: Meters
 
@@ -39,7 +42,7 @@ class Robot(magicbot.MagicRobot):
         self.joystick_alt = wpilib.Joystick(2)
 
         # TODO: decide what buttons should do. Need to talk to drivers
-
+        self.align_button = Toggle(self.joystick_alt, 2)
         # Set up Speed Controller Groups
         self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushless), CANSparkMax(20, MotorType.kBrushless), CANSparkMax(30, MotorType.kBrushless))
         self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(40, MotorType.kBrushless), CANSparkMax(50, MotorType.kBrushless), CANSparkMax(60, MotorType.kBrushless))
@@ -65,6 +68,9 @@ class Robot(magicbot.MagicRobot):
     def teleopPeriodic(self):
         self.drive.move(-self.joystick_left.getY(),
                         self.joystick_right.getX()) 
+       
+        if self.align_button:
+            self.align.execute()
 
 
 if __name__ == '__main__':
