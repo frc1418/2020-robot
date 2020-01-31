@@ -10,7 +10,7 @@ from wpilib import Spark
 # from electrical_test.blinkinLED import BlinkinLED
 from robotpy_ext.misc.periodic_filter import PeriodicFilter, logging
 # from limelight.py import Limelight
-from networktables.util import ntproperty
+
 
 # from ColorSensorV3 import ColorSensorV3
 # from ColorMatch import ColorMatch
