@@ -6,6 +6,7 @@ from ColorSensorV3 import ColorSensorV3
 from ColorMatch import ColorMatch
 from enum import Enum
 from magicbot import state
+from magicbot.state_machine import StateMachine
 
 
 class Colors(Enum):
@@ -15,7 +16,7 @@ class Colors(Enum):
     Yellow = wpilib.Color(0.317, 0.557, 0.124, 0)  # accurate from ~20 cm
 
 
-class ControlPanel:
+class ControlPanel(StateMachine):
     red = tunable(0, writeDefault=False)
     green = tunable(0, writeDefault=False)
     blue = tunable(0, writeDefault=False)
@@ -45,7 +46,7 @@ class ControlPanel:
         self.engage('positionControl' if position else 'rotationControl')
 
     def stop(self):
-        self.done()
+        self.engage('stop_now', force=True)
 
     def getFMSColor(self):
         self.fmsColorString = self.ds.getGameSpecificMessage()
@@ -65,19 +66,20 @@ class ControlPanel:
         self.turnToColorString = Colors(self.colors[(colorInt + 2) % 4]).name
 
     def execute(self):
+        super().execute()
         if len(self.ds.getGameSpecificMessage()) > 0 and self.getColor is True:
             self.getFMSColor()
 
         try:
-            detectedColor = self.colorSensor.getColor()
+            self.detectedColor = self.colorSensor.getColor()
         except IOError:
             pass
         else:
-            self.red = detectedColor.red
-            self.blue = detectedColor.blue
-            self.green = detectedColor.green
+            self.red = self.detectedColor.red
+            self.blue = self.detectedColor.blue
+            self.green = self.detectedColor.green
 
-            self.currentColorString = Colors(detectedColor).name
+            self.currentColorString = Colors(self.detectedColor).name
 
         self.cp_motor.set(self.speed)
 
@@ -85,21 +87,25 @@ class ControlPanel:
     def rotationControl(self, initial_call):
         if initial_call:
             self.rotations = 0
-            self.onColor = True
-            self.startingColorString = self.currentColorString
+            self.lastColorString = self.currentColorString
 
-        if not self.onColor and self.currentColorString == self.startingColorString:
-            self.rotations += 0.5
-            self.onColor == True
-        elif self.currentColorString != self.startingColorString:
-            self.onColor = False
+        if self.currentColorString != self.lastColorString:
+            self.rotations += 1
+            self.lastColorString = self.currentColorString
         self.cp_motor.set(0.5)
-        if self.rotations >= 3:
+        if self.rotations >= 18:
             self.done()
 
     @state
     def positionControl(self):
         if self.currentColorString != self.turnToColorString:
-            self.cp_motor.set(0.5)
+            if abs(self.colors.index(self.detectedColor) - self.colors.index(self.fmsColor)) <= 2:
+                self.cp_motor.set(0.5)
+            else:
+                self.cp_motor.set(-0.5)
         else:
             self.done()
+
+    @state
+    def stop_now(self):
+        self.done()
