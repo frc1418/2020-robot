@@ -42,3 +42,7 @@ class Limelight():
         # true: Driver Camera
         # false: Vision Processor
         self.camera_mode = int(mode)
+
+    def targetExists(self):
+        return bool(self.valid_target)
+        
