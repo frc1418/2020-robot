@@ -2,8 +2,7 @@ import wpilib
 from rev import CANSparkMax
 from magicbot import will_reset_to
 from magicbot import tunable
-from ColorSensorV3 import ColorSensorV3
-from ColorMatch import ColorMatch
+from rev.color import ColorSensorV3, ColorMatch
 from enum import Enum
 from magicbot import state
 from magicbot.state_machine import StateMachine
