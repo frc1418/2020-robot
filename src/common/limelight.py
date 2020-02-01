@@ -5,8 +5,8 @@ class Limelight():
     yaw_angle = ntproperty('/limelight/tx',0)
     pitch_angle = ntproperty('/limelight/ty',0)
     light_mode = ntproperty('/limelight/ledMode', 0)
-    valid_target = ntproperty('limelight/tv', 0)
-    camera_mode = ntproperty('limelight/camMode', 0)
+    valid_target = ntproperty('/limelight/tv', 0)
+    camera_mode = ntproperty('/limelight/camMode', 0)
 
     # change with new robot; UNIT = inches
     CAMERA_HEIGHT = 12 
