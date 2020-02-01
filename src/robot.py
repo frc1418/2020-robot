@@ -109,7 +109,7 @@ class Robot(magicbot.MagicRobot):
         if self.btn_launcher_motor.get():
             self.launcher_motor.set(0.75)
         else:
-            self.launcher_motor.set(0)
+            self.launcher_motor.set(0)  # Must use set(0) when not pressed because there is no component
 
         # Intake
         if self.btn_intake_out.get():
