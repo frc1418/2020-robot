@@ -1,113 +1,103 @@
 import magicbot
 import wpilib
-import wpilib.drive
-import math
-import time
-import random
 from magicbot import tunable
-
-from robotpy_ext.misc.periodic_filter import PeriodicFilter, logging
-
 from rev import CANSparkMax, MotorType
-# from ColorSensorV3 import ColorSensorV3
-# from ColorMatch import ColorMatch
-# from enum import Enum
-# from blinkinLED import BlinkinLED
+import navx
+
+from components.drive import Drive
 
 
-# class Colors(Enum):
-#     Blue = ColorSensorV3.RawColor(
-#         0.187, 0.457, 0.376, 0)  # accurate from ~16.2 cm
-#     Green = ColorSensorV3.RawColor(
-#         0.178, 0.573, 0.252, 0)  # accurate from ~12.7 cm
-#     Red = ColorSensorV3.RawColor(
-#         0.497, 0.365, 0.143, 0)  # accurate from ~12.2 cm
-#     Yellow = ColorSensorV3.RawColor(
-#         0.317, 0.557, 0.124, 0)  # default color
+r"""
+/ \                / \
+\ /       (+)      \ /
+           |
+           |X
+(+) -------|--Y----  (-)
+           |
+           |
+/ \       (-)      / \
+\ /                \ /
+
+Counter-Clockwise is Positive
+   /-\ ^
+   |X| | (+)
+   \-/ |
+   -->
+"""
 
 
 class TestRobot(magicbot.MagicRobot):
+    drive: Drive
+    time = tunable(0)
+    voltage = tunable(0)
+    rotation = tunable(0)
+    color = tunable('')
+    getColor = True
 
-    red = tunable(0, writeDefault=False)
-    green = tunable(0, writeDefault=False)
-    blue = tunable(0, writeDefault=False)
-    currentColorString = tunable("", writeDefault=False)
-    turnToColorString = tunable("", writeDefault=False)
-    fmsColorString = tunable("", writeDefault=False)
-    
     def createObjects(self):
-        # self.LED = wpilib.Spark(8)
-        # self.RAINBOW = -0.89
-        # self.HEARTBEAT_RED = -0.35
-        # self.GREEN = 0.71
-        self.launcher_motor = CANSparkMax(7, MotorType.kBrushless)
-        self.launcher_motor.restoreFactoryDefaults()
-        self.launcher_motor.setOpenLoopRampRate(0)
-        self.encoder = self.launcher_motor.getEncoder()
-        self.i = 0
-        # self.left_joystick = wpilib.Joystick(0)
-        # self.right_joystick = wpilib.Joystick(1)
-        # self.alt_joystick = wpilib.Joystick(2)
+        # Joysticks
+        self.joystick_left = wpilib.Joystick(0)
+        self.joystick_right = wpilib.Joystick(1)
+        self.joystick_alt = wpilib.Joystick(2)
 
-        # self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushed), CANSparkMax(20, MotorType.kBrushed))
-        # self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(30, MotorType.kBrushed), CANSparkMax(40, MotorType.kBrushed))
+        # TODO: decide what buttons should do. Need to talk to drivers
 
-        # self.drive = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
-        # self.last_time = time.time()
+        # Set up Speed Controller Groups
+        self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(10, MotorType.kBrushless), CANSparkMax(20, MotorType.kBrushless), CANSparkMax(30, MotorType.kBrushless))
+        self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(40, MotorType.kBrushless), CANSparkMax(50, MotorType.kBrushless), CANSparkMax(60, MotorType.kBrushless))
 
-        # self.colors = [val for val in Colors.__members__.values()]
-        # self.fmsColor = random.choice(self.colors).value
+        # Drivetrain
+        self.train = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
 
-        # self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
+        # NavX (purple board on top of the RoboRIO)
+        self.navx = navx.AHRS.create_spi()
+        self.navx.reset()
 
-        # self.colorMatcher = ColorMatch()
-        
-       # self.LED = BlinkinLED(8)
-        # self.i = 0
+        # Utility
+        self.ds = wpilib.DriverStation.getInstance()
+        self.timer = wpilib.Timer()
+        self.pdp = wpilib.PowerDistributionPanel(0)
 
-        # for color in self.colors:
-        #     self.colorMatcher.addColorMatch(color)
-    
-    def setup(self):
-        # Set period to 3 seconds, set bypass_level to WARN
-        self.logger.addFilter(PeriodicFilter(1, bypass_level=logging.WARN))
+    def robotPeriodic(self):
+        self.time = int(self.timer.getMatchTime())
+        self.voltage = self.pdp.getVoltage()
+        self.rotation = self.navx.getAngle() % 360
+
+    def autonomous(self):
+        pass
+
+    def disabledInit(self):
+        self.navx.reset()
+
+    def disabledPeriodic(self):
+        pass
+
+    def teleopInit(self):
+        self.drive.squared_inputs = True
+        self.drive.rotational_constant = 0.5
+        self.train.setDeadband(0.1)
 
     def teleopPeriodic(self):
-    #     try:
-    #         detectedColor = self.colorSensor.getColor()
-    #     except IOError:
-    #         pass
-    #     else:
-    #         self.red = detectedColor.red
-    #         self.blue = detectedColor.blue
-    #         self.green = detectedColor.green
+        self.drive.move(-self.joystick_left.getY(),
+                        self.joystick_right.getX())
 
-    #         self.currentColorString = self.colorToString(detectedColor)
-        self.launcher_motor.set(-1)
-        self.logger.info(self.encoder.getVelocity())
-
-
-        
-        
-    #     self.fmsColorString = self.colorToString(self.fmsColor)
-    #     colorInt = self.colors.index(self.fmsColor)
-    #     self.turnToColorString = self.colorToString(
-    #         self.colors[(colorInt + 2) % 4])
-        # if self.i <= 50:
-        #     self.LED.set(self.RAINBOW)
-        # elif self.i <= 100:
-        #     self.LED.set(self.HEARTBEAT_RED)
-        # elif self.i <= 150:
-        #     self.LED.set(self.GREEN)
-        # else:
-        #     self.LED.set(0)
-        # self.i += 1
+        # Checks whether or not the FMS has sent what color the color wheel needs to be spun to
+        if len(self.ds.getGameSpecificMessage()) > 0 and self.getColor is True:
+            self.color = self.ds.getGameSpecificMessage()
+            if self.color == 'R':
+                # red color
+                pass
+            elif self.color == 'G':
+                # green color
+                pass
+            elif self.color == 'B':
+                # blue color
+                pass
+            elif self.color == 'Y':
+                # yellow color
+                pass
+            self.getColor = False
 
 
-    # def colorToString(self, color: ColorSensorV3.RawColor):
-    #     match = self.colorMatcher.matchClosestColor(color)
-    #     return Colors(match.color).name
-    def disabledInit(self):
-        self.launcher_motor.set(0)
 if __name__ == '__main__':
     wpilib.run(TestRobot)
