@@ -46,7 +46,7 @@ class ControlPanel(StateMachine):
         self.engage('positionControl' if position else 'rotationControl')
 
     def stop(self):
-        self.engage('stop_now', force=True)
+        self.done()
 
     def getFMSColor(self):
         self.fmsColorString = self.ds.getGameSpecificMessage()
@@ -105,7 +105,3 @@ class ControlPanel(StateMachine):
                 self.cp_motor.set(-0.5)
         else:
             self.done()
-
-    @state
-    def stop_now(self):
-        self.done()
