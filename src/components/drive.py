@@ -6,7 +6,6 @@ from magicbot import tunable
 from networktables.util import ntproperty
 
 
-
 class Drive:
     """
     Handle robot drivetrain.
@@ -19,6 +18,7 @@ class Drive:
     y = will_reset_to(0)
     rot = will_reset_to(0)
     aligning = will_reset_to(False)
+    deadband = will_reset_to(0.1)
 
     speed_constant = 1.05
     rotational_constant = 0.5
@@ -38,6 +38,7 @@ class Drive:
 
     def align(self, angle: float, relative=False):
         self.aligning = True
+        self.deadband = 0
 
         if relative:
             self.angle_setpoint = (angle + self.angle) % 360
@@ -64,6 +65,8 @@ class Drive:
         """
         Handle driving.
         """
+        self.train.setDeadband(self.deadband)
+
         if self.aligning:
             if self.angle_controller.atSetpoint():
                 self.train.arcadeDrive(0, 0, squareInputs=False)

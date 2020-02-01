@@ -1,5 +1,6 @@
 import wpilib
-from rev import CANSparkMax
+from wpilib.DoubleSolenoid import Value as DoubleSolenoidValue
+from common.rev import CANSparkMax
 from magicbot import will_reset_to
 from magicbot import tunable
 from rev.color import ColorSensorV3, ColorMatch
@@ -24,7 +25,9 @@ class ControlPanel(StateMachine):
     fmsColorString = tunable("No message from field", writeDefault=True)
 
     cp_motor: CANSparkMax
-
+    cp_solenoid: wpilib.DoubleSolenoid
+    
+    solenoid_state = will_reset_to(DoubleSolenoidValue.kReverse)
     speed = will_reset_to(0)
 
     def createObjects(self):
@@ -46,6 +49,9 @@ class ControlPanel(StateMachine):
 
     def stop(self):
         self.done()
+
+    def set_solenoid(self, extend: bool):
+        self.solenoid_state = DoubleSolenoidValue.kForward if extend else DoubleSolenoidValue.kReverse
 
     def getFMSColor(self):
         self.fmsColorString = self.ds.getGameSpecificMessage()
@@ -81,6 +87,8 @@ class ControlPanel(StateMachine):
             self.currentColorString = Colors(self.detectedColor).name
 
         self.cp_motor.set(self.speed)
+        if self.cp_solenoid.get() != self.solenoid_state:
+            self.cp_solenoid.set(self.solenoid_state)
 
     @state
     def rotationControl(self, initial_call):
@@ -104,3 +112,4 @@ class ControlPanel(StateMachine):
                 self.cp_motor.set(-0.5)
         else:
             self.done()
+
