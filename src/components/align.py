@@ -1,7 +1,9 @@
-from drive import Drive
+from components.drive import Drive
 from common.limelight import Limelight
 from magicbot import will_reset_to
-class Align():
+
+
+class Align:
     limelight: Limelight
     drive: Drive
     aligning = will_reset_to(False)
