@@ -41,8 +41,6 @@ class Robot(magicbot.MagicRobot):
 
     TRACK_WIDTH = 0.43  # Units: Meters
 
-    control_panel: ControlPanel
-
     def createObjects(self):
         # Joysticks
         self.joystick_left = wpilib.Joystick(0)
@@ -87,9 +85,6 @@ class Robot(magicbot.MagicRobot):
 
         # Kinematics
         self.kinematics = DifferentialDriveKinematics(self.TRACK_WIDTH)  # Track width in meters
-
-        #Control Panel Component
-        self.cp_motor = CANSparkMax(10, MotorType.kBrushless)
 
         # Limelight
         self.limelight = Limelight()
