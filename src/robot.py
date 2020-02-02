@@ -33,7 +33,7 @@ Counter-Clockwise is Positive
 class Robot(magicbot.MagicRobot):
     drive: Drive
     intake: Intake
-    # control_panel: ControlPanel
+    control_panel: ControlPanel
     odometry: Odometry
     align: Align
     launcher: Launcher
@@ -50,15 +50,16 @@ class Robot(magicbot.MagicRobot):
         self.btn_launcher_solenoid = JoystickButton(self.joystick_alt, 1)
         self.btn_align = Toggle(self.joystick_alt, 2)
         self.btn_intake_in = JoystickButton(self.joystick_alt, 3)
-        self.btn_intake_out = JoystickButton(self.joystick_alt, 4)
+        self.btn_intake_out = JoystickButton(self.joystick_alt, 5)
         self.btn_cp_extend = Toggle(self.joystick_left, 4)
         self.btn_winch = JoystickButton(self.joystick_alt, 6)
         self.btn_cp_motor = JoystickButton(self.joystick_left, 3)
         self.btn_launcher_motor = Toggle(self.joystick_alt, 12)
         self.btn_slow_movement = Toggle(self.joystick_right, 3)
-        self.btn_intake_solenoid = Toggle(self.joystick_alt, 5)
-        self.btn_scissor_extend = Toggle(self.joystick_left, 5)
+        self.btn_intake_solenoid = Toggle(self.joystick_alt, 4)
+        self.btn_scissor_extend = Toggle(self.joystick_right, 5)
         self.btn_color_sensor = JoystickButton(self.joystick_left, 5)
+        self.btn_cp_stop = JoystickButton(self.joystick_left, 2)
 
         # Set up Speed Controller Groups
         self.left_motors = wpilib.SpeedControllerGroup(
@@ -126,6 +127,7 @@ class Robot(magicbot.MagicRobot):
             self.drive.speed_constant = 1.05
 
         # Control Panel Spinner
+        self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
         self.control_panel.set_solenoid(self.btn_cp_extend.get())
         if self.btn_scissor_extend.get():
             self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
@@ -134,7 +136,10 @@ class Robot(magicbot.MagicRobot):
 
         # Color Sensor
         if self.btn_color_sensor.get():
-            self.control_panel.spin(position=True)
+            self.control_panel.spin_to(position=True)
+
+        if self.btn_cp_motor.get():
+            self.control_panel.spin(0.5)
 
         # Launcher
         if self.btn_launcher_motor.get():
@@ -145,6 +150,9 @@ class Robot(magicbot.MagicRobot):
 
         if self.btn_launcher_solenoid:
             self.launcher.fire()
+
+        if self.btn_cp_stop.get():
+            self.control_panel.done()
 
         # Intake
         if self.btn_intake_out.get():
