@@ -1,8 +1,8 @@
-from common.differential import DifferentialDriveKinematics, DifferentialDriveOdometry
+# from common.differential import DifferentialDriveKinematics, DifferentialDriveOdometry
 import navx
 
 class Odometry:
-    kinematics: DifferentialDriveKinematics
+    # kinematics: DifferentialDriveKinematics
     navx: navx.AHRS 
 
     def getAngle(self):
@@ -10,8 +10,10 @@ class Odometry:
         return -self.navx.getAngle()
 
     def setup(self):
-        self.odometry = DifferentialDriveOdometry(self.getAngle())
+        # self.odometry = DifferentialDriveOdometry(self.getAngle())
+        pass
 
     def execute(self):
         # TODO: Use encoders ot measure left and right distance meters
-        self.odometry.update(self.getAngle(), 0, 0)
+        # self.odometry.update(self.getAngle(), 0, 0)
+        pass

@@ -1,7 +1,6 @@
 pyfrc
-wpilib.kinematics
 robotpy-navx
 robotpy-commands-v1
+robotpy-rev-color
 robotpy-ctre
 robotpy-rev
-robotpy-rev-color
