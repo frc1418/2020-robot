@@ -48,9 +48,6 @@ class ControlPanel(StateMachine):
     def spin(self, position=False):
         self.engage('positionControl' if position else 'rotationControl')
 
-    def stop(self):
-        self.done()
-
     def set_solenoid(self, extend: bool):
         self.solenoid_state = DoubleSolenoid.Value.kForward if extend else DoubleSolenoid.Value.kReverse
 
@@ -91,15 +88,7 @@ class ControlPanel(StateMachine):
         if self.cp_solenoid.get() != self.solenoid_state:
             self.cp_solenoid.set(self.solenoid_state)
 
-    @default_state
-    def default(self):
-        pass
-
-    @timed_state(duration=0.1, first=True)
-    def go_to_do_nothing(self):
-        pass
-
-    @state
+    @state(first=True, must_finish=True)  # First here doesn't matter because we use the argument form of engage
     def rotationControl(self, initial_call):
         if initial_call:
             self.rotations = 0
@@ -112,7 +101,7 @@ class ControlPanel(StateMachine):
         if self.rotations >= 18:
             self.done()
 
-    @state
+    @state(must_finish=True)
     def positionControl(self):
         if self.currentColorString != self.turnToColorString:
             if abs(self.colors.index(self.detectedColor) - self.colors.index(self.fmsColor)) <= 2:
