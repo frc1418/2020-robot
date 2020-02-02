@@ -7,6 +7,7 @@ except ImportError:
 
     class navx:
         AHRS = AHRS()
+
         def getAngle(self):
             return 5
 

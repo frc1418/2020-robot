@@ -1,6 +1,5 @@
 from wpilib.interfaces import SpeedController
 from wpilib import Encoder
-from enum import Enum
 
 try:
     from rev import CANEncoder, CANSparkMax, MotorType

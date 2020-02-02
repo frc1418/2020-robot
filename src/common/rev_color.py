@@ -2,7 +2,7 @@ try:
     from rev.color import ColorMatch, ColorSensorV3, Colors, CIEColor
 
 except ImportError:
-    
+
     class CIEColor():
         pass
 

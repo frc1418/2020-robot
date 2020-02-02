@@ -112,7 +112,7 @@ class Robot(magicbot.MagicRobot):
     def teleopPeriodic(self):
         self.drive.move(-self.joystick_left.getY(),
                         self.joystick_right.getX())
-       
+
         # Align (Overrides self.drive.move() because it's placed after)
         if self.btn_align.get() and self.limelight.targetExists():
             self.align.align(self.limelight.getYaw())
@@ -170,6 +170,7 @@ class Robot(magicbot.MagicRobot):
         #     self.drive.move(0, 0.2)
 
         # print(self.joystick_alt.getPOV())
+
 
 if __name__ == '__main__':
     wpilib.run(Robot)
