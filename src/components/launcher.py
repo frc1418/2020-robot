@@ -23,7 +23,6 @@ class Launcher:
         self.decimal = decimal
         self.control_velocity = False
 
-
     def returnSpeed(self):
         return self.encoder.getVelocity()
 
