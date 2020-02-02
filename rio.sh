@@ -8,4 +8,4 @@ fi
 
 robotpy-installer $verb-robotpy
 robotpy-installer $verb-opkg $(< rio-opkgs.txt)
-robotpy-installer $verb-pip  $(< rio-requirements.txt)
+# robotpy-installer $verb-pip $(< rio-requirements.txt)

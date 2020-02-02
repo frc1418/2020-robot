@@ -1,44 +1,45 @@
-import wpilib
-from wpilib.DoubleSolenoid import Value as DoubleSolenoidValue
-from common.rev import CANSparkMax
-from magicbot import will_reset_to
-from magicbot import tunable
-from rev.color import ColorSensorV3, ColorMatch
 from enum import Enum
-from magicbot import state
+
+import wpilib
+from wpilib import DoubleSolenoid
+
+from common.rev import CANSparkMax
+# from magicbot import tunable
+from common.rev_color import ColorMatch, ColorSensorV3
+from magicbot import default_state, state, timed_state, will_reset_to
 from magicbot.state_machine import StateMachine
+from networktables.util import ntproperty
 
 
 class Colors(Enum):
-    Blue = wpilib.Color(0.187, 0.457, 0.376, 0)  # accurate from ~16.2 cm
-    Green = wpilib.Color(0.178, 0.573, 0.252, 0)  # accurate from ~12.7 cm
-    Red = wpilib.Color(0.497, 0.365, 0.143, 0)  # accurate from ~12.2 cm
-    Yellow = wpilib.Color(0.317, 0.557, 0.124, 0)  # accurate from ~20 cm
+    Blue = wpilib.Color(0.187, 0.457, 0.376)  # accurate from ~16.2 cm
+    Green = wpilib.Color(0.178, 0.573, 0.252)  # accurate from ~12.7 cm
+    Red = wpilib.Color(0.497, 0.365, 0.143)  # accurate from ~12.2 cm
+    Yellow = wpilib.Color(0.317, 0.557, 0.124)  # accurate from ~20 cm
 
 
 class ControlPanel(StateMachine):
-    red = tunable(0, writeDefault=False)
-    green = tunable(0, writeDefault=False)
-    blue = tunable(0, writeDefault=False)
-    currentColorString = tunable("No Color", writeDefault=True)
-    turnToColorString = tunable("No message from field", writeDefault=True)
-    fmsColorString = tunable("No message from field", writeDefault=True)
-
+    red = 0
+    green = 0
+    blue = 0
+    currentColorString = "No Color"
+    turnToColorString = "No message from field"
+    fmsColorString = "No message from field"
     cp_motor: CANSparkMax
     cp_solenoid: wpilib.DoubleSolenoid
     
-    solenoid_state = will_reset_to(DoubleSolenoidValue.kReverse)
+    solenoid_state = will_reset_to(DoubleSolenoid.Value.kReverse)
     speed = will_reset_to(0)
 
-    def createObjects(self):
+    def setup(self):
         self.getColor = True
 
         self.ds = wpilib.DriverStation.getInstance()
 
         self.colors = [val for val in Colors.__members__.values()]
-        self.fmsColor = wpilib.Color(0, 0, 0, 0)
+        self.fmsColor = wpilib.Color(0, 0, 0)
 
-        self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
+        self.colorSensor = ColorSensorV3()
         self.colorMatcher = ColorMatch()
 
         for color in self.colors:
@@ -51,7 +52,7 @@ class ControlPanel(StateMachine):
         self.done()
 
     def set_solenoid(self, extend: bool):
-        self.solenoid_state = DoubleSolenoidValue.kForward if extend else DoubleSolenoidValue.kReverse
+        self.solenoid_state = DoubleSolenoid.Value.kForward if extend else DoubleSolenoid.Value.kReverse
 
     def getFMSColor(self):
         self.fmsColorString = self.ds.getGameSpecificMessage()
@@ -90,6 +91,14 @@ class ControlPanel(StateMachine):
         if self.cp_solenoid.get() != self.solenoid_state:
             self.cp_solenoid.set(self.solenoid_state)
 
+    @default_state
+    def default(self):
+        pass
+
+    @timed_state(duration=0.1, first=True)
+    def go_to_do_nothing(self):
+        pass
+
     @state
     def rotationControl(self, initial_call):
         if initial_call:
@@ -112,4 +121,3 @@ class ControlPanel(StateMachine):
                 self.cp_motor.set(-0.5)
         else:
             self.done()
-

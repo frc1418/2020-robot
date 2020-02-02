@@ -31,3 +31,4 @@ class Initiation(AutonomousStateMachine):
         self.launcher_solenoid.set(True)
         if state_tm > 0.5:
             self.launcher_solenoid.set(False)
+        self.shot_count += 1
