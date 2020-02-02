@@ -1,6 +1,6 @@
 from wpilib.kinematics import ChassisSpeeds
 from wpilib.geometry import Pose2d, Rotation2d, Twist2d
-import math
+
 
 class DifferentialDriveKinematics:
     def __init__(self, trackWidthMeters: float):
@@ -14,14 +14,12 @@ class DifferentialDriveKinematics:
 
     def toWheelSpeeds(self, chassisSpeeds: ChassisSpeeds):
         return DifferentialDriveWheelSpeeds(
-            chassisSpeeds.vxMetersPerSecond - self.trackWidthMeters / 2
-            * chassisSpeeds.omegaRadiansPerSecond,
-            chassisSpeeds.vxMetersPerSecond + self.trackWidthMeters / 2
-            * chassisSpeeds.omegaRadiansPerSecond
+            chassisSpeeds.vxMetersPerSecond - self.trackWidthMeters / 2 * chassisSpeeds.omegaRadiansPerSecond,
+            chassisSpeeds.vxMetersPerSecond + self.trackWidthMeters / 2 * chassisSpeeds.omegaRadiansPerSecond
         )
 
-class DifferentialDriveWheelSpeeds:
 
+class DifferentialDriveWheelSpeeds:
     def __init__(self, leftMetersPerSecond: float, rightMetersPerSecond: float):
         self.leftMetersPerSecond = leftMetersPerSecond
         self.rightMetersPerSecond = rightMetersPerSecond
@@ -33,13 +31,12 @@ class DifferentialDriveWheelSpeeds:
             self.leftMetersPerSecond = self.leftMetersPerSecond / realMaxSpeed * attainableMaxSpeedMetersPerSecond
             self.rightMetersPerSecond = self.rightMetersPerSecond / realMaxSpeed * attainableMaxSpeedMetersPerSecond
 
-  
     def toString(self):
         return f'DifferentialDriveWheelSpeeds(Left: {self.leftMetersPerSecond} m/s, \
                 Right: {self.rightMetersPerSecond} m/s)'
 
-class DifferentialDriveOdometry:
 
+class DifferentialDriveOdometry:
     def __init__(self, gyroAngle: Rotation2d, initialPoseMeters=Pose2d()):
         self.poseMeters = initialPoseMeters
         self.gyroOffset = self.poseMeters.getRotation().minus(gyroAngle)
@@ -48,7 +45,7 @@ class DifferentialDriveOdometry:
         self.prevLeftDistance = 0.0
         self.prevRightDistance = 0.0
 
-    def resetPosition(self, poseMeters: Pose2d,  gyroAngle: Rotation2d):
+    def resetPosition(self, poseMeters: Pose2d, gyroAngle: Rotation2d):
         self.poseMeters = poseMeters
         self.previousAngle = poseMeters.getRotation()
         self.gyroOffset = poseMeters.getRotation().minus(gyroAngle)

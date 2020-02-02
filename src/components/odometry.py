@@ -1,9 +1,10 @@
 # from common.differential import DifferentialDriveKinematics, DifferentialDriveOdometry
 import navx
 
+
 class Odometry:
     # kinematics: DifferentialDriveKinematics
-    navx: navx.AHRS 
+    navx: navx.AHRS
 
     def getAngle(self):
         """Return the navx angle with counter-clockwise as positive"""

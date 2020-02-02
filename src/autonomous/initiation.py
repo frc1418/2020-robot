@@ -1,5 +1,5 @@
 import wpilib
-from magicbot import AutonomousStateMachine, default_state, state, timed_state
+from magicbot import AutonomousStateMachine, default_state, timed_state
 
 from common.rev import CANSparkMax
 from components import Align, Drive
@@ -16,7 +16,7 @@ class Initiation(AutonomousStateMachine):
         self.shot_count = 0
 
     @default_state
-    def spinup(state_tm):
+    def spinup(self, state_tm):
         if self.shot_count >= 3:
             self.done()
 

@@ -27,7 +27,7 @@ class ControlPanel(StateMachine):
     fmsColorString = "No message from field"
     cp_motor: CANSparkMax
     cp_solenoid: wpilib.DoubleSolenoid
-    
+
     solenoid_state = will_reset_to(DoubleSolenoid.Value.kReverse)
     speed = will_reset_to(0)
 

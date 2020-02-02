@@ -10,10 +10,9 @@ class Align:
     angle = will_reset_to(0)
 
     def execute(self):
-        if self.aligning == True:
+        if self.aligning:
             self.drive.align(self.angle, True)
 
     def align(self, angle):
         self.aligning = True
         self.angle = angle
-        
