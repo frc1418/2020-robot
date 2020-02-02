@@ -61,8 +61,17 @@ class Robot(magicbot.MagicRobot):
         self.btn_color_sensor = JoystickButton(self.joystick_left, 5)
 
         # Set up Speed Controller Groups
-        self.left_motors = wpilib.SpeedControllerGroup(CANSparkMax(1, MotorType.kBrushless), CANSparkMax(2, MotorType.kBrushless), CANSparkMax(3, MotorType.kBrushless))
-        self.right_motors = wpilib.SpeedControllerGroup(CANSparkMax(4, MotorType.kBrushless), CANSparkMax(5, MotorType.kBrushless), CANSparkMax(6, MotorType.kBrushless))
+        self.left_motors = wpilib.SpeedControllerGroup(
+            CANSparkMax(1, MotorType.kBrushless),
+            CANSparkMax(2, MotorType.kBrushless),
+            CANSparkMax(3, MotorType.kBrushless)
+        )
+
+        self.right_motors = wpilib.SpeedControllerGroup(
+            CANSparkMax(4, MotorType.kBrushless),
+            CANSparkMax(5, MotorType.kBrushless),
+            CANSparkMax(6, MotorType.kBrushless)
+        )
 
         # Drivetrain
         self.train = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
@@ -105,7 +114,7 @@ class Robot(magicbot.MagicRobot):
                         self.joystick_right.getX())
        
         # Align (Overrides self.drive.move() because it's placed after)
-        if self.btn_align.get():
+        if self.btn_align.get() and self.limelight.targetExists():
             self.align.align(self.limelight.getYaw())
 
         if self.btn_slow_movement:
@@ -117,15 +126,14 @@ class Robot(magicbot.MagicRobot):
             self.drive.speed_constant = 1.05
 
         # Control Panel Spinner
-        # self.control_panel.set_solenoid(self.btn_cp_extend.get())
+        self.control_panel.set_solenoid(self.btn_cp_extend.get())
         if self.btn_scissor_extend.get():
             self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
         else:
             self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
         # Color Sensor
-        if self.btn_color_sensor:
-            # self.control_panel.spin(True)
-            pass
+        if self.btn_color_sensor.get():
+            self.control_panel.spin(position=True)
 
         # Launcher
         if self.btn_launcher_motor.get():
