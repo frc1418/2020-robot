@@ -2,7 +2,7 @@ from wpilib.interfaces import SpeedController
 from wpilib import Encoder
 
 try:
-    from rev import CANEncoder, CANSparkMax, MotorType
+    from rev import CANEncoder, CANSparkMax, MotorType, ControlType
 except ImportError:
     CANEncoder = type('CANEncoder', (Encoder,), {})
     CANSparkMax = type('CANSparkMax', (SpeedController,), {})
@@ -13,3 +13,4 @@ except ImportError:
         'kMotorFault', 'kOtherFault', 'kOvercurrent', 'kSensorFault',
         'kSoftLimitFwd', 'kSoftLimitRev', 'kStall'
     ])})
+    ControlType = type('ControlType', (), {'kVelocity': 0, 'kVoltage': 1})

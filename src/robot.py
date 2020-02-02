@@ -9,7 +9,7 @@ from common.ctre import WPI_TalonSRX, WPI_VictorSPX
 # from common.differential import DifferentialDriveKinematics
 from common.limelight import Limelight
 from common.rev import CANSparkMax, MotorType
-from components import Align, ControlPanel, Drive, Intake, Odometry
+from components import Align, ControlPanel, Drive, Intake, Odometry, Launcher
 
 r"""
 / \                / \
@@ -36,7 +36,7 @@ class Robot(magicbot.MagicRobot):
     # control_panel: ControlPanel
     odometry: Odometry
     align: Align
-    # TODO: Add launcher component
+    launcher: Launcher
 
     TRACK_WIDTH = 0.43  # Units: Meters
 
@@ -131,16 +131,19 @@ class Robot(magicbot.MagicRobot):
             self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
         else:
             self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+
         # Color Sensor
         if self.btn_color_sensor.get():
             self.control_panel.spin(position=True)
 
         # Launcher
         if self.btn_launcher_motor.get():
-            self.launcher_motor.set(0.75)
+            self.launcher.setPercentOutput(0.5)
         else:
-            self.launcher_motor.set(0)  # Must use set(0) when not pressed because there is no component
-        self.launcher_solenoid.set(self.btn_launcher_solenoid.get())
+            self.launcher.setPercentOutput(0)
+       
+        if self.btn_launcher_solenoid:
+            self.launcher.fire()
 
         # Intake
         if self.btn_intake_out.get():
