@@ -1,6 +1,6 @@
 import wpilib
 import wpilib.drive
-import navx
+from common.navx import navx
 from magicbot import will_reset_to
 from magicbot import tunable
 from networktables.util import ntproperty
