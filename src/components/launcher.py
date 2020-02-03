@@ -35,6 +35,5 @@ class Launcher:
             self.PID_Controller.setReference(self.speed, ControlType.kVelocity, pidSlot=0, arbFeedforward=0)
         else:
             self.launcher_motor.set(self.decimal)
-        
-        if self.shoot == True:
+        if self.shoot:
             self.launcher_solenoid.set(True)
