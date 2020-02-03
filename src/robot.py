@@ -1,15 +1,18 @@
 import magicbot
 import wpilib
 from magicbot import tunable
+from rev.color import ColorSensorV3
+from robotpy_ext.autonomous import AutonomousModeSelector
 from robotpy_ext.control.toggle import Toggle
 from wpilib.buttons import JoystickButton
 
-from common.navx import navx
 from common.ctre import WPI_TalonSRX, WPI_VictorSPX
 # from common.differential import DifferentialDriveKinematics
 from common.limelight import Limelight
-from common.rev import CANSparkMax, MotorType
-from components import Align, ControlPanel, Drive, Intake, Odometry, Launcher
+from common.navx import navx
+from common.rev import CANSparkMax, IdleMode, MotorType
+from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry
+
 
 r"""
 / \                / \
@@ -31,6 +34,7 @@ Counter-Clockwise is Positive
 
 
 class Robot(magicbot.MagicRobot):
+    extunable = tunable(5)
     drive: Drive
     intake: Intake
     control_panel: ControlPanel
@@ -82,8 +86,10 @@ class Robot(magicbot.MagicRobot):
         self.scissor_solenoid = wpilib.DoubleSolenoid(6, 7)
 
         # Control Panel Spinner
+        self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
         self.cp_solenoid = wpilib.DoubleSolenoid(5, 4)  # Reversed numbers so kForward is extended
         self.cp_motor = CANSparkMax(10, MotorType.kBrushed)
+        self.cp_motor.setIdleMode(IdleMode.kBrake)
 
         # Intake
         self.intake_motor = WPI_VictorSPX(1)
@@ -99,11 +105,19 @@ class Robot(magicbot.MagicRobot):
         self.navx = navx.AHRS.create_spi()
         self.navx.reset()
 
+        # Limelight
+        self.limelight = Limelight()
+
         # Kinematics
         # self.kinematics = DifferentialDriveKinematics(self.TRACK_WIDTH)  # Track width in meters
 
-        # Limelight
-        self.limelight = Limelight()
+    # def robotInit(self):
+    #     # Autonomous selector
+    #     self.automodes = AutonomousModeSelector('autonomous')
+
+    # def autonomous(self):
+    #     self.automodes.run()
+    #     super().autonomous()
 
     def teleopInit(self):
         self.drive.squared_inputs = True
@@ -127,7 +141,6 @@ class Robot(magicbot.MagicRobot):
             self.drive.speed_constant = 1.05
 
         # Control Panel Spinner
-        self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
         self.control_panel.set_solenoid(self.btn_cp_extend.get())
         if self.btn_scissor_extend.get():
             self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)

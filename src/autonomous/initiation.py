@@ -6,6 +6,9 @@ from components import Align, Drive
 
 
 class Initiation(AutonomousStateMachine):
+    DEFAULT = True
+    MODE_NAME = 'Initiation'
+
     drive: Drive
     align: Align
     # TODO: Use launcher component
@@ -25,7 +28,7 @@ class Initiation(AutonomousStateMachine):
         if state_tm > 5 or (state_tm > 1 and self.shot_count > 0):
             self.next_state('shoot')
 
-    @timed_state(duration=1)
+    @timed_state(duration=1, first=True)
     def shoot(self, state_tm):
         self.launcher_motor.set(0.75)  # Continue to set launcher motor speed
         self.launcher_solenoid.set(True)
