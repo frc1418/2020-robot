@@ -9,6 +9,7 @@ class Launcher:
     speed = will_reset_to(0)
     decimal = will_reset_to(0)
     control_velocity = will_reset_to(True)
+    shoot = will_reset_to(False)
 
     def setup(self):
         self.PID_Controller = self.launcher_motor.getPIDController()
@@ -23,14 +24,17 @@ class Launcher:
         self.decimal = decimal
         self.control_velocity = False
 
-    def returnSpeed(self):
+    def getSpeed(self):
         return self.encoder.getVelocity()
 
-    def spin(self):
+    def fire(self):
+        self.shoot = True
+
+    def execute(self):
         if self.control_velocity:
             self.PID_Controller.setReference(self.speed, ControlType.kVelocity, pidSlot=0, arbFeedforward=0)
         else:
             self.launcher_motor.set(self.decimal)
-
-    def fire(self):
-        self.launcher_solenoid.set(True)
+        
+        if self.shoot == True:
+            self.launcher_solenoid.set(True)
