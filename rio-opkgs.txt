@@ -2,5 +2,4 @@ python38-robotpy-ctre
 python38-robotpy-rev
 python38-robotpy-rev-color
 python38-robotpy-navx
-python38-numpy
 python38-robotpy-commands-v1
