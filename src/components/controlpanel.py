@@ -11,11 +11,31 @@ from wpilib import DoubleSolenoid
 
 from common.rev import CANSparkMax
 
+class Color:
+    def __init__(self, red, green, blue):
+        self.red = int(red * 1000) / 1000
+        self.green = int(green * 1000) / 1000
+        self.blue = int(blue * 1000) / 1000
+
+    @classmethod
+    def from_wpilib(cls, color: wpilib.Color):
+        return cls(color.red, color.green, color.blue)
+
+    def __repr__(self):
+        return f'Color({self.red}, {self.green}, {self.blue})'
+
+    def __eq__(self, other):
+        if not isinstance(other, Color) and not isinstance(other, wpilib.Color):
+            return False
+        if isinstance(other, wpilib.Color):
+            other = Color(other.red, other.green, other.blue)
+        return self.red == other.red and self.green == other.green and self.blue == other.blue
+
 COLORS = {
-    'B': wpilib.Color(0.187, 0.457, 0.376),  # accurate from ~16.2 cm
-    'G': wpilib.Color(0.178, 0.573, 0.252),  # accurate from ~12.7 cm
-    'R': wpilib.Color(0.497, 0.365, 0.143),  # accurate from ~12.2 cm
-    'Y': wpilib.Color(0.317, 0.557, 0.124),  # accurate from ~20 cm
+    'B': Color(0.187, 0.457, 0.376),  # accurate from ~16.2 cm
+    'G': Color(0.178, 0.573, 0.252),  # accurate from ~12.7 cm
+    'R': Color(0.497, 0.365, 0.143),  # accurate from ~12.2 cm
+    'Y': Color(0.317, 0.557, 0.124),  # accurate from ~20 cm
 }
 
 
@@ -31,14 +51,14 @@ class ControlPanel(StateMachine):
         self.ds = wpilib.DriverStation.getInstance()
         self.turn_to_color = None
         self.detected_color = None
-        self.colors = list(colors.values())
+        self.colors = list(COLORS.values())
         self.fms_color = None
         self.last_color = None
 
         self.colorMatcher = ColorMatch()
 
         for color in self.colors:
-            self.colorMatcher.addColorMatch(color)
+            self.colorMatcher.addColorMatch(wpilib.Color(color.red, color.green, color.blue))
 
     def spin(self, speed: int):
         self.speed = speed
@@ -70,11 +90,20 @@ class ControlPanel(StateMachine):
             pass
         else:
             # Sometimes black is returned but we don't want it
-            if result_color != wpilib.Color.kBlack:
-                self.detected_color = result_color
+            if Color.from_wpilib(result_color) != wpilib.Color.kBlack:
+                self.detected_color = Color.from_wpilib(result_color)
+                self.detected_color = list(sorted(self.colors, key=lambda c: self.calculate_distance(c, self.detected_color)))[0]
 
         self.cp_motor.set(self.speed)
         self.cp_solenoid.set(self.solenoid_state)
+
+    @staticmethod
+    def calculate_distance(color1, color2):
+        redDiff = color1.red - color2.red;
+        greenDiff = color1.green - color2.green;
+        blueDiff = color1.blue - color2.blue;
+
+        return math.sqrt((redDiff*redDiff + greenDiff*greenDiff + blueDiff*blueDiff)/2);
 
     @state(first=True, must_finish=True)  # First here doesn't matter because we use the argument form of engage
     def rotationControl(self, initial_call):
@@ -85,7 +114,7 @@ class ControlPanel(StateMachine):
         if self.detected_color != self.last_color:
             self.rotations += 1
             self.last_color = self.detected_color
-        self.cp_motor.set(0.5)
+        self.cp_motor.set(0.25)
         if self.rotations >= 18:
             self.done()
 
@@ -95,7 +124,9 @@ class ControlPanel(StateMachine):
             return
 
         if self.detected_color != self.turn_to_color:
-            direction = math.copysign(1, self.colors.index(self.detected_color) - self.colors.index(self.fms_color))
-            self.cp_motor.set(direction * 0.5)
+            print(f'Detected: {self.detected_color.red}, {self.detected_color.green}, {self.detected_color.blue}  Towards: {self.turn_to_color.red}, {self.turn_to_color.green}, {self.turn_to_color.blue}')
+            direction = math.copysign(1, self.colors.index(self.detected_color) - self.colors.index(self.turn_to_color))
+            self.cp_motor.set(direction * 0.17)
         else:
+            self.cp_motor.set(0)
             self.done()

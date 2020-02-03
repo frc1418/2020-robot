@@ -1,5 +1,6 @@
 import wpilib
 import wpilib.drive
+from wpilib.controller import PIDController
 from common.navx import navx
 from magicbot import will_reset_to
 from networktables.util import ntproperty
@@ -31,7 +32,7 @@ class Drive:
         """
         Run setup code on the injected variables (train)
         """
-        self.angle_controller = wpilib.PIDController(self.angle_p, self.angle_i, self.angle_d)
+        self.angle_controller = PIDController(self.angle_p, self.angle_i, self.angle_d)
         self.angle_controller.setTolerance(2, float('inf'))
         self.angle_controller.enableContinuousInput(0, 360)
 
