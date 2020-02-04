@@ -111,14 +111,6 @@ class Robot(magicbot.MagicRobot):
         # Kinematics
         # self.kinematics = DifferentialDriveKinematics(self.TRACK_WIDTH)  # Track width in meters
 
-    # def robotInit(self):
-    #     # Autonomous selector
-    #     self.automodes = AutonomousModeSelector('autonomous')
-
-    # def autonomous(self):
-    #     self.automodes.run()
-    #     super().autonomous()
-
     def teleopInit(self):
         self.drive.squared_inputs = True
         self.drive.speed_constant = 1.05
@@ -157,7 +149,6 @@ class Robot(magicbot.MagicRobot):
         # Launcher
         if self.btn_launcher_motor.get():
             self.launcher.setPercentOutput(0.75)
-            self.launcher.spin()
         else:
             self.launcher_motor.setPercentOutput(0)
 
