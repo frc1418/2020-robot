@@ -3,3 +3,6 @@ python38-robotpy-rev
 python38-robotpy-rev-color
 python38-robotpy-navx
 python38-robotpy-commands-v1
+python38-numpy
+python38-opencv4
+python38-robotpy-cscore
