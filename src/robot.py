@@ -153,7 +153,7 @@ class Robot(magicbot.MagicRobot):
         if self.btn_launcher_motor.get():
             self.launcher.setPercentOutput(0.75)
         else:
-            self.launcher_motor.setPercentOutput(0)
+            self.launcher.setPercentOutput(0)
 
         if self.btn_launcher_solenoid:
             self.launcher.fire()

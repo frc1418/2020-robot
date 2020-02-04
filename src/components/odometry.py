@@ -1,4 +1,6 @@
 from wpilib.kinematics import DifferentialDriveKinematics, DifferentialDriveOdometry
+from wpilib.geometry import Rotation2d
+import math
 import navx
 
 
@@ -11,10 +13,10 @@ class Odometry:
         return -self.navx.getAngle()
 
     def setup(self):
-        self.odometry = DifferentialDriveOdometry(self.getAngle())
+        self.odometry = DifferentialDriveOdometry(Rotation2d(math.radians(self.getAngle())))
         pass
 
     def execute(self):
         # TODO: Use encoders ot measure left and right distance meters
-        self.odometry.update(self.getAngle(), 0, 0)
+        self.odometry.update(Rotation2d(math.radians(self.getAngle())), 0, 0)
         pass
