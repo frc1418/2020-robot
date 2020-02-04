@@ -12,7 +12,7 @@ from common.limelight import Limelight
 from common.navx import navx
 from common.rev import CANSparkMax, IdleMode, MotorType
 from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry
-
+from common.camera_server import CameraServer
 
 r"""
 / \                / \
@@ -37,7 +37,7 @@ class Robot(magicbot.MagicRobot):
     extunable = tunable(5)
     drive: Drive
     intake: Intake
-    control_panel: ControlPanel
+    # control_panel: ControlPanel
     odometry: Odometry
     align: Align
     launcher: Launcher
@@ -110,6 +110,9 @@ class Robot(magicbot.MagicRobot):
 
         # Kinematics
         # self.kinematics = DifferentialDriveKinematics(self.TRACK_WIDTH)  # Track width in meters
+        # Camera Stream
+        CameraServer.launch('camera/camera.py:main')
+        wpilib.LiveWindow.disableAllTelemetry()
 
     def teleopInit(self):
         self.drive.squared_inputs = True
@@ -133,6 +136,7 @@ class Robot(magicbot.MagicRobot):
             self.drive.speed_constant = 1.05
 
         # Control Panel Spinner
+<<<<<<< Updated upstream
         self.control_panel.set_solenoid(self.btn_cp_extend.get())
         if self.btn_scissor_extend.get():
             self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
@@ -145,6 +149,9 @@ class Robot(magicbot.MagicRobot):
 
         if self.btn_cp_motor.get():
             self.control_panel.spin(0.5)
+=======
+        # self.control_panel.set_solenoid(self.btn_cp_extend.get())
+>>>>>>> Stashed changes
 
         # Launcher
         if self.btn_launcher_motor.get():
