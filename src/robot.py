@@ -112,7 +112,6 @@ class Robot(magicbot.MagicRobot):
         # self.kinematics = DifferentialDriveKinematics(self.TRACK_WIDTH)  # Track width in meters
         # Camera Stream
         CameraServer.launch('camera/camera.py:main')
-        wpilib.LiveWindow.disableAllTelemetry()
 
     def teleopInit(self):
         self.drive.squared_inputs = True
