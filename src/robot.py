@@ -7,7 +7,7 @@ from robotpy_ext.control.toggle import Toggle
 from wpilib.buttons import JoystickButton
 
 from common.ctre import WPI_TalonSRX, WPI_VictorSPX
-# from common.differential import DifferentialDriveKinematics
+from wpilib.kinematics import DifferentialDriveKinematics
 from common.limelight import Limelight
 from common.navx import navx
 from common.rev import CANSparkMax, IdleMode, MotorType
@@ -109,7 +109,8 @@ class Robot(magicbot.MagicRobot):
         self.limelight = Limelight()
 
         # Kinematics
-        # self.kinematics = DifferentialDriveKinematics(self.TRACK_WIDTH)  # Track width in meters
+        self.kinematics = DifferentialDriveKinematics(self.TRACK_WIDTH)  # Track width in meters
+
         # Camera Stream
         CameraServer.launch('camera/camera.py:main')
 
