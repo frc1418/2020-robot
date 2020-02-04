@@ -14,9 +14,7 @@ class Odometry:
 
     def setup(self):
         self.odometry = DifferentialDriveOdometry(Rotation2d(math.radians(self.getAngle())))
-        pass
 
     def execute(self):
         # TODO: Use encoders ot measure left and right distance meters
         self.odometry.update(Rotation2d(math.radians(self.getAngle())), 0, 0)
-        pass
