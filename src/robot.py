@@ -147,7 +147,6 @@ class Robot(magicbot.MagicRobot):
 
         if self.btn_cp_motor.get():
             self.control_panel.spin(0.5)
-        self.control_panel.set_solenoid(self.btn_cp_extend.get())
 
         # Launcher
         if self.btn_launcher_motor.get():
