@@ -37,7 +37,7 @@ class Robot(magicbot.MagicRobot):
     extunable = tunable(5)
     drive: Drive
     intake: Intake
-    # control_panel: ControlPanel
+    control_panel: ControlPanel
     odometry: Odometry
     align: Align
     launcher: Launcher
