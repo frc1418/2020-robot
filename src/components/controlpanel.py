@@ -11,6 +11,7 @@ from wpilib import DoubleSolenoid
 
 from common.rev import CANSparkMax
 
+
 class Color:
     def __init__(self, red, green, blue):
         self.red = int(red * 1000) / 1000
@@ -30,6 +31,7 @@ class Color:
         if isinstance(other, wpilib.Color):
             other = Color(other.red, other.green, other.blue)
         return self.red == other.red and self.green == other.green and self.blue == other.blue
+
 
 COLORS = {
     'B': Color(0.187, 0.457, 0.376),  # accurate from ~16.2 cm
@@ -86,7 +88,7 @@ class ControlPanel(StateMachine):
             # The "confidence" argument here is meant to be a double reference, so it
             # would be set to the confidence in C++ code. Unused here.
             result_color = self.colorMatcher.matchClosestColor(self.colorSensor.getColor(), confidence=0)
-        except IOError as e:
+        except IOError:
             pass
         else:
             # Sometimes black is returned but we don't want it
@@ -99,11 +101,11 @@ class ControlPanel(StateMachine):
 
     @staticmethod
     def calculate_distance(color1, color2):
-        redDiff = color1.red - color2.red;
-        greenDiff = color1.green - color2.green;
-        blueDiff = color1.blue - color2.blue;
+        redDiff = color1.red - color2.red
+        greenDiff = color1.green - color2.green
+        blueDiff = color1.blue - color2.blue
 
-        return math.sqrt((redDiff*redDiff + greenDiff*greenDiff + blueDiff*blueDiff)/2);
+        return math.sqrt((redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff) / 2)
 
     @state(first=True, must_finish=True)  # First here doesn't matter because we use the argument form of engage
     def rotationControl(self, initial_call):
@@ -124,7 +126,7 @@ class ControlPanel(StateMachine):
             return
 
         if self.detected_color != self.turn_to_color:
-            print(f'Detected: {self.detected_color.red}, {self.detected_color.green}, {self.detected_color.blue}  Towards: {self.turn_to_color.red}, {self.turn_to_color.green}, {self.turn_to_color.blue}')
+            # print(f'Detected: {self.detected_color.red}, {self.detected_color.green}, {self.detected_color.blue}  Towards: {self.turn_to_color.red}, {self.turn_to_color.green}, {self.turn_to_color.blue}')
             direction = math.copysign(1, self.colors.index(self.detected_color) - self.colors.index(self.turn_to_color))
             self.cp_motor.set(direction * 0.17)
         else:
