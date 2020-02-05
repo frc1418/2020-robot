@@ -12,7 +12,7 @@ class Initiation(AutonomousStateMachine):
     drive: Drive
     align: Align
     # TODO: Use launcher component
-    launcher_motor: CANSparkMax
+    launcher_motors: wpilib.SpeedControllerGroup
     launcher_solenoid: wpilib.Solenoid
 
     def on_enable(self):
@@ -24,13 +24,13 @@ class Initiation(AutonomousStateMachine):
             self.done()
 
         # TODO: Use RPM to check if spun up
-        self.launcher_motor.set(0.75)
+        self.launcher_motors.set(0.75)
         if state_tm > 5 or (state_tm > 1 and self.shot_count > 0):
             self.next_state('shoot')
 
     @timed_state(duration=1, first=True)
     def shoot(self, state_tm):
-        self.launcher_motor.set(0.75)  # Continue to set launcher motor speed
+        self.launcher_motors.set(0.75)  # Continue to set launcher motor speed
         self.launcher_solenoid.set(True)
         if state_tm > 0.5:
             self.launcher_solenoid.set(False)
