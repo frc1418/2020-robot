@@ -57,8 +57,6 @@ class Drive:
     @property
     def angle(self):
         raw = self.navx.getAngle()
-        while raw < 0:
-            raw += 360
         return raw % 360
 
     def execute(self):
