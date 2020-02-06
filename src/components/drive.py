@@ -43,16 +43,18 @@ class Drive:
         self.angle_controller = PIDController(self.angle_p, self.angle_i, self.angle_d)
         self.angle_controller.setTolerance(2, float('inf'))
         self.angle_controller.enableContinuousInput(0, 360)
+        self.angle_setpoint = None
 
-    def align(self, angle: float, relative=False):
-        self.aligning = True
-        self.deadband = 0
-
+    def set_target(self, angle: float, relative=False):
         if relative:
             self.angle_setpoint = (self.angle + angle) % 360
             self.angle_to = self.angle_setpoint
+        else:
+            self.angle_setpoint = angle
 
-        self.angle_setpoint = angle
+    def align(self):
+        self.aligning = True
+        self.deadband = 0
 
     def voltageDrive(self, left_voltage, right_voltage):
         self.left_voltage = left_voltage
@@ -81,7 +83,7 @@ class Drive:
         self.train.setDeadband(self.deadband)
         self.angle_reported = self.angle
 
-        if self.aligning:
+        if self.aligning and self.angle_setpoint is not None:
             # if self.angle_controller.atSetpoint():
             # print('Stopped aligning')
             # self.train.arcadeDrive(0, 0, squareInputs=False)
