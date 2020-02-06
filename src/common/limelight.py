@@ -9,6 +9,7 @@ class Limelight():
     valid_target = ntproperty('/limelight/tv', 0)
     camera_mode = ntproperty('/limelight/camMode', 0)
 
+    target_state = ntproperty('/limelight/target_state', 0)
     # change with new robot; UNIT = inches
     CAMERA_HEIGHT = 12
     TARGET_HEIGHT = 98.25
@@ -46,3 +47,5 @@ class Limelight():
 
     def targetExists(self):
         return bool(self.valid_target)
+
+    

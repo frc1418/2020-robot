@@ -2,6 +2,7 @@ import wpilib
 import wpilib.drive
 from wpilib.controller import PIDController
 from common.navx import navx
+from common.limelight import Limelight
 from magicbot import will_reset_to
 from networktables.util import ntproperty
 
@@ -12,6 +13,7 @@ class Drive:
     All drive interaction must go through this class.
     """
 
+    limelight: Limelight
     train: wpilib.drive.DifferentialDrive
     navx: navx.AHRS
     left_motors: wpilib.SpeedControllerGroup
@@ -125,3 +127,10 @@ class Drive:
                 self.rot,
                 squareInputs=self.squared_inputs,
             )
+        
+        if not self.limelight.valid_target():
+            self.limelight.target_state = 0
+        elif self.angle_controller.atSetpoint():
+            self.limelight.target_state = 2
+        else:
+            self.limelight.target_state = 1
