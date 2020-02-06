@@ -30,4 +30,3 @@ class Climber:
             self.climber_motor.set(-0.5)
         else:
             self.climber_motor.set(0)
-
