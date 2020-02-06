@@ -64,6 +64,7 @@ class Robot(magicbot.MagicRobot):
         self.btn_cp_motor = JoystickButton(self.joystick_left, 3)
         self.btn_launcher_motor = JoystickButton(self.joystick_alt, 12)
         self.btn_launcher_motor70 = JoystickButton(self.joystick_alt, 11)
+        self.btn_launcher_motor55 = JoystickButton(self.joystick_alt, 10)
         self.btn_slow_movement = Toggle(self.joystick_right, 3)
         self.btn_intake_solenoid = Toggle(self.joystick_alt, 4)
         self.btn_scissor_extend = Toggle(self.joystick_right, 5)
@@ -143,14 +144,19 @@ class Robot(magicbot.MagicRobot):
         self.inverse = -1
 
     def teleopPeriodic(self):
-        if self.btn_inverse.get():
+        if self.btn_invert_y_axis.get():
             self.inverse*=-1
         self.drive.move(self.inverse*self.joystick_left.getY(),
                         self.joystick_right.getX())
 
         # Align (Overrides self.drive.move() because it's placed after)
-        if self.btn_align.get() and True:
-            self.drive.align(self.limelight.getYaw(), relative=True)
+        if self.btn_align.get() and self.limelight.targetExists():
+            self.drive.set_target(self.limelight.getYaw(), relative=True)
+
+        if self.btn_align.get():
+            self.drive.align()
+        else:
+            self.drive.set_target(None)
 
         if self.btn_slow_movement:
             # 10% of original values
@@ -180,6 +186,8 @@ class Robot(magicbot.MagicRobot):
             self.launcher.setPercentOutput(-0.6)
         elif self.btn_launcher_motor70.get():
             self.launcher.setPercentOutput(-0.7)
+        elif self.btn_launcher_motor55.get():
+            self.launcher.setPercentOutput(-0.55)
         else:
             self.launcher.setPercentOutput(0)
 
