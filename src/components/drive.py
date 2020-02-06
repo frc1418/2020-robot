@@ -43,7 +43,7 @@ class Drive:
         self.deadband = 0
 
         if relative:
-            self.angle_setpoint = (self.angle - angle) % 360
+            self.angle_setpoint = (self.angle + angle) % 360
             self.angle_to = self.angle_setpoint
 
         self.angle_setpoint = angle
