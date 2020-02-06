@@ -1,5 +1,5 @@
 import magicbot
-import wpilib
+import wpilib.analogaccelerometer
 from magicbot import tunable
 from rev.color import ColorSensorV3
 from robotpy_ext.autonomous import AutonomousModeSelector
@@ -11,7 +11,7 @@ from wpilib.kinematics import DifferentialDriveKinematics
 from common.limelight import Limelight
 from common.navx import navx
 from common.rev import CANSparkMax, IdleMode, MotorType
-from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry
+from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry, Climber
 from common.camera_server import CameraServer
 
 r"""
@@ -137,10 +137,6 @@ class Robot(magicbot.MagicRobot):
 
         # Control Panel Spinner
         self.control_panel.set_solenoid(self.btn_cp_extend.get())
-        if self.btn_scissor_extend.get():
-            self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
-        else:
-            self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
         # Color Sensor
         if self.btn_color_sensor.get():
@@ -172,11 +168,12 @@ class Robot(magicbot.MagicRobot):
         else:
             self.intake_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
 
-        # Winch
+        # Climber
         if self.btn_winch.get():
-            self.winch_motor.set(1)
-        else:
-            self.winch_motor.set(0)  # Must use set(0) when not pressed because there is no component
+            self.winch.winch_motor_on()
+
+        if self.btn_scissor_extend.get():
+            self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
 
         # slow movement using POV on joystick_alt
         # if self.joystick_alt.getPOV() == 0:
