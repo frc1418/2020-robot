@@ -5,14 +5,16 @@ from rev.color import ColorSensorV3
 from robotpy_ext.autonomous import AutonomousModeSelector
 from robotpy_ext.control.toggle import Toggle
 from wpilib.buttons import JoystickButton
-
-from common.ctre import WPI_TalonSRX, WPI_VictorSPX
 from wpilib.kinematics import DifferentialDriveKinematics
+
+from common.camera_server import CameraServer
+from common.ctre import WPI_TalonSRX, WPI_VictorSPX
 from common.limelight import Limelight
 from common.navx import navx
 from common.rev import CANSparkMax, IdleMode, MotorType
 from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry
-from common.camera_server import CameraServer
+from entry_points.trajectory_generator import KINEMATICS, DRIVE_FEEDFORWARD, load_trajectories
+
 
 r"""
 / \                / \
@@ -41,8 +43,6 @@ class Robot(magicbot.MagicRobot):
     odometry: Odometry
     align: Align
     launcher: Launcher
-
-    TRACK_WIDTH = 0.43  # Units: Meters
 
     def createObjects(self):
         # Joysticks
@@ -107,11 +107,13 @@ class Robot(magicbot.MagicRobot):
         # Limelight
         self.limelight = Limelight()
 
-        # Kinematics
-        self.kinematics = DifferentialDriveKinematics(self.TRACK_WIDTH)  # Track width in meters
-
         # Camera Stream
         CameraServer.launch('camera/camera.py:main')
+
+        # Robot motion control
+        self.kinematics = KINEMATICS  # Use kinematics from inner trajectory generator code
+        self.drive_feedforward = DRIVE_FEEDFORWARD
+        self.trajectories = load_trajectories()
 
     def teleopInit(self):
         self.drive.squared_inputs = True

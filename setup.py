@@ -5,10 +5,10 @@ setup(
     version='1.0.0',
     packages=['entry_points'],
     package_dir={'': 'src'},
-    install_requires=['pybind11', 'robotpy-pathfinder'],
+    install_requires=['wpilib'],
     entry_points={
         'robotpy': [
-          'generate=entry_points.trajectory_generator:TrajectoryGenerator'
+          'generate=entry_points.trajectory_generator:TrajectoryGenerate'
         ]
     }
 )
