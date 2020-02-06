@@ -24,7 +24,7 @@ KS = 0.161  # Units: volts
 KV = 1.96  # volts * seconds / distance
 KA = 0.49  # volts * seconds^2 / distance
 TRACK_WIDTH = 0.43  # Units: meters
-MAX_GENERATION_VELOCITY = 6  # Units: m/s
+MAX_GENERATION_VELOCITY = 4  # Units: m/s
 MAX_GENERATION_VOLTAGE = 10  # Units: volts
 
 TRAJECTORY_DIRECTORY = 'trajectories'
@@ -37,23 +37,6 @@ PICKLE_FILE = path.join(
 
 # Unimportant due to DifferentialDriveVoltageConstraint
 MAX_GENERATION_ACCELERATION = MAX_GENERATION_VELOCITY  # Units: m/s^2.
-
-
-def load_trajectories() -> Dict[str, Trajectory]:
-    """
-    Load trajectories that were saved in the predefined trajectory file.
-    """
-    try:
-        with open(PICKLE_FILE, 'rb') as f:
-            generated_trajectories = pickle.load(f)
-    except FileNotFoundError:
-        print('Trajectory file not found. Did you forget to generate them?')
-        generated_trajectories = {}
-    else:
-        generated_trajectories = {k: TrajectoryUtil.deserializeTrajectory(v) for k, v in generated_trajectories.items()}
-
-    return generated_trajectories
-
 
 DRIVE_FEEDFORWARD = SimpleMotorFeedforwardMeters(KS, KV, KA)
 KINEMATICS = DifferentialDriveKinematics(TRACK_WIDTH)
@@ -82,6 +65,22 @@ TRAJECTORIES = {
 }
 
 
+def load_trajectories() -> Dict[str, Trajectory]:
+    """
+    Load trajectories that were saved in the predefined trajectory file.
+    """
+    try:
+        with open(PICKLE_FILE, 'rb') as f:
+            generated_trajectories = pickle.load(f)
+    except FileNotFoundError:
+        print('Trajectory file not found. Did you forget to generate them?')
+        generated_trajectories = {}
+    else:
+        generated_trajectories = {k: TrajectoryUtil.deserializeTrajectory(v) for k, v in generated_trajectories.items()}
+
+    return generated_trajectories
+
+
 def generate_trajectory(trajectory_data: TrajectoryData) -> Trajectory:
     for constraint in trajectory_data.constraints:
         trajectory_data.config.addConstraint(constraint)
@@ -102,7 +101,7 @@ def generate_trajectories(options, robot_class):
     :param options: Options for the entry point being called
     :param robot_class: The class of the robot being run
     """
-    print('Generating Trajectories...')
+    print('Generating Trajectories...', end='')
 
     generated_trajectories: Dict[str, str] = {}
 
@@ -113,9 +112,9 @@ def generate_trajectories(options, robot_class):
         generated_trajectories[key] = TrajectoryUtil.serializeTrajectory(trajectory)
 
     print('Done')
-    print('Writing Trajectories...')
+    print('Writing Trajectories...', end='')
 
     with open(PICKLE_FILE, 'wb') as f:
         pickle.dump(generated_trajectories, f)
 
-    print('Finished.')
+    print('Done')
