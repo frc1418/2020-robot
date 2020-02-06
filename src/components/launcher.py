@@ -4,7 +4,7 @@ import wpilib
 
 
 class Launcher:
-    launcher_motor: CANSparkMax
+    launcher_motors: wpilib.SpeedControllerGroup
     launcher_solenoid: wpilib.Solenoid
     speed = will_reset_to(0)
     decimal = will_reset_to(0)
@@ -12,8 +12,9 @@ class Launcher:
     shoot = will_reset_to(False)
 
     def setup(self):
-        self.PID_Controller = self.launcher_motor.getPIDController()
-        self.encoder = self.launcher_motor.getEncoder()
+        # self.PID_Controller = self.launcher_motor.getPIDController()
+        # self.encoder = self.launcher_motor.getEncoder()
+        pass
 
     def setVelocity(self, speed):
         self.speed = speed
@@ -31,9 +32,9 @@ class Launcher:
         self.shoot = True
 
     def execute(self):
-        if self.control_velocity:
-            self.PID_Controller.setReference(self.speed, ControlType.kVelocity, pidSlot=0, arbFeedforward=0)
-        else:
-            self.launcher_motor.set(self.decimal)
-        if self.shoot:
-            self.launcher_solenoid.set(True)
+        # if self.control_velocity:
+            # self.PID_Controller.setReference(self.speed, ControlType.kVelocity, pidSlot=0, arbFeedforward=0)
+        # else:
+            # self.launcher_motor.set(self.decimal)
+        self.launcher_motors.set(self.decimal)
+        self.launcher_solenoid.set(self.shoot)

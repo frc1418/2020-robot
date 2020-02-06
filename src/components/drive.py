@@ -25,8 +25,10 @@ class Drive:
     squared_inputs = False
 
     angle_p = ntproperty('/align/kp', 0.0099)
-    angle_i = ntproperty('/align/ki', 0.0005)
-    angle_d = ntproperty('/align/kd', 0.001)
+    angle_i = ntproperty('/align/ki', 0)
+    angle_d = ntproperty('/align/kd', 0)
+    angle_reported = ntproperty('/align/angle', 0)
+    angle_to = ntproperty('/align/angle_to', 0)
 
     def setup(self):
         """
@@ -41,7 +43,8 @@ class Drive:
         self.deadband = 0
 
         if relative:
-            self.angle_setpoint = (angle + self.angle) % 360
+            self.angle_setpoint = (self.angle + angle) % 360
+            self.angle_to = self.angle_setpoint
 
         self.angle_setpoint = angle
 
@@ -64,11 +67,13 @@ class Drive:
         Handle driving.
         """
         self.train.setDeadband(self.deadband)
+        self.angle_reported = self.angle
 
         if self.aligning:
-            if self.angle_controller.atSetpoint():
-                self.train.arcadeDrive(0, 0, squareInputs=False)
-                return
+            # if self.angle_controller.atSetpoint():
+                # print('Stopped aligning')
+                # self.train.arcadeDrive(0, 0, squareInputs=False)
+                # return
 
             # Use new network tables variables for testing
             self.angle_controller.setP(self.angle_p)
@@ -90,6 +95,6 @@ class Drive:
         else:
             self.train.arcadeDrive(
                 self.speed_constant * self.y,
-                self.rotational_constant * self.rot,
+                self.rot,
                 squareInputs=self.squared_inputs,
             )
