@@ -69,6 +69,7 @@ class Robot(magicbot.MagicRobot):
         self.btn_scissor_extend = Toggle(self.joystick_right, 5)
         self.btn_color_sensor = JoystickButton(self.joystick_left, 5)
         self.btn_cp_stop = JoystickButton(self.joystick_left, 2)
+        self.btn_invert_y_axis = JoystickButton(self.joystick_left, 1)
 
         # Set up motors for encoders
         self.master_left = CANSparkMax(1, MotorType.kBrushless)
@@ -139,9 +140,12 @@ class Robot(magicbot.MagicRobot):
         self.drive.squared_inputs = True
         self.drive.speed_constant = 1.05
         self.drive.rotational_constant = 0.5
+        self.inverse = -1
 
     def teleopPeriodic(self):
-        self.drive.move(-self.joystick_left.getY(),
+        if self.btn_inverse.get():
+            self.inverse*=-1
+        self.drive.move(self.inverse*self.joystick_left.getY(),
                         self.joystick_right.getX())
 
         # Align (Overrides self.drive.move() because it's placed after)
