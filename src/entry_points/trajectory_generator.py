@@ -50,8 +50,8 @@ DEFAULT_CONSTRAINTS: Tuple[TrajectoryConstraint, ...] = (
 class TrajectoryData:
     """Hold metadata for a wpilib trajectory"""
     start: Pose2d
-    end: Pose2d
     interior_waypoints: List[Translation2d]
+    end: Pose2d
     config: TrajectoryConfig = TrajectoryConfig(MAX_GENERATION_VELOCITY, MAX_GENERATION_ACCELERATION)
     constraints: Tuple[TrajectoryConstraint, ...] = DEFAULT_CONSTRAINTS
     kinematics: DifferentialDriveKinematics = KINEMATICS
@@ -60,7 +60,7 @@ class TrajectoryData:
 
 TRAJECTORIES = {
     "charge": TrajectoryData(
-        Pose2d(), Pose2d(2, 0, Rotation2d()), [Translation2d(1, 0)]
+        Pose2d(), [Translation2d(1, 0)], Pose2d(2, 0, Rotation2d())
     )
 }
 
