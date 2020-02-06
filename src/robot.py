@@ -1,5 +1,5 @@
 import magicbot
-import wpilib
+import wpilib.analogaccelerometer
 from magicbot import tunable
 from rev.color import ColorSensorV3
 from robotpy_ext.autonomous import AutonomousModeSelector
@@ -11,7 +11,7 @@ from wpilib.kinematics import DifferentialDriveKinematics
 from common.limelight import Limelight
 from common.navx import navx
 from common.rev import CANSparkMax, IdleMode, MotorType
-from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry
+from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry, Climber
 from common.camera_server import CameraServer
 
 r"""
@@ -52,14 +52,13 @@ class Robot(magicbot.MagicRobot):
 
         # Buttons
         self.btn_launcher_solenoid = JoystickButton(self.joystick_alt, 1)
-        self.btn_align = JoystickButton(self.joystick_alt, 2)
+        self.btn_align = Toggle(self.joystick_alt, 2)
         self.btn_intake_in = JoystickButton(self.joystick_alt, 3)
         self.btn_intake_out = JoystickButton(self.joystick_alt, 5)
         self.btn_cp_extend = Toggle(self.joystick_left, 4)
         self.btn_winch = JoystickButton(self.joystick_alt, 6)
         self.btn_cp_motor = JoystickButton(self.joystick_left, 3)
-        self.btn_launcher_motor = JoystickButton(self.joystick_alt, 12)
-        self.btn_launcher_motor70 = JoystickButton(self.joystick_alt, 11)
+        self.btn_launcher_motor = Toggle(self.joystick_alt, 12)
         self.btn_slow_movement = Toggle(self.joystick_right, 3)
         self.btn_intake_solenoid = Toggle(self.joystick_alt, 4)
         self.btn_scissor_extend = Toggle(self.joystick_right, 5)
@@ -94,10 +93,12 @@ class Robot(magicbot.MagicRobot):
 
         # Intake
         self.intake_motor = WPI_VictorSPX(1)
-        self.intake_solenoid = wpilib.DoubleSolenoid(2, 1)
+        self.intake_solenoid = wpilib.DoubleSolenoid(1, 2)
 
         # Launcher
-        self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
+        self.launcher_motor = CANSparkMax(7, MotorType.kBrushed)
+        self.launcher_motor.restoreFactoryDefaults()
+        self.launcher_motor.setOpenLoopRampRate(0)
         self.launcher_solenoid = wpilib.Solenoid(0)
 
         # NavX (purple board on top of the RoboRIO)
@@ -123,24 +124,19 @@ class Robot(magicbot.MagicRobot):
                         self.joystick_right.getX())
 
         # Align (Overrides self.drive.move() because it's placed after)
-        if self.btn_align.get() and True:
-            self.drive.align(self.limelight.getYaw(), relative=True)
+        if self.btn_align.get() and self.limelight.targetExists():
+            self.align.align(self.limelight.getYaw())
 
         if self.btn_slow_movement:
             # 10% of original values
             self.drive.rotational_constant = 0.05
             self.drive.speed_constant = 0.105
-            self.drive.deadband = 0.05
         else:
             self.drive.rotational_constant = 0.5
             self.drive.speed_constant = 1.05
 
         # Control Panel Spinner
         self.control_panel.set_solenoid(self.btn_cp_extend.get())
-        if self.btn_scissor_extend.get():
-            self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
-        else:
-            self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
         # Color Sensor
         if self.btn_color_sensor.get():
@@ -151,13 +147,11 @@ class Robot(magicbot.MagicRobot):
 
         # Launcher
         if self.btn_launcher_motor.get():
-            self.launcher.setPercentOutput(-0.6)
-        elif self.btn_launcher_motor70.get():
-            self.launcher.setPercentOutput(-0.7)
+            self.launcher.setPercentOutput(0.75)
         else:
             self.launcher.setPercentOutput(0)
 
-        if self.btn_launcher_solenoid.get():
+        if self.btn_launcher_solenoid:
             self.launcher.fire()
 
         if self.btn_cp_stop.get():
@@ -174,11 +168,12 @@ class Robot(magicbot.MagicRobot):
         else:
             self.intake_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
 
-        # Winch
+        # Climber
         if self.btn_winch.get():
-            self.winch_motor.set(-1)
-        else:
-            self.winch_motor.set(0)  # Must use set(0) when not pressed because there is no component
+            self.winch.winch_motor_on()
+
+        if self.btn_scissor_extend.get():
+            self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
 
         # slow movement using POV on joystick_alt
         # if self.joystick_alt.getPOV() == 0:
@@ -195,3 +190,4 @@ class Robot(magicbot.MagicRobot):
 
 if __name__ == '__main__':
     wpilib.run(Robot)
+
