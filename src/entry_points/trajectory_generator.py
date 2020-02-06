@@ -36,8 +36,7 @@ PICKLE_FILE = path.join(
 )
 
 # Unimportant due to DifferentialDriveVoltageConstraint
-MAX_GENERATION_ACCELERATION = MAX_GENERATION_VELOCITY  # Units: m/s^2. 
-
+MAX_GENERATION_ACCELERATION = MAX_GENERATION_VELOCITY  # Units: m/s^2.
 
 
 def load_trajectories() -> Dict[str, Trajectory]:
@@ -110,7 +109,7 @@ def generate_trajectories(options, robot_class):
     traj_data: TrajectoryData
     for key, traj_data in TRAJECTORIES.items():
         trajectory = generate_trajectory(traj_data)
-        
+
         generated_trajectories[key] = TrajectoryUtil.serializeTrajectory(trajectory)
 
     print('Done')
