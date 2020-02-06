@@ -1,126 +1,122 @@
-import os
-import sys
-import pickle
-import pathfinder as pf
-from . import robotpy_entry_point
 import math
+import pickle
+import sys
+from dataclasses import dataclass
+from os import path
+from typing import Dict, List, Tuple
+
+from wpilib.controller import SimpleMotorFeedforwardMeters
 from wpilib.geometry import Pose2d, Rotation2d, Translation2d
-from wpilib.trajectory import TrajectoryGenerator, TrajectoryConfig
+from wpilib.kinematics import DifferentialDriveKinematics
+from wpilib.trajectory import (
+    Trajectory, TrajectoryConfig,
+    TrajectoryGenerator, TrajectoryUtil
+)
+from wpilib.trajectory.constraint import (
+    DifferentialDriveKinematicsConstraint,
+    DifferentialDriveVoltageConstraint,
+    TrajectoryConstraint
+)
 
+from . import robotpy_entry_point
 
-WHEELBASE_WIDTH = 1.83  # Units: ft
+KS = 0.161  # Units: volts
+KV = 1.96  # volts * seconds / distance
+KA = 0.49  # volts * seconds^2 / distance
+TRACK_WIDTH = 0.43  # Units: meters
+MAX_GENERATION_VELOCITY = 6  # Units: m/s
+MAX_GENERATION_VOLTAGE = 10  # Units: volts
+
 TRAJECTORY_DIRECTORY = 'trajectories'
-PICKLE_FILE = os.path.join(os.path.dirname(sys.modules['__main__'].__file__), TRAJECTORY_DIRECTORY, 'trajectories.pickle')
-MAX_GENERATION_VELOCITY = 3.4  # Units: ft/s
-MAX_GENERATION_ACCELERATION = 8.5  # Units: ft/s^2
-MAX_GENERATION_JERK = 15  # Units: ft/s^3
+PICKLE_FILE_NAME = 'trajectories.pickle'
+PICKLE_FILE = path.join(
+    path.dirname(sys.modules['__main__'].__file__),
+    TRAJECTORY_DIRECTORY,
+    PICKLE_FILE_NAME
+)
 
-trajectories = {
-    "charge": [
-        pf.Waypoint(0, 0, 0),
-        pf.Waypoint(3, 0, 0)
-    ],
-    "diagonal_higher": [
-        pf.Waypoint(0, 0, 0),  # Waypoints are relative to first, so start at 0, 0, 0
-        pf.Waypoint(15, 8, 0)
-    ],
-    "cargo_ship": [
-        pf.Waypoint(0, 0, 0),
-        pf.Waypoint(7.33, 0, 0)
-    ],
-    "left-side": [
-        pf.Waypoint(0, 0, 0),
-        pf.Waypoint(6, 6, math.pi / 4)
-    ],
-    "turn": [
-        pf.Waypoint(0, 0, 0),  # Waypoints are relative to first, so start at 0, 0, 0
-        pf.Waypoint(0.5, 0, math.pi / 4)
-    ]
-}
+# Unimportant due to DifferentialDriveVoltageConstraint
+MAX_GENERATION_ACCELERATION = MAX_GENERATION_VELOCITY  # Units: m/s^2. 
 
 
-def load_trajectories():
+
+def load_trajectories() -> Dict[str, Trajectory]:
     """
-    Either generate and write trajectories if in a sim or read them if on the robot.
+    Load trajectories that were saved in the predefined trajectory file.
     """
     try:
         with open(PICKLE_FILE, 'rb') as f:
             generated_trajectories = pickle.load(f)
     except FileNotFoundError:
+        print('Trajectory file not found. Did you forget to generate them?')
         generated_trajectories = {}
+    else:
+        generated_trajectories = {k: TrajectoryUtil.deserializeTrajectory(v) for k, v in generated_trajectories.items()}
 
     return generated_trajectories
 
 
-def _write_trajectories(trajectories):
-    """
-    Write trajectories dictionary to a file.
-    :param trajectories: The trajectory dict to write.
-    """
-    with open(PICKLE_FILE, 'wb') as f:
-        pickle.dump(trajectories, f)
-
-    # if wpilib.RobotBase.isSimulation():
-    #     from pyfrc.sim import get_user_renderer
-    #
-    #     renderer = get_user_renderer()
-    #     if renderer:
-    #         renderer.draw_pathfinder_trajectory(modifier.getLeftTrajectory(), '#0000ff', offset=(-0.9, 0))
-    #         renderer.draw_pathfinder_trajectory(modifier.source, '#00ff00', show_dt=True)
-    #         renderer.draw_pathfinder_trajectory(modifier.getRightTrajectory(), '#0000ff', offset=(0.9, 0))
+DRIVE_FEEDFORWARD = SimpleMotorFeedforwardMeters(KS, KV, KA)
+KINEMATICS = DifferentialDriveKinematics(TRACK_WIDTH)
+DEFAULT_CONSTRAINTS: Tuple[TrajectoryConstraint, ...] = (
+    DifferentialDriveKinematicsConstraint(KINEMATICS, MAX_GENERATION_VELOCITY),
+    DifferentialDriveVoltageConstraint(DRIVE_FEEDFORWARD, KINEMATICS, MAX_GENERATION_VOLTAGE)
+)
 
 
-@robotpy_entry_point(name='TrajectoryGenerator')
+@dataclass
+class TrajectoryData:
+    """Hold metadata for a wpilib trajectory"""
+    start: Pose2d
+    end: Pose2d
+    interior_waypoints: List[Translation2d]
+    config: TrajectoryConfig = TrajectoryConfig(MAX_GENERATION_VELOCITY, MAX_GENERATION_ACCELERATION)
+    constraints: Tuple[TrajectoryConstraint, ...] = DEFAULT_CONSTRAINTS
+    kinematics: DifferentialDriveKinematics = KINEMATICS
+    reverse = False
+
+
+TRAJECTORIES = {
+    "charge": TrajectoryData(
+        Pose2d(), Pose2d(2, 0, Rotation2d()), [Translation2d(1, 0)]
+    )
+}
+
+
+def generate_trajectory(trajectory_data: TrajectoryData) -> Trajectory:
+    for constraint in trajectory_data.constraints:
+        trajectory_data.config.addConstraint(constraint)
+
+    trajectory_data.config.setKinematics(trajectory_data.kinematics)
+    trajectory_data.config.setReversed(trajectory_data.reverse)
+
+    return TrajectoryGenerator.generateTrajectory(
+        trajectory_data.start, trajectory_data.interior_waypoints,
+        trajectory_data.end, trajectory_data.config
+    )
+
+
+@robotpy_entry_point(name='TrajectoryGenerate')
 def generate_trajectories(options, robot_class):
     """
     Generate trajectory from waypoints.
     :param options: Options for the entry point being called
     :param robot_class: The class of the robot being run
     """
-    # print('Generating Trajectories...')
-    # generated_trajectories = {}
+    print('Generating Trajectories...')
 
-    # for trajectory_name, trajectory in trajectories.items():
-    #     print(f'Trajectory: {trajectory_name} ...', end='')
-    #     generated_trajectory = pf.generate(
-    #         trajectory,
-    #         pf.FIT_HERMITE_CUBIC,
-    #         pf.SAMPLES_HIGH,
-    #         dt=0.02,  # 20ms
-    #         max_velocity=MAX_GENERATION_VELOCITY,  # These are in ft/sec and
-    #         max_acceleration=MAX_GENERATION_ACCELERATION,  # set the units for distance to ft.
-    #         max_jerk=MAX_GENERATION_JERK
-    #     )[1]  # The 0th element is just info
+    generated_trajectories: Dict[str, str] = {}
 
-    #     modifier = pf.modifiers.TankModifier(generated_trajectory).modify(WHEELBASE_WIDTH)
+    traj_data: TrajectoryData
+    for key, traj_data in TRAJECTORIES.items():
+        trajectory = generate_trajectory(traj_data)
+        
+        generated_trajectories[key] = TrajectoryUtil.serializeTrajectory(trajectory)
 
-    #     generated_trajectories[trajectory_name] = (
-    #         modifier.getLeftTrajectory(),
-    #         modifier.getRightTrajectory()
-    #     )
-    #     print('Done')
+    print('Done')
+    print('Writing Trajectories...')
 
-    # _write_trajectories(generated_trajectories)
-    # print('Finished.')
-    # UNITS: Meters
-    start = Pose2d(0, 0, Rotation2d.fromDegrees(0))
-    finish = Pose2d(0, 1, Rotation2d.fromDegrees(0))
+    with open(PICKLE_FILE, 'wb') as f:
+        pickle.dump(generated_trajectories, f)
 
-    # 2018 cross scale auto waypoints
-    #   const frc::Pose2d sideStart{1.54_ft, 23.23_ft, frc::Rotation2d(180_deg)};
-    #   const frc::Pose2d crossScale{23.7_ft, 6.8_ft, frc::Rotation2d(-160_deg)};
-
-    interiorWaypoints = []
-
-    #   std::vector<frc::Translation2d> interiorWaypoints{
-    #       frc::Translation2d{14.54_ft, 23.23_ft},
-    #       frc::Translation2d{21.04_ft, 18.23_ft}};
-
-    config = TrajectoryConfig(12, 12)
-    config.setReversed(False)
-
-    trajectory = TrajectoryGenerator.generateTrajectory(
-        start, interiorWaypoints, finish, config
-    )
-    return trajectory
-
+    print('Finished.')
