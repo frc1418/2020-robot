@@ -56,6 +56,7 @@ class ControlPanel(StateMachine):
         self.colors = list(COLORS.values())
         self.fms_color = None
         self.last_color = None
+        self.resting_timestamp = None
 
         self.colorMatcher = ColorMatch()
 
@@ -96,7 +97,7 @@ class ControlPanel(StateMachine):
                 self.detected_color = Color.from_wpilib(result_color)
                 self.detected_color = list(sorted(self.colors, key=lambda c: self.calculate_distance(c, self.detected_color)))[0]
 
-        self.cp_motor.set(self.speed)
+        # self.cp_motor.set(self.speed)
         self.cp_solenoid.set(self.solenoid_state)
 
     @staticmethod
@@ -106,6 +107,10 @@ class ControlPanel(StateMachine):
         blueDiff = color1.blue - color2.blue
 
         return math.sqrt((redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff) / 2)
+
+    @default_state
+    def stop(self):
+        self.cp_motor.set(0)
 
     @state(first=True, must_finish=True)  # First here doesn't matter because we use the argument form of engage
     def rotationControl(self, initial_call):
@@ -121,7 +126,9 @@ class ControlPanel(StateMachine):
             self.done()
 
     @state(must_finish=True)
-    def positionControl(self):
+    def positionControl(self, state_tm):
+        print(state_tm)
+
         if self.turn_to_color is None or self.detected_color is None:
             return
 
@@ -129,6 +136,13 @@ class ControlPanel(StateMachine):
             # print(f'Detected: {self.detected_color.red}, {self.detected_color.green}, {self.detected_color.blue}  Towards: {self.turn_to_color.red}, {self.turn_to_color.green}, {self.turn_to_color.blue}')
             direction = math.copysign(1, self.colors.index(self.detected_color) - self.colors.index(self.turn_to_color))
             self.cp_motor.set(direction * 0.17)
+            self.resting_timestamp = None
         else:
-            self.cp_motor.set(0)
-            self.done()
+            if self.resting_timestamp is None:
+                self.resting_timestamp = state_tm
+
+            # Wait on the correct color for one second
+            if state_tm - self.resting_timestamp < 1:
+                self.cp_motor.set(0)
+            else:
+                self.done()
