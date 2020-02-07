@@ -11,8 +11,9 @@ from rev import CANSparkMax, MotorType
 
 class Robot(wpilib.IterativeRobot):
     WHEEL_DIAMETER = 0.1524  # Units: Meters
-    ENCODER_PULSE_PER_REV = 42
-    GEARING = 7.56  # 6:1 gear ratio
+    # Currently unused
+    # ENCODER_PULSE_PER_REV = 42 
+    GEARING = 7.56  # 7.56:1 gear ratio
 
     autoSpeedEntry = ntproperty('/robot/autospeed', 0.0)
     telemetry_entry = ntproperty('/robot/telemetry', [0.0], writeDefault=False)
