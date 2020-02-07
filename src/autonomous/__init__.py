@@ -14,7 +14,6 @@ def follower_state(f=None, *, trajectory_name: str, follower, next_state=None, f
         # done = follower.follow_trajectory(trajectory_name, state_tm)
         f(self, initial_call, tm, state_tm)
         # if done:
-            # self.next_state(next_state)
+        # self.next_state(next_state)
 
     return state(wrapper, first=first, must_finish=must_finish)
-
