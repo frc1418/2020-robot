@@ -20,6 +20,10 @@ class Drive:
     aligning = will_reset_to(False)
     deadband = will_reset_to(0.1)
 
+    auto = will_reset_to(False)
+    leftmotors = will_reset_to(None)
+    rightmotors = will_reset_to(None)
+
     speed_constant = 1.05
     rotational_constant = 0.5
     squared_inputs = False
@@ -47,6 +51,12 @@ class Drive:
             self.angle_to = self.angle_setpoint
 
         self.angle_setpoint = angle
+
+    def voltageDrive(self, leftmotors, rightmotors):
+        self.leftmotors = leftmotors
+        self.rightmotors = rightmotors
+        self.auto = True
+        self.deadband = 0
 
     def move(self, y: float, rot: float):
         """
@@ -92,6 +102,9 @@ class Drive:
             output = self.angle_controller.calculate(self.angle, self.angle_setpoint)
             print(f'Angle: {self.angle} Desired: {self.angle_setpoint} Output: {output} Error: {self.angle_controller.getPositionError()}')
             self.train.arcadeDrive(0, output, squareInputs=False)
+        elif self.auto:
+            self.train.tankDrive(self.leftmotors, self.rightmotors)
+        
         else:
             self.train.arcadeDrive(
                 self.speed_constant * self.y,
