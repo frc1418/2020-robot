@@ -30,9 +30,9 @@ class Drive:
     rotational_constant = 0.5
     squared_inputs = False
 
-    angle_p = ntproperty('/align/kp', 0.0099)
-    angle_i = ntproperty('/align/ki', 0)
-    angle_d = ntproperty('/align/kd', 0)
+    angle_p = ntproperty('/align/kp', 0.02)
+    angle_i = ntproperty('/align/ki', 0.001)
+    angle_d = ntproperty('/align/kd', 0.003)
     angle_reported = ntproperty('/align/angle', 0)
     angle_to = ntproperty('/align/angle_to', 0)
 
@@ -41,7 +41,7 @@ class Drive:
         Run setup code on the injected variables (train)
         """
         self.angle_controller = PIDController(self.angle_p, self.angle_i, self.angle_d)
-        self.angle_controller.setTolerance(2, float('inf'))
+        self.angle_controller.setTolerance(3, 0)
         self.angle_controller.enableContinuousInput(0, 360)
         self.angle_setpoint = None
 
@@ -51,6 +51,11 @@ class Drive:
             self.angle_to = self.angle_setpoint
         else:
             self.angle_setpoint = angle
+        
+        if angle is not None:
+            self.angle_controller.setSetpoint(self.angle_setpoint)
+        else:
+            self.angle_controller.reset()
 
     def align(self):
         self.aligning = True
@@ -74,6 +79,8 @@ class Drive:
     @property
     def angle(self):
         raw = self.navx.getAngle()
+        while raw < 0:
+            raw += 360
         return raw % 360
 
     def execute(self):
@@ -84,26 +91,27 @@ class Drive:
         self.angle_reported = self.angle
 
         if self.aligning and self.angle_setpoint is not None:
-            # if self.angle_controller.atSetpoint():
-            # print('Stopped aligning')
-            # self.train.arcadeDrive(0, 0, squareInputs=False)
-            # return
+            if self.angle_controller.atSetpoint():
+                print(f'Setpoint: {self.angle_controller.getSetpoint()} Angle: {self.angle} Error: {self.angle_controller.getPositionError()}')
+                self.train.arcadeDrive(0, 0, squareInputs=False)
+                return
 
             # Use new network tables variables for testing
             self.angle_controller.setP(self.angle_p)
             self.angle_controller.setD(self.angle_d)
             self.angle_controller.setI(self.angle_i)
 
+            output = self.angle_controller.calculate(self.angle)
+
             # Manual I-term zone (15 degrees)
             if abs(self.angle_controller.getPositionError()) <= 15:
                 self.angle_controller.setI(self.angle_i)
                 # Minumum and Maximum effect of integrator on output
-                self.angle_controller.setIntegratorRange(-0.15, 0.15)
+                self.angle_controller.setIntegratorRange(-0.05, 0.05)
             else:
                 self.angle_controller.setI(0)
                 self.angle_controller.setIntegratorRange(0, 0)
-
-            output = self.angle_controller.calculate(self.angle, self.angle_setpoint)
+            
             print(f'Angle: {self.angle} Desired: {self.angle_setpoint} Output: {output} Error: {self.angle_controller.getPositionError()}')
             self.train.arcadeDrive(0, output, squareInputs=False)
 
