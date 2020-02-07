@@ -126,6 +126,7 @@ class Robot(magicbot.MagicRobot):
         # Launcher
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
+        self.launcher_encoder = wpilib.Encoder(0, 1)
 
         # NavX (purple board on top of the RoboRIO)
         self.navx = navx.AHRS.create_spi()
