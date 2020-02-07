@@ -8,7 +8,7 @@ class Launcher:
     launcher_solenoid: wpilib.Solenoid
     speed = will_reset_to(0)
     decimal = will_reset_to(0)
-    control_velocity = will_reset_to(True)
+    control_velocity = will_reset_to(False)
     shoot = will_reset_to(False)
 
     def setup(self):
@@ -23,7 +23,6 @@ class Launcher:
 
     def setPercentOutput(self, decimal):
         self.decimal = decimal
-        self.control_velocity = False
 
     def getSpeed(self):
         return self.encoder.getVelocity()
@@ -32,9 +31,9 @@ class Launcher:
         self.shoot = True
 
     def execute(self):
-        # if self.control_velocity:
-            # self.PID_Controller.setReference(self.speed, ControlType.kVelocity, pidSlot=0, arbFeedforward=0)
-        # else:
-            # self.launcher_motor.set(self.decimal)
+        if self.control_velocity:
+            self.PID_Controller.setReference(self.speed, ControlType.kVelocity, pidSlot=0, arbFeedforward=0)
+        else:
+            self.launcher_motor.set(self.decimal)
         self.launcher_motors.set(self.decimal)
         self.launcher_solenoid.set(self.shoot)
