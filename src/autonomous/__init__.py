@@ -11,9 +11,9 @@ def follower_state(f=None, *, trajectory_name: str, next_state=None, first=False
 
     @wraps(f)
     def wrapper(self, initial_call, tm, state_tm):
-        self.follower.follow_trajectory(trajectory_name, state_tm)
+        # self.follower.follow_trajectory(trajectory_name, state_tm)
         f(self, initial_call, tm, state_tm)
-        if self.follower.is_finished():
-            self.next_state(next_state)
+        # if self.follower.is_finished():
+            # self.next_state(next_state)
 
     return state(wrapper, first=first, must_finish=must_finish)

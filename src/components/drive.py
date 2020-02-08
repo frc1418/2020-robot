@@ -24,9 +24,9 @@ class Drive:
     aligning = will_reset_to(False)
     deadband = will_reset_to(0.1)
 
-    auto = will_reset_to(False)
-    left_voltage = will_reset_to(None)
-    right_voltage = will_reset_to(None)
+    auto = False
+    left_voltage = None
+    right_voltage = None
 
     speed_constant = 1.05
     rotational_constant = 0.5
@@ -117,10 +117,9 @@ class Drive:
             print(f'Angle: {self.angle} Desired: {self.angle_setpoint} Output: {output} Error: {self.angle_controller.getPositionError()}')
             self.train.arcadeDrive(0, output, squareInputs=False)
 
-        elif self.auto:
+        if self.auto:
             self.right_motors.setVoltage(self.right_voltage)
             self.left_motors.setVoltage(self.left_voltage)
-
         else:
             self.train.arcadeDrive(
                 self.speed_constant * self.y,
