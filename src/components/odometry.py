@@ -22,13 +22,21 @@ class Odometry:
         self.odometry = DifferentialDriveOdometry(Rotation2d(math.radians(self.getAngle())))
 
     def get_pose(self):
-        self.odometry.getPose()
+        return self.odometry.getPose()
 
     def get_distance(self, left=True):
         if left:
             return self.left_distance
         else:
             return self.right_distance
+
+    @property
+    def left_rate(self):
+        return self.left_encoder.getVelocity()
+
+    @property
+    def right_rate(self):
+        return self.right_encoder.getVelocity()
 
     def execute(self):
         self.odometry.update(Rotation2d(math.radians(self.getAngle())), self.left_encoder.getPosition(), self.right_encoder.getPosition())

@@ -13,9 +13,9 @@ from common.ctre import WPI_TalonSRX, WPI_VictorSPX
 from common.limelight import Limelight
 from common.navx import navx
 from common.rev import CANSparkMax, IdleMode, MotorType, CANEncoder
-from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry
+from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry, Follower
 from entry_points.trajectory_generator import KINEMATICS, DRIVE_FEEDFORWARD, load_trajectories
-from common.panelSpinner import PanelSpinner
+from Controllers.panelSpinner import PanelSpinner
 
 r"""
 / \                / \
@@ -45,6 +45,7 @@ class Robot(magicbot.MagicRobot):
     odometry: Odometry
     align: Align
     launcher: Launcher
+    follower: Follower
 
     WHEEL_DIAMETER = 0.1524  # Units: Meters
     GEARING = 7.56  # 7.56:1 gear ratio
@@ -106,7 +107,7 @@ class Robot(magicbot.MagicRobot):
         self.train = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
 
         # Winch
-        self.winch_motor = CANSparkMax(8, MotorType.kBrushless)
+        self.winch_motor = CANSparkMax(8, MotorType.kBrushed)
         self.scissor_solenoid = wpilib.DoubleSolenoid(6, 7)
 
         # Control Panel Spinner
@@ -138,7 +139,12 @@ class Robot(magicbot.MagicRobot):
         self.drive_feedforward = DRIVE_FEEDFORWARD
         self.trajectories = load_trajectories()
 
+    def autonomous(self):
+        self.right_motors.setInverted(True)
+        super().autonomous()
+
     def teleopInit(self):
+        self.right_motors.setInverted(False)
         self.drive.squared_inputs = True
         self.drive.speed_constant = 1.05
         self.drive.rotational_constant = 0.5

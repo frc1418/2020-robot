@@ -2,7 +2,7 @@ import math
 
 from magicbot import default_state, state, timed_state
 from magicbot.state_machine import StateMachine
-from src.components.controlpanel import ControlPanel
+from components.controlpanel import ControlPanel
 from networktables.util import ntproperty
 
 
