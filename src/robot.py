@@ -15,7 +15,8 @@ from common.navx import navx
 from common.rev import CANSparkMax, IdleMode, MotorType, CANEncoder
 from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry
 from entry_points.trajectory_generator import KINEMATICS, DRIVE_FEEDFORWARD, load_trajectories
-
+from common.panelSpinner import PanelSpinner
+from common.camera_server import CameraServer
 
 r"""
 / \                / \
@@ -41,6 +42,7 @@ class Robot(magicbot.MagicRobot):
     drive: Drive
     intake: Intake
     control_panel: ControlPanel
+    panel_spinner: PanelSpinner
     odometry: Odometry
     align: Align
     launcher: Launcher
@@ -177,7 +179,7 @@ class Robot(magicbot.MagicRobot):
 
         # Color Sensor
         if self.btn_color_sensor.get():
-            self.control_panel.spin_to(position=True)
+            self.panel_spinner.spin_to(position=True)
 
         if self.btn_cp_motor.get():
             self.control_panel.spin(0.5)
@@ -196,7 +198,7 @@ class Robot(magicbot.MagicRobot):
             self.launcher.fire()
 
         if self.btn_cp_stop.get():
-            self.control_panel.done()
+            self.panel_spinner.done()
 
         # Intake
         if self.btn_intake_out.get():
