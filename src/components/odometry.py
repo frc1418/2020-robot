@@ -31,6 +31,6 @@ class Odometry:
             return self.right_distance
 
     def execute(self):
-        self.odometry.update(Rotation2d(math.radians(self.getAngle())), self.left_encoder.getPosition(), self.right_encoder.getPosition)
+        self.odometry.update(Rotation2d(math.radians(self.getAngle())), self.left_encoder.getPosition(), self.right_encoder.getPosition())
         self.left_distance = self.left_encoder.getPosition()
         self.right_distance = self.right_encoder.getPosition()
