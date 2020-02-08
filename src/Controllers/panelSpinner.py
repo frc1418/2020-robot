@@ -3,13 +3,17 @@ import math
 from magicbot import default_state, state, timed_state
 from magicbot.state_machine import StateMachine
 from src.components.controlpanel import ControlPanel
+from networktables.util import ntproperty
 
 class PanelSpinner(StateMachine):
 
     control_panel: ControlPanel
 
+    isSpinning = ntproperty('/Controllers/panelSpinner/isSpinning', False)
+
     def spin_to(self, position=False):
         self.engage('positionControl' if position else 'rotationControl')
+        self.isSpinning = True
 
     # First here doesn't matter because we use the argument form of engage
     @state(first=True, must_finish=True)
@@ -23,6 +27,7 @@ class PanelSpinner(StateMachine):
             self.last_color = self.control_panel.detected_color
         self.control_panel.spin(0.25)
         if self.rotations >= 18:
+            self.isSpinning = False
             self.done()
 
     @state(must_finish=True)
@@ -37,4 +42,5 @@ class PanelSpinner(StateMachine):
             self.control_panel.spin(direction * 0.17)
         else:
             self.control_panel.spin(0)
+            self.isSpinning = False
             self.done()
