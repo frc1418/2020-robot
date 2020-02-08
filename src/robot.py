@@ -6,12 +6,13 @@ from robotpy_ext.autonomous import AutonomousModeSelector
 from robotpy_ext.control.toggle import Toggle
 from wpilib.buttons import JoystickButton
 from wpilib.kinematics import DifferentialDriveKinematics
+import math
 
 from common.camera_server import CameraServer
 from common.ctre import WPI_TalonSRX, WPI_VictorSPX
 from common.limelight import Limelight
 from common.navx import navx
-from common.rev import CANSparkMax, IdleMode, MotorType
+from common.rev import CANSparkMax, IdleMode, MotorType, CANEncoder
 from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry
 from entry_points.trajectory_generator import KINEMATICS, DRIVE_FEEDFORWARD, load_trajectories
 
@@ -44,6 +45,9 @@ class Robot(magicbot.MagicRobot):
     align: Align
     launcher: Launcher
 
+    WHEEL_DIAMETER = 0.1524  # Units: Meters
+    GEARING = 7.56  # 7.56:1 gear ratio
+
     def createObjects(self):
         # Joysticks
         self.joystick_left = wpilib.Joystick(0)
@@ -66,15 +70,31 @@ class Robot(magicbot.MagicRobot):
         self.btn_color_sensor = JoystickButton(self.joystick_left, 5)
         self.btn_cp_stop = JoystickButton(self.joystick_left, 2)
 
+        # Set up motors for encoders
+        self.master_left = CANSparkMax(1, MotorType.kBrushless)
+        self.master_right = CANSparkMax(4, MotorType.kBrushless)
+        self.encoder_constant = (1 / self.GEARING) * self.WHEEL_DIAMETER * math.pi
+
+        self.left_encoder = self.master_left.getEncoder()
+        self.left_encoder.setPositionConversionFactor(self.encoder_constant)
+        self.left_encoder.setVelocityConversionFactor(self.encoder_constant / 60)
+
+        self.right_encoder = self.master_right.getEncoder()
+        self.right_encoder.setPositionConversionFactor(self.encoder_constant)
+        self.right_encoder.setVelocityConversionFactor(self.encoder_constant / 60)
+
+        self.left_encoder.setPosition(0)
+        self.right_encoder.setPosition(0)
+
         # Set up Speed Controller Groups
         self.left_motors = wpilib.SpeedControllerGroup(
-            CANSparkMax(1, MotorType.kBrushless),
+            self.master_left,
             CANSparkMax(2, MotorType.kBrushless),
             CANSparkMax(3, MotorType.kBrushless)
         )
 
         self.right_motors = wpilib.SpeedControllerGroup(
-            CANSparkMax(4, MotorType.kBrushless),
+            self.master_right,
             CANSparkMax(5, MotorType.kBrushless),
             CANSparkMax(6, MotorType.kBrushless)
         )
