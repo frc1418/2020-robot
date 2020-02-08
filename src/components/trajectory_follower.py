@@ -62,7 +62,7 @@ class Follower:
 
             leftFeedforward = self.feedforward.calculate(leftSpeedSetpoint, (leftSpeedSetpoint - self.prevSpeeds.leftMetersPerSecond) / self.dt)
 
-            rightFeedforward = self.feedforward.calculate(rightSpeedSetpoint,(rightSpeedSetpoint - self.prevSpeeds.rightMetersPerSecond) / self.dt)
+            rightFeedforward = self.feedforward.calculate(rightSpeedSetpoint, (rightSpeedSetpoint - self.prevSpeeds.rightMetersPerSecond) / self.dt)
 
             leftOutput = leftFeedforward + self.left_controller.calculate(self.speed.get().leftMetersPerSecond, leftSpeedSetpoint)
 

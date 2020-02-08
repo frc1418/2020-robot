@@ -14,6 +14,8 @@ class Drive:
 
     train: wpilib.drive.DifferentialDrive
     navx: navx.AHRS
+    left_motors: wpilib.SpeedControllerGroup
+    right_motors: wpilib.SpeedControllerGroup
 
     y = will_reset_to(0)
     rot = will_reset_to(0)
@@ -104,7 +106,8 @@ class Drive:
             self.train.arcadeDrive(0, output, squareInputs=False)
 
         elif self.auto:
-            self.train.tankDrive(self.left_voltage, self.right_voltage)
+            self.right_motors.setVoltage(self.right_voltage)
+            self.left_motors.setVoltage(self.left_voltage)
 
         else:
             self.train.arcadeDrive(
