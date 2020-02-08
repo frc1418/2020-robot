@@ -71,9 +71,9 @@ class Drive:
 
         if self.aligning:
             # if self.angle_controller.atSetpoint():
-                # print('Stopped aligning')
-                # self.train.arcadeDrive(0, 0, squareInputs=False)
-                # return
+            # print('Stopped aligning')
+            # self.train.arcadeDrive(0, 0, squareInputs=False)
+            # return
 
             # Use new network tables variables for testing
             self.angle_controller.setP(self.angle_p)
