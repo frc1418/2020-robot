@@ -8,7 +8,7 @@ from rev import CANSparkMax, MotorType
 
 class Robot(wpilib.TimedRobot):
 
-    GEARING = 1  # Gear ratio
+    ENCODER_PULSES_PER_REV = 256  # Ignore quadrature decoding (4x)
 
     encoder_pos = ntproperty('/robot/encoder_pos', 0)
     encoder_rate = ntproperty('/robot/encoder_rate', 0)
@@ -38,21 +38,15 @@ class Robot(wpilib.TimedRobot):
         # % elif units == 'Radians':
         # double encoderConstant = (1 / GEARING) * 2. * Math.PI;
         # % elif units == 'Rotations':
-        self.encoderConstant = (1 / GEARING) * 1
+        self.encoderConstant = (1 / self.ENCODER_PULSES_PER_REV)
+        self.encoder.setDistancePerPulse(self.encoderConstant)
 
-        self.encoder.setPosition(0)
+        self.encoder.reset()
 
         NetworkTableInstance.getDefault().setUpdateRate(0.010)
 
     def disabledInit(self):
         self.motor.set(0)
-
-    def getEncoderPosition(self):
-        return self.encoder.getPosition() * self.encoderConstant
-
-    # In Rotations per second
-    def getEncoderRate(self):
-        return (self.encoder.getRate() * self.encoderConstant) / 60
 
     def robotPeriodic(self):
         self.encoder_pos = self.getEncoderPosition()
@@ -66,8 +60,8 @@ class Robot(wpilib.TimedRobot):
         # // Retrieve values to send back before telling the motors to do something
         now = wpilib.Timer.getFPGATimestamp()
 
-        position = self.getEncoderPosition()
-        rate = self.getEncoderRate()
+        position = self.encoder.getDistance()
+        rate = self.encoder.getRate()
 
         battery = wpilib.RobotController.getBatteryVoltage()
 
