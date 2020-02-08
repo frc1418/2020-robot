@@ -13,8 +13,6 @@ class Follower:
     feedforward: SimpleMotorFeedforwardMeters
     trajectories: dict
     odometry: Odometry
-    left_controller: PIDController
-    right_controller: PIDController
     drive: Drive
     use_pid = tunable(True)
     trajectory = will_reset_to(None)
@@ -22,9 +20,13 @@ class Follower:
 
     def setup(self):
         self.trajectory_name = None
+        self.left_controller = PIDController()
+        self.right_controller = PIDController()
 
     def setup_trajectory(self, trajectory):
         self.controller = RamseteController()
+        self.left_controller.reset()
+        self.right_controller.reset()
         self.controller.setTolerance(Pose2d(0.1, 0.1, Rotation2d(5)))
         self.speed = DifferentialDriveWheelSpeeds()
         self.prev_time = 0
