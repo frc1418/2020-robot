@@ -31,10 +31,17 @@ class Launcher:
         self.shoot = True
 
     def execute(self):
+<<<<<<< HEAD
         if self.control_velocity:
             pass
             # self.PID_Controller.setReference(self.speed, ControlType.kVelocity, pidSlot=0, arbFeedforward=0)
         else:
             self.launcher_motors.set(self.decimal)
+=======
+        # if self.control_velocity:
+        #     self.PID_Controller.setReference(self.speed, ControlType.kVelocity, pidSlot=0, arbFeedforward=0)
+        # else:
+        #     self.launcher_motor.set(self.decimal)
+>>>>>>> Fix format issues
         self.launcher_motors.set(self.decimal)
         self.launcher_solenoid.set(self.shoot)
