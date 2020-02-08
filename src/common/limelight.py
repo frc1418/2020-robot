@@ -47,5 +47,3 @@ class Limelight():
 
     def targetExists(self):
         return bool(self.valid_target)
-
-    
