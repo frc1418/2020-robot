@@ -3,6 +3,8 @@ from magicbot import AutonomousStateMachine, default_state, timed_state
 
 from common.rev import CANSparkMax
 from components import Align, Drive
+from components.trajectory_follower import Follower
+from . import follower_state
 
 
 class Initiation(AutonomousStateMachine):
@@ -11,6 +13,7 @@ class Initiation(AutonomousStateMachine):
 
     drive: Drive
     align: Align
+    follower: Follower
     # TODO: Use launcher component
     launcher_motors: wpilib.SpeedControllerGroup
     launcher_solenoid: wpilib.Solenoid
@@ -35,3 +38,7 @@ class Initiation(AutonomousStateMachine):
         if state_tm > 0.5:
             self.launcher_solenoid.set(False)
         self.shot_count += 1
+
+    @follower_state("charge")
+    def moveForward(self):
+        self.follower.follow_trajectory()
