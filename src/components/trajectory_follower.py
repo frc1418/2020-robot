@@ -4,7 +4,7 @@ from wpilib.geometry import Pose2d, Rotation2d, Translation2d
 from wpilib.trajectory import Trajectory
 from magicbot import will_reset_to, tunable
 from drive import Drive
-
+import math
 from . import Odometry
 
 
@@ -27,10 +27,9 @@ class Follower:
         self.controller = RamseteController()
         self.left_controller.reset()
         self.right_controller.reset()
-        self.controller.setTolerance(Pose2d(0.1, 0.1, Rotation2d(5)))
+        self.controller.setTolerance(Pose2d(0.1, 0.1, Rotation2d(math.radians(5))))
         self.speed = DifferentialDriveWheelSpeeds()
         self.prev_time = 0
-        self.runnning = True
         self.initial_state = self.trajectory.sample(0)
         self.prevSpeeds = self.kinematics.toWheelSpeeds(
             ChassisSpeeds(self.initial_state.velocityMetersPerSecond,
@@ -48,10 +47,10 @@ class Follower:
         self.trajectory_name = trajectory_name
 
     def is_finished(self):
-        return not self.runnning
+        return self.controller.atReference()
 
     def execute(self):
-        if self.trajectory is None or self.runnning is False:
+        if self.trajectory is None or self.controller.atReference() is True:
             return
 
         if self.use_pid:
@@ -81,9 +80,6 @@ class Follower:
         else:
             leftOutput = leftSpeedSetpoint
             rightOutput = rightSpeedSetpoint
-
-        if self.controller.atReference():
-            self.running = False
 
         self.drive.voltageDrive(leftOutput, rightOutput)
         
