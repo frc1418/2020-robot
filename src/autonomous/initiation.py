@@ -31,7 +31,7 @@ class Initiation(AutonomousStateMachine):
         if state_tm > 5 or (state_tm > 1 and self.shot_count > 0):
             self.next_state('shoot')
 
-    @timed_state(duration=1, first=True)
+    @timed_state(duration=1, first=False)
     def shoot(self, state_tm):
         self.launcher_motors.set(0.75)  # Continue to set launcher motor speed
         self.launcher_solenoid.set(True)
@@ -39,6 +39,6 @@ class Initiation(AutonomousStateMachine):
             self.launcher_solenoid.set(False)
         self.shot_count += 1
 
-    @follower_state("charge")
+    @follower_state(trajectory_name = "charge", next_state = shoot, first = True)
     def moveForward(self):
-        self.follower.follow_trajectory()
+        pass
