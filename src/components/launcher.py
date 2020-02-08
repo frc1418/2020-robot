@@ -24,16 +24,17 @@ class Launcher:
     def setPercentOutput(self, decimal):
         self.decimal = decimal
 
-    def getSpeed(self):
-        return self.encoder.getVelocity()
+    # def getSpeed(self):
+        # return self.encoder.getVelocity()
 
     def fire(self):
         self.shoot = True
 
     def execute(self):
         if self.control_velocity:
-            self.PID_Controller.setReference(self.speed, ControlType.kVelocity, pidSlot=0, arbFeedforward=0)
+            pass
+            # self.PID_Controller.setReference(self.speed, ControlType.kVelocity, pidSlot=0, arbFeedforward=0)
         else:
-            self.launcher_motor.set(self.decimal)
+            self.launcher_motors.set(self.decimal)
         self.launcher_motors.set(self.decimal)
         self.launcher_solenoid.set(self.shoot)

@@ -115,7 +115,7 @@ class Robot(magicbot.MagicRobot):
         self.cp_motor.setIdleMode(IdleMode.kBrake)
 
         # Intake
-        self.intake_motor = WPI_VictorSPX(1)
+        self.intake_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(1), WPI_VictorSPX(4))
         self.intake_solenoid = wpilib.DoubleSolenoid(2, 1)
 
         # Launcher
