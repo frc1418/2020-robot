@@ -16,7 +16,6 @@ from common.rev import CANSparkMax, IdleMode, MotorType, CANEncoder
 from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry
 from entry_points.trajectory_generator import KINEMATICS, DRIVE_FEEDFORWARD, load_trajectories
 from common.panelSpinner import PanelSpinner
-from common.camera_server import CameraServer
 
 r"""
 / \                / \
