@@ -10,6 +10,7 @@ from wpilib import DoubleSolenoid
 
 from common.rev import CANSparkMax
 
+
 class Color:
     def __init__(self, red, green, blue):
         self.red = int(red * 1000) / 1000
