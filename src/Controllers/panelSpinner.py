@@ -2,7 +2,7 @@ import math
 
 from magicbot import default_state, state, timed_state
 from magicbot.state_machine import StateMachine
-from src.components.controlpanel import ControlPanel
+from components.controlpanel import ControlPanel
 from networktables.util import ntproperty
 
 
@@ -31,31 +31,32 @@ class PanelSpinner(StateMachine):
         if self.control_panel.detected_color != self.last_color:
             self.rotations += 1
             self.last_color = self.control_panel.detected_color
-        self.control_panel.spin(0.25)
+        self.control_panel.cp_motor.set(0.25)
         if self.rotations >= 18:
             self.isSpinningRotation = False
             self.done()
 
     @state(must_finish=True)
     def positionControl(self, state_tm):
-        print(state_tm)
 
         if self.control_panel.turn_to_color is None or self.control_panel.detected_color is None:
+            print('No Color')
             return
 
         if self.control_panel.detected_color != self.control_panel.turn_to_color:
-            # print(f'Detected: {self.detected_color.red}, {self.detected_color.green}, {self.detected_color.blue}  Towards: {self.turn_to_color.red}, {self.turn_to_color.green}, {self.turn_to_color.blue}')
+            print(f'Detected: {self.control_panel.detected_color.red}, {self.control_panel.detected_color.green}, {self.control_panel.detected_color.blue}  Towards: {self.control_panel.turn_to_color.red}, {self.control_panel.turn_to_color.green}, {self.control_panel.turn_to_color.blue}')
             direction = math.copysign(1, self.control_panel.colors.index(
                 self.control_panel.detected_color) - self.control_panel.colors.index(self.control_panel.turn_to_color))
-            self.control_panel.spin(direction * 0.17)
+            self.control_panel.cp_motor.set(direction * 0.2)
             self.resting_timestamp = None
         else:
             if self.resting_timestamp is None:
                 self.resting_timestamp = state_tm
 
             # Wait on the correct color for one second
+            print(state_tm - self.resting_timestamp)
             if state_tm - self.resting_timestamp < 1:
-                self.control_panel.spin(0)
+                self.control_panel.cp_motor.set(0)
             else:
                 self.done()
-                self.isSpinningPosition = True
+                self.isSpinningPosition = False

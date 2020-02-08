@@ -92,7 +92,7 @@ class ControlPanel:
                 self.detected_color = Color.from_wpilib(result_color)
                 self.detected_color = list(sorted(self.colors, key=lambda c: self.calculate_distance(c, self.detected_color)))[0]
 
-        # self.cp_motor.set(self.speed)
+        self.cp_motor.set(self.speed)
         self.cp_solenoid.set(self.solenoid_state)
 
     @staticmethod
