@@ -5,7 +5,7 @@ from common.ctre import WPI_VictorSPX
 
 
 class Intake:
-    intake_motor: WPI_VictorSPX
+    intake_motors: wpilib.SpeedControllerGroup
 
     speed = will_reset_to(0)
 
@@ -13,4 +13,4 @@ class Intake:
         self.speed = speed
 
     def execute(self):
-        self.intake_motor.set(self.speed)
+        self.intake_motors.set(self.speed)

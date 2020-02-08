@@ -30,9 +30,9 @@ class Drive:
     rotational_constant = 0.5
     squared_inputs = False
 
-    angle_p = ntproperty('/align/kp', 0.02)
-    angle_i = ntproperty('/align/ki', 0.001)
-    angle_d = ntproperty('/align/kd', 0.003)
+    angle_p = ntproperty('/align/kp', 0.023)
+    angle_i = ntproperty('/align/ki', 0.002)
+    angle_d = ntproperty('/align/kd', 0.001)
     angle_reported = ntproperty('/align/angle', 0)
     angle_to = ntproperty('/align/angle_to', 0)
 
@@ -41,7 +41,7 @@ class Drive:
         Run setup code on the injected variables (train)
         """
         self.angle_controller = PIDController(self.angle_p, self.angle_i, self.angle_d)
-        self.angle_controller.setTolerance(3, 0)
+        self.angle_controller.setTolerance(2, 0)
         self.angle_controller.enableContinuousInput(0, 360)
         self.angle_setpoint = None
 
@@ -104,10 +104,10 @@ class Drive:
             output = self.angle_controller.calculate(self.angle)
 
             # Manual I-term zone (15 degrees)
-            if abs(self.angle_controller.getPositionError()) <= 15:
+            if abs(self.angle_controller.getPositionError()) <= 7:
                 self.angle_controller.setI(self.angle_i)
                 # Minumum and Maximum effect of integrator on output
-                self.angle_controller.setIntegratorRange(-0.05, 0.05)
+                self.angle_controller.setIntegratorRange(-0.15, 0.15)
             else:
                 self.angle_controller.setI(0)
                 self.angle_controller.setIntegratorRange(0, 0)
