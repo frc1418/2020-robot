@@ -5,6 +5,7 @@ from magicbot.state_machine import StateMachine
 from src.components.controlpanel import ControlPanel
 from networktables.util import ntproperty
 
+
 class PanelSpinner(StateMachine):
 
     control_panel: ControlPanel
