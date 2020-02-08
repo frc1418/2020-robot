@@ -146,7 +146,8 @@ class Robot(magicbot.MagicRobot):
     def teleopPeriodic(self):
         if self.btn_invert_y_axis.get():
             self.inverse *= -1
-        self.drive.move(self.inverse*self.joystick_left.getY(),
+
+        self.drive.move(self.inverse * self.joystick_left.getY(),
                         self.joystick_right.getX())
 
         # Align (Overrides self.drive.move() because it's placed after)

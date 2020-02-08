@@ -51,7 +51,7 @@ class Drive:
             self.angle_to = self.angle_setpoint
         else:
             self.angle_setpoint = angle
-        
+
         if angle is not None:
             self.angle_controller.setSetpoint(self.angle_setpoint)
         else:
@@ -111,7 +111,7 @@ class Drive:
             else:
                 self.angle_controller.setI(0)
                 self.angle_controller.setIntegratorRange(0, 0)
-            
+
             print(f'Angle: {self.angle} Desired: {self.angle_setpoint} Output: {output} Error: {self.angle_controller.getPositionError()}')
             self.train.arcadeDrive(0, output, squareInputs=False)
 
