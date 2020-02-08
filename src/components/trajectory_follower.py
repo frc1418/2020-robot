@@ -31,11 +31,7 @@ class Follower:
         self.speed = DifferentialDriveWheelSpeeds()
         self.prev_time = 0
         self.initial_state = self.trajectory.sample(0)
-        self.prevSpeeds = self.kinematics.toWheelSpeeds(
-            ChassisSpeeds(self.initial_state.velocityMetersPerSecond,
-            0,
-            self.initial_state.curvatureRadPerMeter
-                * self.initial_state.velocityMetersPerSecond))
+        self.prevSpeeds = self.kinematics.toWheelSpeeds(ChassisSpeeds(self.initial_state.velocityMetersPerSecond, 0, self.initial_state.curvatureRadPerMeter * self.initial_state.velocityMetersPerSecond))
 
     def follow_trajectory(self, trajectory_name, sample_time):
         self.trajectory = self.trajectories[trajectory_name]
@@ -43,7 +39,7 @@ class Follower:
 
         if self.trajectory_name != trajectory_name:
             self.setup_trajectory(self.trajectory)
-        
+
         self.trajectory_name = trajectory_name
 
     def is_finished(self):
@@ -64,23 +60,17 @@ class Follower:
             leftSpeedSetpoint = targetWheelSpeeds.leftMetersPerSecond
             rightSpeedSetpoint = targetWheelSpeeds.rightMetersPerSecond
 
-            leftFeedforward = self.feedforward.calculate(leftSpeedSetpoint, 
-                    (leftSpeedSetpoint - self.prevSpeeds.leftMetersPerSecond) / self.dt)
+            leftFeedforward = self.feedforward.calculate(leftSpeedSetpoint, (leftSpeedSetpoint - self.prevSpeeds.leftMetersPerSecond) / self.dt)
 
-            rightFeedforward = self.feedforward.calculate(rightSpeedSetpoint,
-                (rightSpeedSetpoint - self.prevSpeeds.rightMetersPerSecond) / self.dt)
+            rightFeedforward = self.feedforward.calculate(rightSpeedSetpoint,(rightSpeedSetpoint - self.prevSpeeds.rightMetersPerSecond) / self.dt)
 
-            leftOutput = leftFeedforward
-            + self.left_controller.calculate(self.speed.get().leftMetersPerSecond,
-            leftSpeedSetpoint)
+            leftOutput = leftFeedforward + self.left_controller.calculate(self.speed.get().leftMetersPerSecond, leftSpeedSetpoint)
 
-            rightOutput = rightFeedforward
-            + self.right_controller.calculate(self.speed.get().rightMetersPerSecond,
-            rightSpeedSetpoint)
+            rightOutput = rightFeedforward + self.right_controller.calculate(self.speed.get().rightMetersPerSecond, rightSpeedSetpoint)
         else:
             leftOutput = leftSpeedSetpoint
             rightOutput = rightSpeedSetpoint
 
         self.drive.voltageDrive(leftOutput, rightOutput)
-        
+
         self.prev_time = self.sample_time

@@ -102,9 +102,10 @@ class Drive:
             output = self.angle_controller.calculate(self.angle, self.angle_setpoint)
             print(f'Angle: {self.angle} Desired: {self.angle_setpoint} Output: {output} Error: {self.angle_controller.getPositionError()}')
             self.train.arcadeDrive(0, output, squareInputs=False)
+
         elif self.auto:
             self.train.tankDrive(self.left_voltage, self.right_voltage)
-        
+
         else:
             self.train.arcadeDrive(
                 self.speed_constant * self.y,
