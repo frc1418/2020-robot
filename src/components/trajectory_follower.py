@@ -26,11 +26,11 @@ class Follower:
         self.controller = RamseteController()
         self.left_controller.reset()
         self.right_controller.reset()
-        self.controller.setTolerance(Pose2d(0.1, 0.1, Rotation2d(math.radians(5))))
+        self.controller.setTolerance(Pose2d(0.05, 0.05, Rotation2d(math.radians(5))))
         self.speed = DifferentialDriveWheelSpeeds()
         self.prev_time = 0
         self.initial_state = self.trajectory.sample(0)
-        self.prevSpeeds = self.kinematics.toWheelSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(self.initial_state.velocity, 0, 0, Rotation2d()))
+        self.prevSpeeds = self.kinematics.toWheelSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(self.initial_state.velocity, 0, self.initial_state.curvature * self.initial_state.velocity, Rotation2d()))
 
     def follow_trajectory(self, trajectory_name, sample_time):
         self.trajectory = self.trajectories[trajectory_name]
