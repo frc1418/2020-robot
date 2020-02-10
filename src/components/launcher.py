@@ -17,9 +17,9 @@ class Launcher:
     control_velocity = will_reset_to(False)
     shoot = will_reset_to(False)
 
-    RPM_KP = ntproperty('/components/launcher/rpm_kp', 0)
-    RPM_KI = ntproperty('/components/launcher/rpm_ki', 0)
-    RPM_KD = ntproperty('/components/launcher/rpm_kd', 0)
+    RPM_KP = tunable(0)
+    RPM_KI = tunable(0)
+    RPM_KD = tunable(0)
 
     def setup(self):
         self.rpm_controller = PIDController(self.RPM_KP, self.RPM_KI, self.RPM_KD)
@@ -40,7 +40,7 @@ class Launcher:
         self.shoot = True
 
     def execute(self):
-        self.flywheel_rpm = self.launcher_encoder.getRate()        
+        self.flywheel_rpm = self.launcher_encoder.getRate()
 
         if self.control_velocity:
             self.rpm_controller.setP(self.RPM_KP)
