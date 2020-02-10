@@ -15,7 +15,7 @@ from common.navx import navx
 from common.rev import CANSparkMax, IdleMode, MotorType, CANEncoder
 from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry, Follower
 from entry_points.trajectory_generator import KINEMATICS, DRIVE_FEEDFORWARD, load_trajectories
-from Controllers.panelSpinner import PanelSpinner
+from controllers.panelSpinner import PanelSpinner
 
 r"""
 / \                / \
@@ -37,15 +37,18 @@ Counter-Clockwise is Positive
 
 
 class Robot(magicbot.MagicRobot):
-    extunable = tunable(5)
-    drive: Drive
-    intake: Intake
-    control_panel: ControlPanel
+    # Order of components determines order that execute methods are run
+    # State Machines
     panel_spinner: PanelSpinner
-    odometry: Odometry
+    # Other components
     align: Align
-    launcher: Launcher
+    odometry: Odometry
     follower: Follower
+    intake: Intake
+    odometry: Odometry
+    control_panel: ControlPanel
+    launcher: Launcher
+    drive: Drive
 
     WHEEL_DIAMETER = 0.1524  # Units: Meters
     GEARING = 7.56  # 7.56:1 gear ratio
