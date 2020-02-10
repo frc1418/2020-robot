@@ -110,7 +110,7 @@ class Robot(magicbot.MagicRobot):
         self.train = wpilib.drive.DifferentialDrive(self.left_motors, self.right_motors)
 
         # Winch
-        self.winch_motor = CANSparkMax(8, MotorType.kBrushed)
+        self.winch_motors = wpilib.SpeedControllerGroup(CANSparkMax(8, MotorType.kBrushless), CANSparkMax(9, MotorType.kBrushless))
         self.scissor_solenoid = wpilib.DoubleSolenoid(6, 7)
 
         # Control Panel Spinner
@@ -221,9 +221,9 @@ class Robot(magicbot.MagicRobot):
 
         # Winch
         if self.btn_winch.get():
-            self.winch_motor.set(-1)
+            self.winch_motors.set(-1)
         else:
-            self.winch_motor.set(0)  # Must use set(0) when not pressed because there is no component
+            self.winch_motors.set(0)  # Must use set(0) when not pressed because there is no component
 
         # slow movement using POV on joystick_alt
         # if self.joystick_alt.getPOV() == 0:
