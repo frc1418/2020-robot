@@ -25,7 +25,7 @@ KV = 1.96  # volts * seconds / distance
 KA = 0.49  # volts * seconds^2 / distance
 TRACK_WIDTH = 0.43  # Units: meters
 MAX_GENERATION_VELOCITY = 4  # Units: m/s
-MAX_GENERATION_VOLTAGE = 10  # Units: volts
+MAX_GENERATION_VOLTAGE = 7  # Units: volts
 
 TRAJECTORY_DIRECTORY = 'trajectories'
 PICKLE_FILE_NAME = 'trajectories.pickle'
