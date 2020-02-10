@@ -38,8 +38,6 @@ class PanelSpinner(StateMachine):
 
     @state(must_finish=True)
     def positionControl(self, state_tm):
-        print(state_tm)
-
         if self.control_panel.turn_to_color is None or self.control_panel.detected_color is None:
             return
 
