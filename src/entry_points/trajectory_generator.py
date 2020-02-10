@@ -61,6 +61,9 @@ class TrajectoryData:
 TRAJECTORIES = {
     "charge": TrajectoryData(
         Pose2d(), [Translation2d(1, 0)], Pose2d(2, 0, Rotation2d())
+    ),
+    "curve": TrajectoryData(
+        Pose2d(), [Translation2d(1, 0), Translation2d(2, 1)], Pose2d(3, 0, Rotation2d())
     )
 }
 
