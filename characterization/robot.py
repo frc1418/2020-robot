@@ -2,9 +2,11 @@
 import wpilib
 from networktables.util import ntproperty
 from networktables import NetworkTablesInstance
-from rev import CANSparkMax, MotorType
 # Add VictorSPX try import
-
+try:
+    from ctre import WPI_VictorSPX
+except ImportError:
+    WPI_VictorSPX = type('WPI_VictorSPX', (wpilib.interfaces.SpeedController,), {})
 
 class Robot(wpilib.TimedRobot):
 
@@ -16,11 +18,11 @@ class Robot(wpilib.TimedRobot):
     autoSpeedEntry = ntproperty('/robot/autospeed', 0, writeDefault=False)
     telemetryEntry = ntproperty('/robot/telemetry', 0, writeDefault=False)
 
-    def createObjects(self):
+    def robotInit(self):
         self.joystick = wpilib.Joystick(0)
 
-        self.motors = wpilib.SpeedControllerGroup()
-        self.motor.setInterved(True)
+        self.motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
+        self.motors.setInverted(True)
 
         self.priorAutospeed = 0
         # TODO: Check if we need IdleMode.kBrake
@@ -43,17 +45,18 @@ class Robot(wpilib.TimedRobot):
 
         self.encoder.reset()
 
-        NetworkTableInstance.getDefault().setUpdateRate(0.010)
+        NetworkTablesInstance.getDefault().setUpdateRate(0.010)
 
     def disabledInit(self):
-        self.motor.set(0)
+        self.motors.set(0)
 
     def robotPeriodic(self):
-        self.encoder_pos = self.getEncoderPosition()
-        self.encoder_rate = self.getEncoderRate()
+        self.encoder_pos = self.encoder.getDistance()
+        self.encoder_rate = self.encoder.getRate()
 
     def teleopPeriodic(self):
-        self.motor.set(-self.joystick.getY())
+        self.motors.set(-self.joystick.getY())
+        print(self.encoder.get())
 
     def autonomousPeriodic(self):
 
@@ -65,15 +68,18 @@ class Robot(wpilib.TimedRobot):
 
         battery = wpilib.RobotController.getBatteryVoltage()
 
-        motorVolts = self.motor.getBusVoltage() * self.motor.getAppliedOutput()
+        motorVolts = self.motor.getBusVoltage() * self.motors.getAppliedOutput()
 
         # // Retrieve the commanded speed from NetworkTables
         autospeed = self.autoSpeedEntry
         self.priorAutospeed = autospeed
 
-        self.motor.set(autospeed)
+        self.motors.set(autospeed)
 
         self.telemetryEntry = [
             now, battery, autospeed,
             motorVolts, position, rate
         ]
+
+if __name__ == '__main__':
+    wpilib.run(Robot)
