@@ -15,15 +15,14 @@ class Robot(wpilib.IterativeRobot):
     # ENCODER_PULSE_PER_REV = 42 
     GEARING = 7.56  # 7.56:1 gear ratio
 
-    autoSpeedEntry = ntproperty('/robot/autospeed', 0.0)
+    auto_speed_entry = ntproperty('/robot/autospeed', 0.0)
     telemetry_entry = ntproperty('/robot/telemetry', [0.0], writeDefault=False)
-    rotateEntry = ntproperty('/robot/rotate', False)
+    rotate_entry = ntproperty('/robot/rotate', False)
 
     l_encoder_pos = ntproperty('/l_encoder_pos', 0)
     l_encoder_rate = ntproperty('/l_encoder_rate', 0)
     r_encoder_pos = ntproperty('/r_encoder_pos', 0)
     r_encoder_rate = ntproperty('/r_encoder_rate', 0)
-
 
     def robotInit(self):
         self.prior_autospeed = 0
@@ -122,11 +121,11 @@ class Robot(wpilib.IterativeRobot):
         rightMotorVolts = motorVolts
 
         # Retrieve the commanded speed from NetworkTables
-        autospeed = self.autoSpeedEntry
+        autospeed = self.auto_speed_entry
         self.prior_autospeed = autospeed
 
         # command motors to do things
-        self.drive.tankDrive((-1 if self.rotateEntry else 1) * autospeed, autospeed, False)
+        self.drive.tankDrive((-1 if self.rotate_entry else 1) * autospeed, autospeed, False)
 
         # send telemetry data array back to NT
         number_array = [
