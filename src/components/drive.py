@@ -29,7 +29,7 @@ class Drive:
     right_voltage = None
 
     speed_constant = 1.05
-    rotational_constant = 0.5
+    rotational_constant = 0.8
     squared_inputs = False
 
     angle_p = ntproperty('/align/kp', 0.023)
@@ -123,7 +123,7 @@ class Drive:
         else:
             self.train.arcadeDrive(
                 self.speed_constant * self.y,
-                self.rot,
+                self.rotational_constant * self.rot,
                 squareInputs=self.squared_inputs,
             )
 
