@@ -24,9 +24,9 @@ class Drive:
     aligning = will_reset_to(False)
     deadband = will_reset_to(0.1)
 
-    auto = False
-    left_voltage = None
-    right_voltage = None
+    auto = will_reset_to(False)
+    left_voltage = will_reset_to(0)
+    right_voltage = will_reset_to(0)
 
     speed_constant = will_reset_to(1.05)
     rotational_constant = will_reset_to(0.8)
@@ -127,7 +127,7 @@ class Drive:
                 squareInputs=self.squared_inputs,
             )
 
-        if not self.limelight.valid_target():
+        if not self.limelight.valid_target:
             self.limelight.target_state = 0
         elif self.angle_controller.atSetpoint():
             self.limelight.target_state = 2
