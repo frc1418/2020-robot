@@ -28,8 +28,8 @@ class Drive:
     left_voltage = None
     right_voltage = None
 
-    speed_constant = 1.05
-    rotational_constant = 0.8
+    speed_constant = will_reset_to(1.05)
+    rotational_constant = will_reset_to(0.8)
     squared_inputs = False
 
     angle_p = ntproperty('/align/kp', 0.023)
