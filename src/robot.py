@@ -173,7 +173,6 @@ class Robot(magicbot.MagicRobot):
             # 10% of original values
             self.drive.rotational_constant = 0.05
             self.drive.speed_constant = 0.105
-            self.drive.deadband = 0.05
         else:
             self.drive.rotational_constant = 0.5
             self.drive.speed_constant = 1.05
