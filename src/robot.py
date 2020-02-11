@@ -45,7 +45,6 @@ class Robot(magicbot.MagicRobot):
     odometry: Odometry
     follower: Follower
     intake: Intake
-    odometry: Odometry
     control_panel: ControlPanel
     launcher: Launcher
     drive: Drive

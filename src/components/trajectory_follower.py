@@ -19,18 +19,22 @@ class Follower:
 
     def setup(self):
         self.trajectory_name = None
-        self.left_controller = PIDController(1, 0, 0)
-        self.right_controller = PIDController(1, 0, 0)
+        self.left_controller = PIDController(0.05, 0, 0)
+        self.right_controller = PIDController(0.05, 0, 0)
 
     def setup_trajectory(self, trajectory):
         self.controller = RamseteController()
         self.left_controller.reset()
         self.right_controller.reset()
+        self.odometry.reset()
         self.controller.setTolerance(Pose2d(0.05, 0.05, Rotation2d(math.radians(5))))
         self.speed = DifferentialDriveWheelSpeeds()
         self.prev_time = 0
         self.initial_state = self.trajectory.sample(0)
-        self.prevSpeeds = self.kinematics.toWheelSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(self.initial_state.velocity, 0, self.initial_state.curvature * self.initial_state.velocity, Rotation2d()))
+        speeds = ChassisSpeeds()
+        speeds.vx = self.initial_state.velocity
+        speeds.omega = self.initial_state.velocity * self.initial_state.curvature
+        self.prevSpeeds = self.kinematics.toWheelSpeeds(speeds)
 
     def follow_trajectory(self, trajectory_name, sample_time):
         self.trajectory = self.trajectories[trajectory_name]
@@ -49,10 +53,10 @@ class Follower:
             return
 
         if self.use_pid:
-            if self.prev_time != 0:
-                self.dt = self.sample_time - self.prev_time
-            else:
-                self.dt = 1
+            self.dt = self.sample_time - self.prev_time
+
+            if self.dt == 0:
+                self.dt = 0.02
 
             targetWheelSpeeds = self.kinematics.toWheelSpeeds(self.controller.calculate(self.odometry.get_pose(), self.trajectory.sample(self.sample_time)))
 
@@ -71,7 +75,8 @@ class Follower:
             rightOutput = rightSpeedSetpoint
 
         self.drive.voltageDrive(leftOutput, rightOutput)
-        print(f'Left: {leftOutput} Right: {rightOutput}')
+        if leftOutput > 0.025 and rightOutput > 0.025:
+            print(f'Left: {leftOutput} Right: {rightOutput}')
 
         self.prev_time = self.sample_time
         self.prevSpeeds = targetWheelSpeeds

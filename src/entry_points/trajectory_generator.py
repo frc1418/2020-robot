@@ -23,9 +23,9 @@ from . import robotpy_entry_point
 KS = 0.161  # Units: volts
 KV = 1.96  # volts * seconds / distance
 KA = 0.49  # volts * seconds^2 / distance
-TRACK_WIDTH = 0.43  # Units: meters
-MAX_GENERATION_VELOCITY = 4  # Units: m/s
-MAX_GENERATION_VOLTAGE = 7  # Units: volts
+TRACK_WIDTH = 0.51  # Units: meters
+MAX_GENERATION_VELOCITY = 1.5  # Units: m/s
+MAX_GENERATION_VOLTAGE = 4  # Units: volts
 
 TRAJECTORY_DIRECTORY = 'trajectories'
 PICKLE_FILE_NAME = 'trajectories.pickle'
@@ -63,7 +63,7 @@ TRAJECTORIES = {
         Pose2d(), [Translation2d(1, 0)], Pose2d(2, 0, Rotation2d())
     ),
     "curve": TrajectoryData(
-        Pose2d(), [Translation2d(1, 0), Translation2d(2, 1)], Pose2d(3, 0, Rotation2d())
+        Pose2d(), [Translation2d(1, 0.3)], Pose2d(2, 0, Rotation2d())
     )
 }
 
