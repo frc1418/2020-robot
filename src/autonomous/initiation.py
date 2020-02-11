@@ -41,5 +41,5 @@ class Initiation(AutonomousStateMachine):
         self.shot_count += 1
 
     @follower_state(trajectory_name='charge', first=True)
-    def moveForward(self, state_tm):
+    def moveForward(self, tm, state_tm, initial_call):
         pass
