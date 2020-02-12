@@ -8,13 +8,14 @@ class Limelight():
     light_mode = ntproperty('/limelight/ledMode', 0)
     valid_target = ntproperty('/limelight/tv', 0)
     camera_mode = ntproperty('/limelight/camMode', 0)
-
+    pipeline_number = ntproperty('/limelight/pipeline', 0, writeDefault=False)
     target_state = ntproperty('/limelight/target_state', 0)
+
     # change with new robot; UNIT = inches
-    CAMERA_HEIGHT = 12
+    CAMERA_HEIGHT = 16.5
     TARGET_HEIGHT = 98.25
     # UNIT = degrees
-    CAMERA_ANGLE = 20
+    CAMERA_ANGLE = 13.5
 
     def findPlaneDistance(self):
         if not self.targetExists():
@@ -47,3 +48,9 @@ class Limelight():
 
     def targetExists(self):
         return bool(self.valid_target)
+
+    def changePipieline(self, mode: int):
+        # 0: close distance pipeline
+        # 1: medium distance pipeline
+        # 2: far distance pipeline
+        self.pipeline_number = mode
