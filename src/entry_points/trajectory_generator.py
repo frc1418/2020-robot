@@ -64,6 +64,11 @@ TRAJECTORIES = {
     ),
     "curve": TrajectoryData(
         Pose2d(), [Translation2d(1, 0.3)], Pose2d(2, 0, Rotation2d())
+    ),
+    "trench": TrajectoryData(
+        Pose2d(2.995, -0.116, Rotation2d()), [Translation2d(3.881, 1.1), Translation2d(5.341, 1.674), 
+        Translation2d(6.749, 1.605), Translation2d(7.097, 0.77), Translation2d(6.297, -0.099)], 
+        Pose2d(4.437, 0.127, Rotation2d(math.radians(183.56)))
     )
 }
 
