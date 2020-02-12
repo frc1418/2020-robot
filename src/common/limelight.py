@@ -12,7 +12,7 @@ class Limelight():
     target_state = ntproperty('/limelight/target_state', 0)
 
     # change with new robot; UNIT = inches
-    CAMERA_HEIGHT = 16.4
+    CAMERA_HEIGHT = 16.5
     TARGET_HEIGHT = 98.25
     # UNIT = degrees
     CAMERA_ANGLE = 13.5
