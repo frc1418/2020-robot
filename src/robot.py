@@ -171,12 +171,8 @@ class Robot(magicbot.MagicRobot):
 
         if self.btn_slow_movement:
             # 10% of original values
-            self.drive.rotational_constant = 0.05
+            self.drive.rotational_constant = 0.08
             self.drive.speed_constant = 0.105
-            self.drive.deadband = 0.05
-        else:
-            self.drive.rotational_constant = 0.5
-            self.drive.speed_constant = 1.05
 
         # Control Panel Spinner
         self.control_panel.set_solenoid(self.btn_cp_extend.get())
