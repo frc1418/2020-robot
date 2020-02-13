@@ -45,8 +45,8 @@ class Follower:
 
         self.trajectory_name = trajectory_name
 
-    def is_finished(self):
-        if self.trajectory is None:
+    def is_finished(self, trajectory_name: str):
+        if self.trajectory_name != trajectory_name or self.trajectory is None:
             return False
 
         return self.prev_time >= self.trajectory.totalTime()
