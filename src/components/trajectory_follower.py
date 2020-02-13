@@ -46,7 +46,10 @@ class Follower:
         self.trajectory_name = trajectory_name
 
     def is_finished(self):
-        return self.controller.atReference()
+        if self.trajectory is None:
+            return False
+
+        return self.prev_time >= self.trajectory.totalTime()
 
     def execute(self):
         if self.trajectory is None:
