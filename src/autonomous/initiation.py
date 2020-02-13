@@ -40,6 +40,6 @@ class Initiation(AutonomousStateMachine):
             self.launcher_solenoid.set(False)
         self.shot_count += 1
 
-    @follower_state(trajectory_name='charge', first=True)
+    @follower_state(trajectory_name='trench', first=True)
     def moveForward(self, tm, state_tm, initial_call):
         pass
