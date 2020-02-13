@@ -8,7 +8,7 @@ from wpilib.buttons import JoystickButton
 from wpilib.kinematics import DifferentialDriveKinematics
 import math
 
-from wpilib.CameraServer import CameraServer
+from wpilib import CameraServer
 from common.ctre import WPI_TalonSRX, WPI_VictorSPX
 from common.limelight import Limelight
 from common.navx import navx
