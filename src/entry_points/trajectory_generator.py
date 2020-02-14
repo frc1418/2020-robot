@@ -4,6 +4,7 @@ import sys
 from dataclasses import dataclass
 from os import path
 from typing import Dict, List, Tuple
+import logging
 
 from wpilib.controller import SimpleMotorFeedforwardMeters
 from wpilib.geometry import Pose2d, Rotation2d, Translation2d
@@ -79,7 +80,8 @@ def load_trajectories() -> Dict[str, Trajectory]:
         with open(PICKLE_FILE, 'rb') as f:
             generated_trajectories = pickle.load(f)
     except FileNotFoundError:
-        print('Trajectory file not found. Did you forget to generate them?')
+        logging.getLogger('robot').error(
+            'Trajectory file not found. Did you forget to generate them?')
         generated_trajectories = {}
     else:
         generated_trajectories = {k: TrajectoryUtil.deserializeTrajectory(v) for k, v in generated_trajectories.items()}
