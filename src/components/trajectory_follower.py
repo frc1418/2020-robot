@@ -41,7 +41,7 @@ class Follower:
         try:
             self.trajectory = self.trajectories[trajectory_name]
         except KeyError:
-            logging.getLogger('robot').error(f'The trajectory with name "{trajectory_name}" could not be found.')
+            self.logger.error(f'The trajectory with name "{trajectory_name}" could not be found.')
             return
         self.sample_time = sample_time
 
