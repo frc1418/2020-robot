@@ -4,6 +4,7 @@ from wpilib.geometry import Pose2d, Rotation2d, Translation2d
 from wpilib.trajectory import Trajectory
 from magicbot import will_reset_to, tunable
 import math
+import logging
 from . import Odometry, Drive
 
 
@@ -37,7 +38,11 @@ class Follower:
         self.prevSpeeds = self.kinematics.toWheelSpeeds(speeds)
 
     def follow_trajectory(self, trajectory_name, sample_time):
-        self.trajectory = self.trajectories[trajectory_name]
+        try:
+            self.trajectory = self.trajectories[trajectory_name]
+        except KeyError:
+            logging.getLogger('robot').error(f'The trajectory with name "{trajectory_name}" could not be found.')
+            return
         self.sample_time = sample_time
 
         if self.trajectory_name != trajectory_name:
@@ -47,7 +52,7 @@ class Follower:
 
     def is_finished(self, trajectory_name: str):
         if self.trajectory_name != trajectory_name or self.trajectory is None:
-            return False
+            return True
 
         return self.prev_time >= self.trajectory.totalTime()
 
