@@ -16,6 +16,7 @@ from common.rev import CANSparkMax, IdleMode, MotorType, CANEncoder
 from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry, Follower
 from entry_points.trajectory_generator import KINEMATICS, DRIVE_FEEDFORWARD, load_trajectories
 from controllers.panelSpinner import PanelSpinner
+from common.blinkinLED import BlinkinLED
 
 r"""
 / \                / \
@@ -140,6 +141,9 @@ class Robot(magicbot.MagicRobot):
         self.kinematics = KINEMATICS  # Use kinematics from inner trajectory generator code
         self.drive_feedforward = DRIVE_FEEDFORWARD
         self.trajectories = load_trajectories()
+
+        # LED strip
+        self.led_driver = BlinkinLED(0)
 
     def autonomous(self):
         self.right_motors.setInverted(True)
