@@ -1,5 +1,6 @@
 from networktables.util import ntproperty
 import math
+from wpilib.geometry import Pose2d
 
 
 class Limelight():
@@ -54,3 +55,6 @@ class Limelight():
         # 1: medium distance pipeline
         # 2: far distance pipeline
         self.pipeline_number = mode
+
+    def getPose(self) -> Pose2d:
+        raise NotImplementedError()

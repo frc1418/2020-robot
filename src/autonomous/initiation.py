@@ -4,6 +4,7 @@ from networktables.util import ntproperty
 
 from entry_points.trajectory_generator import StartingPosition
 from common.rev import CANSparkMax
+from common.limelight import Limelight
 from components import Align, Drive, Odometry, Follower
 from . import follower_state
 
@@ -18,13 +19,17 @@ class Initiation(AutonomousStateMachine):
     align: Align
     follower: Follower
     odometry: Odometry
+    limelight: Limelight
     # TODO: Use launcher component
     launcher_motors: wpilib.SpeedControllerGroup
     launcher_solenoid: wpilib.Solenoid
 
     def on_enable(self):
         super().on_enable()
-        self.odometry.reset(StartingPosition[self.starting_pos])
+        if StartingPosition[self.starting_pos] == 'LIMELIGHT' and self.limelight.targetExists():
+            self.odometry.reset(self.limelight.getPose())
+        else:
+            self.odometry.reset(StartingPosition[self.starting_pos])
         self.shot_count = 0
 
     @default_state
