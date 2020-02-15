@@ -2,6 +2,7 @@
 import wpilib
 from networktables.util import ntproperty
 from networktables import NetworkTablesInstance
+import math
 # Add VictorSPX try import
 try:
     from ctre import WPI_VictorSPX
@@ -10,13 +11,14 @@ except ImportError:
 
 class Robot(wpilib.TimedRobot):
 
-    ENCODER_PULSES_PER_REV = 256  # Ignore quadrature decoding (4x)
+    ENCODER_PULSES_PER_REV = 1024  # Ignore quadrature decoding (4x)
+    GEARING = (3.25 / 1)  # 3.25:1 in gearbox
 
     encoder_pos = ntproperty('/robot/encoder_pos', 0)
     encoder_rate = ntproperty('/robot/encoder_rate', 0)
 
     autoSpeedEntry = ntproperty('/robot/autospeed', 0, writeDefault=False)
-    telemetryEntry = ntproperty('/robot/telemetry', 0, writeDefault=False)
+    telemetryEntry = ntproperty('/robot/telemetry', [0, 0, 0, 0, 0, 0], writeDefault=False)
 
     def robotInit(self):
         self.joystick = wpilib.Joystick(0)
@@ -28,7 +30,7 @@ class Robot(wpilib.TimedRobot):
         # TODO: Check if we need IdleMode.kBrake
         # self.motor.setIdleMode(IdleMode.kBrake);
 
-        self.encoder = wpilib.Encoder(0, 1)
+        self.encoder = wpilib.Encoder(1, 2)
 
         # //
         # // Configure encoder related functions -- getDistance and getrate should
@@ -40,7 +42,7 @@ class Robot(wpilib.TimedRobot):
         # % elif units == 'Radians':
         # double encoderConstant = (1 / GEARING) * 2. * Math.PI;
         # % elif units == 'Rotations':
-        self.encoderConstant = (1 / self.ENCODER_PULSES_PER_REV)
+        self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV * self.GEARING))
         self.encoder.setDistancePerPulse(self.encoderConstant)
 
         self.encoder.reset()
@@ -66,9 +68,9 @@ class Robot(wpilib.TimedRobot):
         position = self.encoder.getDistance()
         rate = self.encoder.getRate()
 
-        battery = wpilib.RobotController.getBatteryVoltage()
+        battery = wpilib.RobotController.getInputVoltage()
 
-        motorVolts = self.motor.getBusVoltage() * self.motors.getAppliedOutput()
+        motorVolts = battery * abs(self.priorAutospeed)
 
         # // Retrieve the commanded speed from NetworkTables
         autospeed = self.autoSpeedEntry
