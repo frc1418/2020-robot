@@ -69,6 +69,9 @@ class StartingPosition(Enum):
 
 
 # ALL trajectory points should be relative to the power port's center facing towards the field
+# Trajectories that aren't field relative are generated with respect to ALL Starting Positions
+# E.x. "charge-LEFT", "charge-CENTER", "charge-RIGHT"
+# We do this to allow for trajectory chaining, which requires field-relativity
 TRAJECTORIES = {
     "charge": TrajectoryData(
         Pose2d(), [Translation2d(1, 0)], Pose2d(2, 0, Rotation2d()),
