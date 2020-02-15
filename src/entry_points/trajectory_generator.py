@@ -59,6 +59,7 @@ class TrajectoryData:
     reverse = False
 
 
+# ALL trajectory points should be relative to the power port's center facing towards the field
 TRAJECTORIES = {
     "charge": TrajectoryData(
         Pose2d(), [Translation2d(1, 0)], Pose2d(2, 0, Rotation2d())

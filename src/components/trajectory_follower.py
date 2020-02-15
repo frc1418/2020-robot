@@ -23,21 +23,22 @@ class Follower:
         self.left_controller = PIDController(0.05, 0, 0)
         self.right_controller = PIDController(0.05, 0, 0)
 
-    def setup_trajectory(self, trajectory):
+    def setup_trajectory(self, trajectory: Trajectory):
+        self.odometry.reset(trajectory.initialPose)
         self.controller = RamseteController()
         self.left_controller.reset()
         self.right_controller.reset()
-        self.odometry.reset()
-        self.controller.setTolerance(Pose2d(0.05, 0.05, Rotation2d(math.radians(5))))
-        self.speed = DifferentialDriveWheelSpeeds()
         self.prev_time = 0
+        self.speed = DifferentialDriveWheelSpeeds()
+
+        self.controller.setTolerance(Pose2d(0.05, 0.05, Rotation2d(math.radians(5))))
         self.initial_state = self.trajectory.sample(0)
         speeds = ChassisSpeeds()
         speeds.vx = self.initial_state.velocity
         speeds.omega = self.initial_state.velocity * self.initial_state.curvature
         self.prevSpeeds = self.kinematics.toWheelSpeeds(speeds)
 
-    def follow_trajectory(self, trajectory_name, sample_time):
+    def follow_trajectory(self, trajectory_name: str, sample_time: float):
         try:
             self.trajectory = self.trajectories[trajectory_name]
         except KeyError:
