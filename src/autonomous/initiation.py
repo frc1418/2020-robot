@@ -1,9 +1,10 @@
 import wpilib
 from magicbot import AutonomousStateMachine, default_state, timed_state, state
+from networktables.util import ntproperty
 
+from entry_points.trajectory_generator import StartingPosition
 from common.rev import CANSparkMax
-from components import Align, Drive
-from components.trajectory_follower import Follower
+from components import Align, Drive, Odometry, Follower
 from . import follower_state
 
 
@@ -11,15 +12,19 @@ class Initiation(AutonomousStateMachine):
     DEFAULT = True
     MODE_NAME = 'Initiation'
 
+    starting_pos = ntproperty('/autonomous/starting_position', 'CENTER', writeDefault=False)
+
     drive: Drive
     align: Align
     follower: Follower
+    odometry: Odometry
     # TODO: Use launcher component
     launcher_motors: wpilib.SpeedControllerGroup
     launcher_solenoid: wpilib.Solenoid
 
     def on_enable(self):
         super().on_enable()
+        self.odometry.reset(StartingPosition[self.starting_pos])
         self.shot_count = 0
 
     @default_state
