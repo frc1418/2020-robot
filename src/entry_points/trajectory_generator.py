@@ -63,9 +63,9 @@ class TrajectoryData:
 
 # Starting positions are relative to the power port's center facing towards the field
 class StartingPosition(Enum):
-    LEFT = Pose2d(2.995, -0.116, Rotation2d.fromDegrees(180))
-    CENTER = Pose2d(2.995, -0.616, Rotation2d.fromDegrees(180))
-    RIGHT = Pose2d(2.995, -1.116, Rotation2d.fromDegrees(180))
+    LEFT = Pose2d(3.0734, 1.25, Rotation2d.fromDegrees(180))
+    CENTER = Pose2d(3.0734, 0, Rotation2d.fromDegrees(180))
+    RIGHT = Pose2d(3.0734, -1.25, Rotation2d.fromDegrees(180))
 
 
 # ALL trajectory points should be relative to the power port's center facing towards the field
