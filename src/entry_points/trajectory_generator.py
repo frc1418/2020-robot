@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from os import path
 from typing import Dict, List, Tuple
 import logging
+from enum import Enum
 
 from wpilib.controller import SimpleMotorFeedforwardMeters
 from wpilib.geometry import Pose2d, Rotation2d, Translation2d
@@ -56,19 +57,29 @@ class TrajectoryData:
     config: TrajectoryConfig = TrajectoryConfig(MAX_GENERATION_VELOCITY, MAX_GENERATION_ACCELERATION)
     constraints: Tuple[TrajectoryConstraint, ...] = DEFAULT_CONSTRAINTS
     kinematics: DifferentialDriveKinematics = KINEMATICS
-    reverse = False
+    field_relative: bool = True
+    reverse: bool = False
+
+
+# Starting positions are relative to the power port's center facing towards the field
+class StartingPosition(Enum):
+    LEFT = Pose2d(2.995, -0.116, Rotation2d.fromDegrees(180))
+    CENTER = Pose2d(2.995, -0.616, Rotation2d.fromDegrees(180))
+    RIGHT = Pose2d(2.995, -1.116, Rotation2d.fromDegrees(180))
 
 
 # ALL trajectory points should be relative to the power port's center facing towards the field
 TRAJECTORIES = {
     "charge": TrajectoryData(
-        Pose2d(), [Translation2d(1, 0)], Pose2d(2, 0, Rotation2d())
+        Pose2d(), [Translation2d(1, 0)], Pose2d(2, 0, Rotation2d()),
+        field_relative=False
     ),
     "curve": TrajectoryData(
-        Pose2d(), [Translation2d(1, 0.3)], Pose2d(2, 0, Rotation2d())
+        Pose2d(), [Translation2d(1, 0.3)], Pose2d(2, 0, Rotation2d()),
+        field_relative=False
     ),
     "trench": TrajectoryData(
-        Pose2d(2.995, -0.116, Rotation2d()), [Translation2d(3.881, 1.1), Translation2d(5.341, 1.674), Translation2d(6.749, 1.605), Translation2d(7.097, 0.77), Translation2d(6.297, -0.099)], Pose2d(4.437, 0.127, Rotation2d(math.radians(183.56)))
+        StartingPosition.LEFT, [Translation2d(3.881, 1.1), Translation2d(5.341, 1.674), Translation2d(6.749, 1.605), Translation2d(7.097, 0.77), Translation2d(6.297, -0.099)], Pose2d(4.437, 0.127, Rotation2d(math.radians(183.56)))
     )
 }
 
@@ -116,9 +127,17 @@ def generate_trajectories(options, robot_class):
 
     traj_data: TrajectoryData
     for key, traj_data in TRAJECTORIES.items():
-        trajectory = generate_trajectory(traj_data)
+        new_trajectories = {}
 
-        generated_trajectories[key] = TrajectoryUtil.serializeTrajectory(trajectory)
+        if not traj_data.field_relative:
+            start_pos: StartingPosition
+            for start_pos in StartingPosition:
+                new_trajectories[f'{key}-{start_pos.name}'] = generate_trajectory(traj_data).transformBy(start_pos.value)
+        else:
+            new_trajectories[key] = generate_trajectory(traj_data)
+
+        # All trajectories should be FIELD relative at this point
+        generated_trajectories.update({k: TrajectoryUtil.serializeTrajectory(v) for k, v in new_trajectories.items()})
 
     print('Done')
     print('Writing Trajectories...', end='')
