@@ -13,7 +13,7 @@ class Initiation(AutonomousStateMachine):
     DEFAULT = True
     MODE_NAME = 'Initiation'
 
-    starting_pos = ntproperty('/autonomous/starting_position', 'CENTER', writeDefault=False)
+    starting_pos = ntproperty('/autonomous/starting_position', 'CENTER')
 
     drive: Drive
     align: Align
