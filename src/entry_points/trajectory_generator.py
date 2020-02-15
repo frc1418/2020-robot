@@ -79,7 +79,7 @@ TRAJECTORIES = {
         field_relative=False
     ),
     "trench": TrajectoryData(
-        StartingPosition.LEFT, [Translation2d(3.881, 1.1), Translation2d(5.341, 1.674), Translation2d(6.749, 1.605), Translation2d(7.097, 0.77), Translation2d(6.297, -0.099)], Pose2d(4.437, 0.127, Rotation2d(math.radians(183.56)))
+        StartingPosition.LEFT.value, [Translation2d(3.881, 1.1), Translation2d(5.341, 1.674), Translation2d(6.749, 1.605), Translation2d(7.097, 0.77), Translation2d(6.297, -0.099)], Pose2d(4.437, 0.127, Rotation2d(math.radians(183.56)))
     )
 }
 
@@ -132,7 +132,9 @@ def generate_trajectories(options, robot_class):
         if not traj_data.field_relative:
             start_pos: StartingPosition
             for start_pos in StartingPosition:
-                new_trajectories[f'{key}-{start_pos.name}'] = generate_trajectory(traj_data).transformBy(start_pos.value)
+                # The subtracted Pose2d here is the ORIGIN of the field (The power port).
+                transformed_trajectory = generate_trajectory(traj_data).transformBy(start_pos.value - Pose2d())
+                new_trajectories[f'{key}-{start_pos.name}'] = transformed_trajectory
         else:
             new_trajectories[key] = generate_trajectory(traj_data)
 
