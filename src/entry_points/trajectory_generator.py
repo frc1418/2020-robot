@@ -26,7 +26,7 @@ KS = 0.161  # Units: volts
 KV = 1.96  # volts * seconds / distance
 KA = 0.49  # volts * seconds^2 / distance
 TRACK_WIDTH = 0.51  # Units: meters
-MAX_GENERATION_VELOCITY = 2.25 # Units: m/s
+MAX_GENERATION_VELOCITY = 2.25  # Units: m/s
 MAX_GENERATION_VOLTAGE = 5  # Units: volts
 
 TRAJECTORY_DIRECTORY = 'trajectories'
