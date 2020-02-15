@@ -120,13 +120,14 @@ class Robot(magicbot.MagicRobot):
         self.cp_motor.setIdleMode(IdleMode.kBrake)
 
         # Intake
-        self.intake_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(1), WPI_VictorSPX(4))
+        self.intake_motor = WPI_VictorSPX(1)
+        self.intake_wheels = WPI_VictorSPX(4)
         self.intake_solenoid = wpilib.DoubleSolenoid(2, 1)
 
         # Launcher
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
-        self.launcher_encoder = wpilib.Encoder(0, 1)
+        self.launcher_encoder = wpilib.Encoder(1, 2)
 
         # NavX (purple board on top of the RoboRIO)
         self.navx = navx.AHRS.create_spi()
@@ -181,9 +182,9 @@ class Robot(magicbot.MagicRobot):
         # Control Panel Spinner
         self.control_panel.set_solenoid(self.btn_cp_extend.get())
         if self.btn_scissor_extend.get():
-            self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
-        else:
             self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
+        else:
+            self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
 
         # Color Sensor
         if self.btn_color_sensor.get():
@@ -196,7 +197,7 @@ class Robot(magicbot.MagicRobot):
         if self.btn_launcher_motor.get():
             self.launcher.setPercentOutput(-0.6)
         elif self.btn_launcher_motor70.get():
-            self.launcher.setPercentOutput(-0.7)
+            self.launcher.setPercentOutput(-0.675)
         elif self.btn_launcher_motor55.get():
             self.launcher.setPercentOutput(-0.55)
         else:
@@ -221,7 +222,7 @@ class Robot(magicbot.MagicRobot):
 
         # Winch
         if self.btn_winch.get():
-            self.winch_motors.set(-1)
+            self.winch_motors.set(1)
         else:
             self.winch_motors.set(0)  # Must use set(0) when not pressed because there is no component
 

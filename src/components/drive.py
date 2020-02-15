@@ -43,9 +43,10 @@ class Drive:
         Run setup code on the injected variables (train)
         """
         self.angle_controller = PIDController(self.angle_p, self.angle_i, self.angle_d)
-        self.angle_controller.setTolerance(2, 0)
+        self.angle_controller.setTolerance(2, float('inf'))
         self.angle_controller.enableContinuousInput(0, 360)
         self.angle_setpoint = None
+        self.calculated_pid = False
 
     def set_target(self, angle: float, relative=False):
         if relative:
@@ -57,6 +58,7 @@ class Drive:
         if angle is not None:
             self.angle_controller.setSetpoint(self.angle_setpoint)
         else:
+            self.calculated_pid = False
             self.angle_controller.reset()
 
     def align(self):
@@ -93,7 +95,7 @@ class Drive:
         self.angle_reported = self.angle
 
         if self.aligning and self.angle_setpoint is not None:
-            if self.angle_controller.atSetpoint():
+            if self.angle_controller.atSetpoint() and self.calculated_pid:
                 print(f'Setpoint: {self.angle_controller.getSetpoint()} Angle: {self.angle} Error: {self.angle_controller.getPositionError()}')
                 self.train.arcadeDrive(0, 0, squareInputs=False)
                 return
@@ -116,7 +118,7 @@ class Drive:
 
             print(f'Angle: {self.angle} Desired: {self.angle_setpoint} Output: {output} Error: {self.angle_controller.getPositionError()}')
             self.train.arcadeDrive(0, output, squareInputs=False)
-
+            self.calculated_pid = True
         if self.auto:
             self.right_motors.setVoltage(self.right_voltage)
             self.left_motors.setVoltage(self.left_voltage)
