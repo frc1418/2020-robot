@@ -1,6 +1,7 @@
 import magicbot
 import wpilib
 from magicbot import tunable
+from networktables.util import ntproperty
 from rev.color import ColorSensorV3
 from robotpy_ext.autonomous import AutonomousModeSelector
 from robotpy_ext.control.toggle import Toggle
@@ -51,6 +52,7 @@ class Robot(magicbot.MagicRobot):
     drive: Drive
 
     flipped = tunable(False)
+    ntSolenoid_state = ntproperty("/robot/ntSolenoid_state", 0)
 
     WHEEL_DIAMETER = 0.1524  # Units: Meters
     GEARING = 7.56  # 7.56:1 gear ratio
@@ -193,6 +195,10 @@ class Robot(magicbot.MagicRobot):
 
         # Control Panel Spinner
         self.control_panel.set_solenoid(self.btn_cp_extend.get())
+        if self.btn_cp_extend.get():
+            self.ntSolenoid_state = True
+        else:
+            self.ntSolenoid_state = False
         if self.btn_scissor_extend.get():
             self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
         else:
