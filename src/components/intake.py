@@ -25,7 +25,6 @@ class Intake:
 
         if self.intake_switch.get():
             if self.intake_switch.get() is not self.previous_limit:
-                self.ball_count+=1
+                self.ball_count += 1
         self.previous_limit = self.intake_switch.get()
         self.balls_collected = self.ball_count
-

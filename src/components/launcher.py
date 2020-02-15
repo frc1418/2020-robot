@@ -46,7 +46,7 @@ class Launcher:
             self.rpm_controller.setP(self.RPM_KP)
             self.rpm_controller.setI(self.RPM_KI)
             self.rpm_controller.setD(self.RPM_KD)
-            self.launcher_motor.set(self.rpm_controller.calculate(self.launcher_encoder.getRate(), self.speed))
+            self.launcher_motors.set(self.rpm_controller.calculate(self.launcher_encoder.getRate(), self.speed))
         else:
             self.launcher_motors.set(self.decimal)
             self.target_rpm = 0

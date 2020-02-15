@@ -159,6 +159,9 @@ class Robot(magicbot.MagicRobot):
         self.right_motors.setInverted(True)
         super().autonomous()
 
+    def disabledPeriodic(self):
+        pass
+
     def teleopInit(self):
         self.right_motors.setInverted(False)
         self.drive.squared_inputs = True
