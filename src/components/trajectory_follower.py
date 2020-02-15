@@ -24,7 +24,7 @@ class Follower:
         self.right_controller = PIDController(0.05, 0, 0)
 
     def setup_trajectory(self, trajectory: Trajectory):
-        self.odometry.reset(trajectory.initialPose)
+        self.odometry.reset(trajectory.initialPose())
         self.controller = RamseteController()
         self.left_controller.reset()
         self.right_controller.reset()
