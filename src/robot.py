@@ -6,6 +6,7 @@ from rev.color import ColorSensorV3
 from robotpy_ext.autonomous import AutonomousModeSelector
 from robotpy_ext.control.toggle import Toggle
 from wpilib.buttons import JoystickButton
+from wpilib.interfaces import GenericHID
 from wpilib.kinematics import DifferentialDriveKinematics
 import math
 
@@ -117,6 +118,7 @@ class Robot(magicbot.MagicRobot):
         # Winch
         self.winch_motors = wpilib.SpeedControllerGroup(CANSparkMax(8, MotorType.kBrushless), CANSparkMax(9, MotorType.kBrushless))
         self.scissor_solenoid = wpilib.DoubleSolenoid(6, 7)
+        self.hook_motor = CANSparkMax(12, MotorType.kBrushed)
 
         # Control Panel Spinner
         self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
@@ -161,7 +163,7 @@ class Robot(magicbot.MagicRobot):
         self.drive.squared_inputs = True
         self.drive.speed_constant = 1.05
         self.drive.rotational_constant = 0.5
-        self.inverse = -1
+        self.inverse = 1
 
     def teleopPeriodic(self):
         # if self.btn_invert_y_axis.get():
@@ -170,9 +172,9 @@ class Robot(magicbot.MagicRobot):
         # else:
         #     self.flipped = False
         if self.btn_invert_y_axis.get():
-            self.inverse = -1
-        else:
             self.inverse = 1
+        else:
+            self.inverse = -1
         if self.btn_rotation_sensitivity.get():
             self.drive.rotational_constant = 0.1
 
@@ -244,6 +246,13 @@ class Robot(magicbot.MagicRobot):
         else:
             self.winch_motors.set(0)  # Must use set(0) when not pressed because there is no component
 
+        # Hook
+        if self.joystick_alt.getPOV(0) == 90:
+            self.hook_motor.set(0.5)
+        elif self.joystick_alt.getPOV(0) == 270:
+            self.hook_motor.set(-0.5)
+        else:
+            self.hook_motor.set(0)
         # slow movement using POV on joystick_alt
         # if self.joystick_alt.getPOV() == 0:
         #     self.drive.move(0.2, 0)
