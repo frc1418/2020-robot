@@ -26,8 +26,8 @@ KS = 0.161  # Units: volts
 KV = 1.96  # volts * seconds / distance
 KA = 0.49  # volts * seconds^2 / distance
 TRACK_WIDTH = 0.51  # Units: meters
-MAX_GENERATION_VELOCITY = 1.5  # Units: m/s
-MAX_GENERATION_VOLTAGE = 4  # Units: volts
+MAX_GENERATION_VELOCITY = 2.25 # Units: m/s
+MAX_GENERATION_VOLTAGE = 5  # Units: volts
 
 TRAJECTORY_DIRECTORY = 'trajectories'
 PICKLE_FILE_NAME = 'trajectories.pickle'
@@ -38,7 +38,7 @@ PICKLE_FILE = path.join(
 )
 
 # Unimportant due to DifferentialDriveVoltageConstraint
-MAX_GENERATION_ACCELERATION = MAX_GENERATION_VELOCITY  # Units: m/s^2.
+MAX_GENERATION_ACCELERATION = 1.5  # Units: m/s^2.
 
 DRIVE_FEEDFORWARD = SimpleMotorFeedforwardMeters(KS, KV, KA)
 KINEMATICS = DifferentialDriveKinematics(TRACK_WIDTH)
