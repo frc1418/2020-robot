@@ -78,6 +78,7 @@ class Robot(magicbot.MagicRobot):
         self.btn_color_sensor = JoystickButton(self.joystick_left, 5)
         self.btn_cp_stop = JoystickButton(self.joystick_left, 2)
         self.btn_invert_y_axis = JoystickButton(self.joystick_left, 1)
+        self.btn_rotation_sensitivity = JoystickButton(self.joystick_right, 1)
 
         # Set up motors for encoders
         self.master_left = CANSparkMax(1, MotorType.kBrushless)
@@ -166,6 +167,8 @@ class Robot(magicbot.MagicRobot):
             self.inverse *= -1
         else:
             self.flipped = False
+        if self.btn_rotation_sensitivity.get():
+            self.drive.rotational_constant = 0.1
 
         self.drive.move(self.inverse * self.joystick_left.getY(),
                         self.joystick_right.getX())
