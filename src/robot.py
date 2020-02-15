@@ -130,6 +130,7 @@ class Robot(magicbot.MagicRobot):
         self.intake_motor = WPI_VictorSPX(1)
         self.intake_wheels = WPI_VictorSPX(4)
         self.intake_solenoid = wpilib.DoubleSolenoid(2, 1)
+        self.intake_switch = wpilib.DigitalInput(3)
 
         # Launcher
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
