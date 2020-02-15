@@ -96,7 +96,7 @@ class Drive:
 
         if self.aligning and self.angle_setpoint is not None:
             if self.angle_controller.atSetpoint() and self.calculated_pid:
-                print(f'Setpoint: {self.angle_controller.getSetpoint()} Angle: {self.angle} Error: {self.angle_controller.getPositionError()}')
+                self.logger.info(f'Setpoint: {self.angle_controller.getSetpoint()} Angle: {self.angle} Error: {self.angle_controller.getPositionError()}')
                 self.train.arcadeDrive(0, 0, squareInputs=False)
                 return
 
@@ -116,7 +116,7 @@ class Drive:
                 self.angle_controller.setI(0)
                 self.angle_controller.setIntegratorRange(0, 0)
 
-            print(f'Angle: {self.angle} Desired: {self.angle_setpoint} Output: {output} Error: {self.angle_controller.getPositionError()}')
+            self.logger.info(f'Angle: {self.angle} Desired: {self.angle_setpoint} Output: {output} Error: {self.angle_controller.getPositionError()}')
             self.train.arcadeDrive(0, output, squareInputs=False)
             self.calculated_pid = True
         if self.auto:
