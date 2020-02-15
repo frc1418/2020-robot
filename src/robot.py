@@ -73,8 +73,8 @@ class Robot(magicbot.MagicRobot):
         self.btn_launcher_motor70 = JoystickButton(self.joystick_alt, 11)
         self.btn_launcher_motor55 = JoystickButton(self.joystick_alt, 10)
         self.btn_slow_movement = Toggle(self.joystick_right, 3)
-        self.btn_intake_solenoid = Toggle(self.joystick_alt, 4)
-        self.btn_scissor_extend = Toggle(self.joystick_right, 5)
+        self.btn_intake_solenoid = Toggle(self.joystick_right, 5)
+        self.btn_scissor_extend = Toggle(self.joystick_alt, 4)
         self.btn_color_sensor = JoystickButton(self.joystick_left, 5)
         self.btn_cp_stop = JoystickButton(self.joystick_left, 2)
         self.btn_invert_y_axis = JoystickButton(self.joystick_left, 1)
@@ -162,11 +162,15 @@ class Robot(magicbot.MagicRobot):
         self.inverse = -1
 
     def teleopPeriodic(self):
+        # if self.btn_invert_y_axis.get():
+        #     self.flipped = True
+        #     self.inverse *= -1
+        # else:
+        #     self.flipped = False
         if self.btn_invert_y_axis.get():
-            self.flipped = True
-            self.inverse *= -1
+            self.inverse = -1
         else:
-            self.flipped = False
+            self.inverse = 1
         if self.btn_rotation_sensitivity.get():
             self.drive.rotational_constant = 0.1
 
