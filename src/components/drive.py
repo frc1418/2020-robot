@@ -131,7 +131,7 @@ class Drive:
 
         if not self.limelight.valid_target:
             self.limelight.target_state = 0
-        elif self.angle_controller.atSetpoint():
+        elif self.angle_controller.atSetpoint() and self.calculated_pid:
             self.limelight.target_state = 2
         else:
             self.limelight.target_state = 1
