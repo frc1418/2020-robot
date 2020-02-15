@@ -58,7 +58,8 @@ class Robot(wpilib.TimedRobot):
 
     def teleopPeriodic(self):
         self.motors.set(-self.joystick.getY())
-        print(self.encoder.get())
+        print(self.encoder.getDistance())
+        print(f'Rate: {self.encoder.getRate()}')
 
     def autonomousPeriodic(self):
 
