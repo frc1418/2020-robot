@@ -83,8 +83,6 @@ class Follower:
             rightOutput = rightSpeedSetpoint
 
         self.drive.voltageDrive(leftOutput, rightOutput)
-        if leftOutput > 0.025 and rightOutput > 0.025:
-            print(f'Left: {leftOutput} Right: {rightOutput}')
 
         self.prev_time = self.sample_time
         self.prevSpeeds = targetWheelSpeeds
