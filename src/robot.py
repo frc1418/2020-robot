@@ -50,6 +50,8 @@ class Robot(magicbot.MagicRobot):
     launcher: Launcher
     drive: Drive
 
+    flipped = tunable(False)
+
     WHEEL_DIAMETER = 0.1524  # Units: Meters
     GEARING = 7.56  # 7.56:1 gear ratio
 
@@ -160,7 +162,10 @@ class Robot(magicbot.MagicRobot):
 
     def teleopPeriodic(self):
         if self.btn_invert_y_axis.get():
+            self.flipped = True
             self.inverse *= -1
+        else:
+            self.flipped = False
 
         self.drive.move(self.inverse * self.joystick_left.getY(),
                         self.joystick_right.getX())
