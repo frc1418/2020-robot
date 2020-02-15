@@ -2,7 +2,7 @@ import math
 
 from magicbot import default_state, state, timed_state
 from magicbot.state_machine import StateMachine
-from components.controlpanel import ControlPanel
+from components import ControlPanel
 from networktables.util import ntproperty
 
 
@@ -12,6 +12,10 @@ class PanelSpinner(StateMachine):
 
     isSpinningPosition = ntproperty('/Controllers/panelSpinner/isSpinningPosition', False)
     isSpinningRotation = ntproperty('/Controllers/panelSpinner/isSpinningRotation', False)
+
+    def on_enable(self):
+        self.resting_timestamp = None
+        super().on_enable()
 
     def spin_to(self, position=False):
         if position:

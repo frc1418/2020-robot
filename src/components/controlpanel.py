@@ -55,7 +55,6 @@ class ControlPanel:
         self.colors = list(COLORS.values())
         self.fms_color = None
         self.last_color = None
-        self.resting_timestamp = None
 
         self.colorMatcher = ColorMatch()
 
