@@ -1,7 +1,7 @@
 from common.rev import CANSparkMax, ControlType
 from magicbot import will_reset_to, tunable
 import wpilib
-from wpilib.controllers import PIDController
+from wpilib.controller import PIDController
 
 
 class Launcher:
@@ -49,5 +49,6 @@ class Launcher:
             self.launcher_motor.set(self.rpm_controller.calculate(self.launcher_encoder.getRate(), self.speed))
         else:
             self.launcher_motors.set(self.decimal)
+            self.target_rpm = 0
 
         self.launcher_solenoid.set(self.shoot)
