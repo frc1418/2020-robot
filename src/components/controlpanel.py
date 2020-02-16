@@ -98,7 +98,6 @@ class ControlPanel:
 
         if self.control_panel_switch.get():
             self.flush = True
-            
 
     @staticmethod
     def calculate_distance(color1, color2):
