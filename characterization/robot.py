@@ -30,7 +30,7 @@ class Robot(wpilib.TimedRobot):
         # TODO: Check if we need IdleMode.kBrake
         # self.motor.setIdleMode(IdleMode.kBrake);
 
-        self.encoder = wpilib.Encoder(1, 2)
+        self.encoder = wpilib.Encoder(1, 2, True)
 
         # //
         # // Configure encoder related functions -- getDistance and getrate should

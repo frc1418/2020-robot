@@ -5,7 +5,7 @@ from networktables.util import ntproperty
 from entry_points.trajectory_generator import StartingPosition
 from common.rev import CANSparkMax
 from common.limelight import Limelight
-from components import Align, Drive, Odometry, Follower, Intake
+from components import Align, Drive, Odometry, Follower, Intake, Launcher
 from . import follower_state
 
 
@@ -13,7 +13,7 @@ class Initiation(AutonomousStateMachine):
     DEFAULT = True
     MODE_NAME = 'Initiation'
 
-    starting_pos = ntproperty('/autonomous/starting_position', 'CENTER')
+    starting_pos = ntproperty('/autonomous/starting_position', 'LEFT')
 
     drive: Drive
     align: Align
@@ -21,42 +21,54 @@ class Initiation(AutonomousStateMachine):
     odometry: Odometry
     intake: Intake
     limelight: Limelight
-    # TODO: Use launcher component
-    launcher_motors: wpilib.SpeedControllerGroup
-    launcher_solenoid: wpilib.Solenoid
+    launcher: Launcher
 
     def on_enable(self):
         super().on_enable()
-        if StartingPosition[self.starting_pos] == 'LIMELIGHT' and self.limelight.targetExists():
-            self.odometry.reset(self.limelight.getPose())
+        start_pos = self.starting_pos
+        if StartingPosition[start_pos] == 'LIMELIGHT':
+            self.odometry.reset(self.limelight.getAveragedPose())
         else:
-            self.odometry.reset(StartingPosition[self.starting_pos])
+            self.odometry.reset(StartingPosition[start_pos].value)
         self.shot_count = 0
+        self.completed_trench = False
 
-    @default_state
-    def spinup(self, state_tm):
-        if self.shot_count >= 3:
-            self.done()
-
-        # TODO: Use RPM to check if spun up
-        self.launcher_motors.set(0.75)
-        if state_tm > 5 or (state_tm > 1 and self.shot_count > 0):
-            self.next_state('shoot')
-
-    @timed_state(duration=1, first=False)
-    def shoot(self, state_tm):
-        self.launcher_motors.set(0.75)  # Continue to set launcher motor speed
-        self.launcher_solenoid.set(True)
-        if state_tm > 0.5:
-            self.launcher_solenoid.set(False)
-        self.shot_count += 1
+    @state(first=True)
+    def trench_first_forward(self, tm, state_tm, initial_call):
+        self.intake.spin(-1)
+        self.follower.follow_trajectory('trench-first-forward', state_tm)
+        if self.follower.is_finished('trench-first-forward'):
+            self.next_state('spinup')
+    
+    @state
+    def trench_second_forward(self, tm, state_tm, initial_call):
+        self.intake.spin(-1)
+        self.follower.follow_trajectory('trench-second-forward', state_tm)
+        if self.follower.is_finished('trench-second-forward'):
+            self.completed_trench = True
+            self.next_state('spinup')
 
     @state
-    def start(self, first=True):
-        self.intake.spin(-1)
-        self.next_state('move_trench')
-        # self.done()
+    def spinup(self, state_tm):
+        if self.shot_count == 2:
+            if self.completed_trench and self.shot_count == 3:
+                self.done()
+            elif not self.completed_trench:
+                self.next_state('trench_second_forward')
+        
+        # Wait until shooter motor is ready
+        self.launcher.setVelocity(-2000)
+        if self.launcher.at_setpoint():
+            self.next_state('shoot')
 
-    @follower_state(trajectory_name='trench-simple')
-    def move_trench(self, tm, state_tm, initial_call):
-        self.intake.spin(-1)
+    @timed_state(duration=0.5, next_state='spinup')
+    def shoot(self, state_tm, initial_call):
+        if initial_call:
+            self.shot_count += 1
+
+        self.launcher.setVelocity(-2000)
+
+        if state_tm < 0.25:
+            self.launcher.fire()
+
+

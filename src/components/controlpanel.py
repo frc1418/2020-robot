@@ -44,9 +44,11 @@ class ControlPanel:
     cp_motor: CANSparkMax
     cp_solenoid: wpilib.DoubleSolenoid
     colorSensor: ColorSensorV3
+    control_panel_switch: wpilib.DigitalInput
 
     solenoid_state = will_reset_to(DoubleSolenoid.Value.kReverse)
     speed = will_reset_to(0)
+    flush = ntproperty("/components/controlpanel/flush", 0)
 
     def setup(self):
         self.ds = wpilib.DriverStation.getInstance()
@@ -93,6 +95,10 @@ class ControlPanel:
 
         self.cp_motor.set(self.speed)
         self.cp_solenoid.set(self.solenoid_state)
+
+        if self.control_panel_switch.get():
+            self.flush = True
+            
 
     @staticmethod
     def calculate_distance(color1, color2):

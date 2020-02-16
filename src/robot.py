@@ -56,6 +56,8 @@ class Robot(magicbot.MagicRobot):
     ntSolenoid_state = ntproperty("/robot/ntSolenoid_state", 0)
 
     WHEEL_DIAMETER = 0.1524  # Units: Meters
+    ENCODER_PULSES_PER_REV = 1024  # Ignore quadrature decoding (4x)
+    LAUNCHER_GEARING = (3.25 / 1)  # 3.25:1 in gearbox
     GEARING = 7.56  # 7.56:1 gear ratio
 
     def createObjects(self):
@@ -125,6 +127,7 @@ class Robot(magicbot.MagicRobot):
         self.cp_solenoid = wpilib.DoubleSolenoid(5, 4)  # Reversed numbers so kForward is extended
         self.cp_motor = CANSparkMax(10, MotorType.kBrushed)
         self.cp_motor.setIdleMode(IdleMode.kBrake)
+        self.control_panel_switch = wpilib.DigitalInput(4)
 
         # Intake
         self.intake_motor = WPI_VictorSPX(1)
@@ -136,6 +139,10 @@ class Robot(magicbot.MagicRobot):
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
         self.launcher_encoder = wpilib.Encoder(1, 2)
+        self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV * self.LAUNCHER_GEARING))
+        self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
+
+        self.launcher_encoder.reset()
 
         # NavX (purple board on top of the RoboRIO)
         self.navx = navx.AHRS.create_spi()
@@ -159,8 +166,11 @@ class Robot(magicbot.MagicRobot):
         self.right_motors.setInverted(True)
         super().autonomous()
 
+    def disabledInit(self):
+        self.limelight.changePipieline(1)
+
     def disabledPeriodic(self):
-        pass
+        self.limelight.averagePose()
 
     def teleopInit(self):
         self.right_motors.setInverted(False)
@@ -168,6 +178,7 @@ class Robot(magicbot.MagicRobot):
         self.drive.speed_constant = 1.05
         self.drive.rotational_constant = 0.5
         self.inverse = 1
+        self.limelight.changePipieline(0)
 
     def teleopPeriodic(self):
         # if self.btn_invert_y_axis.get():
@@ -175,6 +186,7 @@ class Robot(magicbot.MagicRobot):
         #     self.inverse *= -1
         # else:
         #     self.flipped = False
+
         if self.btn_invert_y_axis.get():
             self.inverse = 1
         else:
@@ -219,7 +231,7 @@ class Robot(magicbot.MagicRobot):
 
         # Launcher
         if self.btn_launcher_motor.get():
-            self.launcher.setPercentOutput(-0.6)
+            self.launcher.setVelocity(-2000)
         elif self.btn_launcher_motor70.get():
             self.launcher.setPercentOutput(-0.675)
         elif self.btn_launcher_motor55.get():
