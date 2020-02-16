@@ -5,7 +5,7 @@ from networktables.util import ntproperty
 from entry_points.trajectory_generator import StartingPosition
 from common.rev import CANSparkMax
 from common.limelight import Limelight
-from components import Align, Drive, Odometry, Follower
+from components import Align, Drive, Odometry, Follower, Intake
 from . import follower_state
 
 
@@ -19,6 +19,7 @@ class Initiation(AutonomousStateMachine):
     align: Align
     follower: Follower
     odometry: Odometry
+    intake: Intake
     limelight: Limelight
     # TODO: Use launcher component
     launcher_motors: wpilib.SpeedControllerGroup
@@ -50,6 +51,12 @@ class Initiation(AutonomousStateMachine):
             self.launcher_solenoid.set(False)
         self.shot_count += 1
 
-    @follower_state(trajectory_name='trench', first=True)
-    def moveForward(self, tm, state_tm, initial_call):
-        pass
+    @state
+    def start(self, first=True):
+        self.intake.spin(-1)
+        self.next_state('move_trench')
+        # self.done()
+
+    @follower_state(trajectory_name='trench-simple')
+    def move_trench(self, tm, state_tm, initial_call):
+        self.intake.spin(-1)
