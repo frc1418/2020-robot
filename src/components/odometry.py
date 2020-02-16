@@ -38,8 +38,8 @@ class Odometry:
 
     def reset(self, new_pose: Pose2d = Pose2d()):
         self.odometry.resetPosition(new_pose, Rotation2d.fromDegrees(self.getAngle()))
-        self.left_encoder.reset()
-        self.right_encoder.reset()
+        self.left_encoder.setPosition(0)
+        self.right_encoder.setPosition(0)
 
     @property
     def left_rate(self):

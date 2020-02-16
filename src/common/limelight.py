@@ -1,6 +1,7 @@
 from networktables.util import ntproperty
 import math
-from wpilib.geometry import Pose2d
+from wpilib.geometry import Pose2d, Translation2d, Rotation2d
+import logging
 
 
 class Limelight():
@@ -11,12 +12,18 @@ class Limelight():
     camera_mode = ntproperty('/limelight/camMode', 0)
     pipeline_number = ntproperty('/limelight/pipeline', 0, writeDefault=False)
     target_state = ntproperty('/limelight/target_state', 0)
+    pose_data = ntproperty('/limelight/camtran', [0] * 6)
 
     # change with new robot; UNIT = inches
     CAMERA_HEIGHT = 16.5
     TARGET_HEIGHT = 98.25
     # UNIT = degrees
     CAMERA_ANGLE = 13.5
+
+    def __init__(self):
+        self.avg_x = 0
+        self.avg_y = 0
+        self.avg_rot = 0
 
     def findPlaneDistance(self):
         if not self.targetExists():
@@ -57,4 +64,24 @@ class Limelight():
         self.pipeline_number = mode
 
     def getPose(self) -> Pose2d:
-        raise NotImplementedError()
+        if not self.targetExists():
+            return False
+
+        data = self.pose_data
+
+        # Turn limelight pose information into a wpilib Pose2d
+        rot = Rotation2d.fromDegrees((data[4] + 180) % 360)
+        x = 15 * math.cos(rot.degrees()) + (-data[2])
+        y = 15 * math.cos(90 - rot.degrees()) + data[0]
+        return Pose2d(x, y, rot)
+
+    def averagePose(self) -> None:
+        pose = self.getPose()
+
+        # Compute new average with the current average holding a worth of 9 values
+        self.avg_x = ((9 * self.avg_x) + pose.translation().X()) / 10
+        self.avg_y = ((9 * self.avg_y) + pose.translation().Y()) / 10
+        self.avg_rot = ((9 * self.avg_rot) + pose.rotation().degrees()) / 10
+
+    def getAveragedPose(self) -> Pose2d:
+        return Pose2d(self.avg_x, self.avg_y, Rotation2d.fromDegrees(self.avg_rot))
