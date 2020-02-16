@@ -39,7 +39,7 @@ class Initiation(AutonomousStateMachine):
         self.follower.follow_trajectory('trench-first-forward', state_tm)
         if self.follower.is_finished('trench-first-forward'):
             self.next_state('spinup')
-    
+
     @state
     def trench_second_forward(self, tm, state_tm, initial_call):
         self.intake.spin(-1)
@@ -55,7 +55,7 @@ class Initiation(AutonomousStateMachine):
                 self.done()
             elif not self.completed_trench:
                 self.next_state('trench_second_forward')
-        
+
         # Wait until shooter motor is ready
         self.launcher.setVelocity(-2000)
         if self.launcher.at_setpoint():
@@ -70,5 +70,3 @@ class Initiation(AutonomousStateMachine):
 
         if state_tm < 0.25:
             self.launcher.fire()
-
-
