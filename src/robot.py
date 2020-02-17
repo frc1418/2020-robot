@@ -165,6 +165,7 @@ class Robot(magicbot.MagicRobot):
         self.led_driver = BlinkinLED(0)
 
     def autonomous(self):
+        self.limelight.changePipieline(0)
         self.right_motors.setInverted(True)
         super().autonomous()
 
@@ -180,7 +181,6 @@ class Robot(magicbot.MagicRobot):
         self.drive.speed_constant = 1.05
         self.drive.rotational_constant = 0.5
         self.inverse = 1
-        self.limelight.changePipieline(0)
 
     def teleopPeriodic(self):
         # if self.btn_invert_y_axis.get():
