@@ -2,6 +2,7 @@ from networktables.util import ntproperty
 import math
 from wpilib.geometry import Pose2d, Translation2d, Rotation2d
 import logging
+from typing import Optional
 
 
 class Limelight():
@@ -63,9 +64,9 @@ class Limelight():
         # 2: far distance pipeline
         self.pipeline_number = mode
 
-    def getPose(self) -> Pose2d:
+    def getPose(self) -> Optional[Pose2d]:
         if not self.targetExists():
-            return False
+            return None
 
         data = self.pose_data
 
@@ -77,6 +78,9 @@ class Limelight():
 
     def averagePose(self) -> None:
         pose = self.getPose()
+
+        if pose is None:
+            return
 
         # Compute new average with the current average holding a worth of 9 values
         self.avg_x = ((9 * self.avg_x) + pose.translation().X()) / 10
