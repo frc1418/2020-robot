@@ -18,6 +18,7 @@ from common.rev import CANSparkMax, IdleMode, MotorType, CANEncoder
 from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry, Follower
 from entry_points.trajectory_generator import KINEMATICS, DRIVE_FEEDFORWARD, load_trajectories
 from controllers.panelSpinner import PanelSpinner
+from controllers.auto_launcher import AutoShoot
 from common.blinkinLED import BlinkinLED
 r"""
 / \                / \
@@ -42,6 +43,7 @@ class Robot(magicbot.MagicRobot):
     # Order of components determines order that execute methods are run
     # State Machines
     panel_spinner: PanelSpinner
+    auto_launcher: AutoShoot
     # Other components
     align: Align
     odometry: Odometry
@@ -75,7 +77,7 @@ class Robot(magicbot.MagicRobot):
         self.btn_cp_motor = JoystickButton(self.joystick_left, 3)
         self.btn_launcher_motor = JoystickButton(self.joystick_alt, 12)
         self.btn_launcher_motor70 = JoystickButton(self.joystick_alt, 11)
-        self.btn_launcher_motor55 = JoystickButton(self.joystick_alt, 10)
+        self.btn_launcher_resting = Toggle(self.joystick_alt, 10)
         self.btn_slow_movement = Toggle(self.joystick_right, 3)
         self.btn_intake_solenoid = Toggle(self.joystick_right, 5)
         self.btn_scissor_extend = Toggle(self.joystick_alt, 4)
@@ -142,7 +144,7 @@ class Robot(magicbot.MagicRobot):
         # self.launcher_spark.setInverted(True)
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
-        self.launcher_encoder = wpilib.Encoder(1, 2)
+        self.launcher_encoder = wpilib.Encoder(1, 2, True)
         self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV * self.LAUNCHER_GEARING))
         self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
 
@@ -236,17 +238,16 @@ class Robot(magicbot.MagicRobot):
             self.control_panel.spin(0.5)
 
         # Launcher
+        if self.btn_launcher_resting.get():
+            self.launcher.setVelocity(1000)
+
         if self.btn_launcher_motor.get():
-            self.launcher.setVelocity(-2000)
+            self.launcher.setVelocity(2100)
         elif self.btn_launcher_motor70.get():
-            self.launcher.setPercentOutput(-0.675)
-        elif self.btn_launcher_motor55.get():
-            self.launcher.setPercentOutput(-0.55)
-        else:
-            self.launcher.setPercentOutput(0)
+            self.launcher.setVelocity(1950)
 
         if self.btn_launcher_solenoid.get():
-            self.launcher.fire()
+            self.auto_launcher.fire_when_ready()
 
         if self.btn_cp_stop.get():
             self.panel_spinner.done()
