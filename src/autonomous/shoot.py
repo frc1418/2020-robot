@@ -54,3 +54,4 @@ class Shoot(AutonomousStateMachine):
 
         if state_tm < 0.25:
             self.launcher.fire()
+
