@@ -21,7 +21,7 @@ class AutoShoot(StateMachine):
             self.launcher.setVelocity(self.speed)
 
         self.logger.info(f'At: {self.launcher.at_setpoint()} State_tm: {state_tm}')
-        if self.launcher.at_setpoint() and state_tm > 0.5:
+        if self.launcher.at_setpoint() and state_tm > 0.25:
             self.next_state('shoot')
 
     @timed_state(duration=0.5, next_state='spinup')
