@@ -6,9 +6,10 @@ from magicbot import will_reset_to
 from networktables.util import ntproperty
 # from magicbot import tunable
 from rev.color import ColorMatch, ColorSensorV3
-from wpilib import DoubleSolenoid
+from wpilib import DoubleSolenoid, Ultrasonic, Joystick
 
 from common.rev import CANSparkMax
+from components import Drive
 
 
 class Color:
@@ -45,6 +46,9 @@ class ControlPanel:
     cp_solenoid: wpilib.DoubleSolenoid
     colorSensor: ColorSensorV3
     control_panel_switch: wpilib.DigitalInput
+    drive: Drive
+    ultrasonic: Ultrasonic
+    joystick_left: Joystick
 
     solenoid_state = will_reset_to(DoubleSolenoid.Value.kReverse)
     speed = will_reset_to(0)
@@ -57,11 +61,14 @@ class ControlPanel:
         self.colors = list(COLORS.values())
         self.fms_color = None
         self.last_color = None
+        self.aligning = False
 
         self.colorMatcher = ColorMatch()
 
         for color in self.colors:
             self.colorMatcher.addColorMatch(wpilib.Color(color.red, color.green, color.blue))
+
+        self.ultrasonic.setAutomaticMode = False
 
     def spin(self, speed: int):
         self.speed = speed
@@ -98,6 +105,15 @@ class ControlPanel:
 
         if self.control_panel_switch.get():
             self.flush = True
+
+        if self.solenoid_state == DoubleSolenoid.Value.kForward:
+            self.ultrasonic.ping()
+            if self.ultrasonic.getRangeInches() > 3:
+                self.aligning = True
+            if self.ultrasonic.getRangeInches() <= 3 and self.aligning == True:
+                self.drive.deadband = 1
+                if self.joystick_left.getY() <= 0.1:
+                    self.aligning = False
 
     @staticmethod
     def calculate_distance(color1, color2):
