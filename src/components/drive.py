@@ -42,7 +42,7 @@ class Drive:
         """
         Run setup code on the injected variables (train)
         """
-        self.angle_controller = PIDController(self.angle_p, self.angle_i, self.angle_d)
+        self.angle_controller = PIDController(self.angle_p, self.angle_i, self.angle_d, period=20)
         self.angle_controller.setTolerance(2, 5)
         self.angle_controller.enableContinuousInput(0, 360)
         self.angle_setpoint = None

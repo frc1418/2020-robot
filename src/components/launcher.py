@@ -23,7 +23,7 @@ class Launcher:
     RPM_KD = tunable(0.1)
 
     def setup(self):
-        self.rpm_controller = PIDController(self.RPM_KP, self.RPM_KI, self.RPM_KD)
+        self.rpm_controller = PIDController(self.RPM_KP, self.RPM_KI, self.RPM_KD, period=20)
         self.feedforward = SimpleMotorFeedforwardMeters(0.953, 0.19, 0.00966)
 
     def setVelocity(self, speed):
