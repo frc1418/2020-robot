@@ -26,7 +26,7 @@ class Initiation(AutonomousStateMachine):
     def on_enable(self):
         super().on_enable()
         start_pos = self.starting_pos
-        if StartingPosition[start_pos] == 'LIMELIGHT':
+        if start_pos == 'LIMELIGHT':
             self.odometry.reset(self.limelight.getAveragedPose())
         else:
             self.odometry.reset(StartingPosition[start_pos].value)
