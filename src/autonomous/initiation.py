@@ -13,7 +13,7 @@ class Initiation(AutonomousStateMachine):
     DEFAULT = True
     MODE_NAME = 'Initiation'
 
-    starting_pos = ntproperty('/autonomous/starting_position', 'LIMELIGHT')
+    starting_pos = ntproperty('/autonomous/starting_position', 'LEFT')
 
     drive: Drive
     follower: Follower
