@@ -4,6 +4,7 @@ from components import Launcher
 from magicbot.state_machine import state, timed_state, StateMachine
 from typing import Optional
 
+
 class AutoShoot(StateMachine):
     launcher: Launcher
 
