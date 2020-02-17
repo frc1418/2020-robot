@@ -110,7 +110,7 @@ class ControlPanel:
             self.ultrasonic.ping()
             if self.ultrasonic.getRangeInches() > 3:
                 self.aligning = True
-            if self.ultrasonic.getRangeInches() <= 3 and self.aligning == True:
+            if self.ultrasonic.getRangeInches() <= 3 and self.aligning is True:
                 self.drive.deadband = 1
                 if self.joystick_left.getY() <= 0.1:
                     self.aligning = False
