@@ -17,8 +17,8 @@ class PanelSpinner(StateMachine):
         self.resting_timestamp = None
         super().on_enable()
 
-    def spin_to(self, position=False):
-        if position:
+    def spin_to(self):
+        if self.control_panel.fms_color is not None:
             self.engage('positionControl')
             self.isSpinningPosition = True
         else:
@@ -35,8 +35,8 @@ class PanelSpinner(StateMachine):
         if self.control_panel.detected_color != self.last_color:
             self.rotations += 1
             self.last_color = self.control_panel.detected_color
-        self.control_panel.spin(0.25)
-        if self.rotations >= 18:
+        self.control_panel.spin(0.15)
+        if self.rotations >= 27:
             self.isSpinningRotation = False
             self.done()
 
