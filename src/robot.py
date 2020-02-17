@@ -10,7 +10,7 @@ from wpilib.interfaces import GenericHID
 from wpilib.kinematics import DifferentialDriveKinematics
 import math
 
-from wpilib import CameraServer
+from wpilib import CameraServer, Ultrasonic
 from common.ctre import WPI_TalonSRX, WPI_VictorSPX
 from common.limelight import Limelight
 from common.navx import navx
@@ -19,7 +19,6 @@ from components import Align, ControlPanel, Drive, Intake, Launcher, Odometry, F
 from entry_points.trajectory_generator import KINEMATICS, DRIVE_FEEDFORWARD, load_trajectories
 from controllers.panelSpinner import PanelSpinner
 from common.blinkinLED import BlinkinLED
-
 r"""
 / \                / \
 \ /       (+)      \ /
@@ -128,6 +127,7 @@ class Robot(magicbot.MagicRobot):
         self.cp_motor = CANSparkMax(10, MotorType.kBrushed)
         self.cp_motor.setIdleMode(IdleMode.kBrake)
         self.control_panel_switch = wpilib.DigitalInput(4)
+        self.ultrasonic = Ultrasonic(5, 4)
 
         # Intake
         self.intake_motor = WPI_VictorSPX(1)
