@@ -9,7 +9,7 @@ from rev.color import ColorMatch, ColorSensorV3
 from wpilib import DoubleSolenoid, Ultrasonic, Joystick
 
 from common.rev import CANSparkMax
-from components import Drive
+from .drive import Drive
 
 
 class Color:
@@ -68,8 +68,6 @@ class ControlPanel:
         for color in self.colors:
             self.colorMatcher.addColorMatch(wpilib.Color(color.red, color.green, color.blue))
 
-        self.ultrasonic.setAutomaticMode = False
-
     def spin(self, speed: int):
         self.speed = speed
 
@@ -108,6 +106,7 @@ class ControlPanel:
 
         if self.solenoid_state == DoubleSolenoid.Value.kForward:
             self.ultrasonic.ping()
+            self.logger.info(self.ultrasonic.getRangeInches())
             if self.ultrasonic.getRangeInches() > 3:
                 self.aligning = True
             if self.ultrasonic.getRangeInches() <= 3 and self.aligning is True:

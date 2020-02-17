@@ -127,7 +127,9 @@ class Robot(magicbot.MagicRobot):
         self.cp_motor = CANSparkMax(10, MotorType.kBrushed)
         self.cp_motor.setIdleMode(IdleMode.kBrake)
         self.control_panel_switch = wpilib.DigitalInput(4)
-        self.ultrasonic = Ultrasonic(5, 4)
+        self.ultrasonic = Ultrasonic(4, 5)
+        self.ultrasonic.setAutomaticMode(False)
+        self.ultrasonic.setEnabled(True)
 
         # Intake
         self.intake_motor = WPI_VictorSPX(1)
@@ -224,7 +226,7 @@ class Robot(magicbot.MagicRobot):
 
         # Color Sensor
         if self.btn_color_sensor.get():
-            self.panel_spinner.spin_to(position=True)
+            self.panel_spinner.spin_to()
 
         if self.btn_cp_motor.get():
             self.control_panel.spin(0.5)
