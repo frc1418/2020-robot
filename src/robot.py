@@ -138,6 +138,8 @@ class Robot(magicbot.MagicRobot):
         self.intake_switch = wpilib.DigitalInput(3)
 
         # Launcher
+        # self.launcher_spark = CANSparkMax(40, MotorType.kBrushed)
+        # self.launcher_spark.setInverted(True)
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
         self.launcher_encoder = wpilib.Encoder(1, 2)
@@ -165,20 +167,22 @@ class Robot(magicbot.MagicRobot):
         self.led_driver = BlinkinLED(0)
 
     def autonomous(self):
-        self.limelight.changePipieline(0)
         self.right_motors.setInverted(True)
         super().autonomous()
+        self.limelight.changePipeline(0)
 
     def disabledInit(self):
-        self.limelight.changePipieline(1)
+        self.limelight.changePipeline(1)
 
     def disabledPeriodic(self):
+        self.limelight.changePipeline(1)
         self.limelight.averagePose()
 
     def teleopInit(self):
         self.right_motors.setInverted(False)
         self.drive.squared_inputs = True
         self.drive.speed_constant = 1.05
+        self.limelight.changePipeline(0)
         self.drive.rotational_constant = 0.5
         self.inverse = 1
 

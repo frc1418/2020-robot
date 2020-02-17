@@ -63,7 +63,7 @@ class TrajectoryData:
 
 # Starting positions are relative to the power port's center facing towards the field
 class StartingPosition(Enum):
-    LEFT = Pose2d(3.0734, 1.7018, Rotation2d.fromDegrees(180))
+    LEFT = Pose2d(3.0734, 1.08, Rotation2d.fromDegrees(180))
     CENTER = Pose2d(3.0734, 0, Rotation2d.fromDegrees(180))
     RIGHT = Pose2d(3.0734, -1.25, Rotation2d.fromDegrees(180))
 
@@ -86,18 +86,19 @@ TRAJECTORIES = {
         reverse=True
     ),
     "trench-forward": TrajectoryData(
-        StartingPosition.LEFT.value, [], Pose2d(7.349, 1.7018, Rotation2d.fromDegrees(180)),
+        StartingPosition.LEFT.value, [], Pose2d(7.349, 1.08, Rotation2d.fromDegrees(180)),
         reverse=True
     ),
     "trench-return": TrajectoryData(
         Pose2d(7.349, 1.7018, Rotation2d.fromDegrees(180)), [], StartingPosition.LEFT.value
     ),
     "trench-first-forward": TrajectoryData(
-        StartingPosition.LEFT.value, [], Pose2d(6.349, 1.7018, Rotation2d.fromDegrees(180)),
+        StartingPosition.LEFT.value, [], Pose2d(6.149, 1.08, Rotation2d.fromDegrees(180)),
         reverse=True
     ),
     "trench-second-forward": TrajectoryData(
-        StartingPosition.LEFT.value, [], Pose2d(1.349, 1.7018, Rotation2d.fromDegrees(180))
+        Pose2d(6.749, 1.08, Rotation2d.fromDegrees(180)), [], Pose2d(7.349, 1.08, Rotation2d.fromDegrees(180)),
+        reverse=True
     )
 }
 
