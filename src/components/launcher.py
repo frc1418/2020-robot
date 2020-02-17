@@ -18,24 +18,25 @@ class Launcher:
     control_velocity = will_reset_to(False)
     shoot = will_reset_to(False)
 
-    RPM_KP = tunable(0.6)
-    RPM_KI = tunable(0.001)
-    RPM_KD = tunable(0.1)
+    RPM_KP = tunable(0.1)
+    RPM_KI = tunable(0.002)
+    RPM_KD = tunable(0.008)
 
     def setup(self):
         self.rpm_controller = PIDController(self.RPM_KP, self.RPM_KI, self.RPM_KD, period=20)
         self.rpm_controller.setTolerance(100, float('inf'))
-        self.feedforward = SimpleMotorFeedforwardMeters(0.953, 0.19, 0.00966)
+        self.feedforward = SimpleMotorFeedforwardMeters(0.933, 0.197, 0.0169)
         self.calculated_pid = False
 
     def setVelocity(self, speed):
         """
         :param speed: Speed in Rotations per minute
         """
+        # TODO: Reset calculated PID to false when another setpoint is set
+
         self.speed = speed / 60
         self.target_rpm = speed
         self.control_velocity = True
-        self.calculated_pid = False
         self.rpm_controller.setSetpoint(self.speed)
         # TODO: make dictionary(?) that lets us find speed of motor depending on distance
 
@@ -49,7 +50,7 @@ class Launcher:
         self.shoot = True
 
     def at_setpoint(self):
-        return self.calculated_pid and self.rpm_controller.atSetpoint()
+        return self.calculated_pid and (self.rpm_controller.getPositionError()) < 100
 
     def execute(self):
         self.flywheel_rpm = self.launcher_encoder.getRate() * 60
