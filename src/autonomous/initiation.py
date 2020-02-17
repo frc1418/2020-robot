@@ -13,7 +13,7 @@ class Initiation(AutonomousStateMachine):
     DEFAULT = True
     MODE_NAME = 'Initiation'
 
-    starting_pos = ntproperty('/autonomous/starting_position', 'LEFT')
+    starting_pos = ntproperty('/autonomous/starting_position', 'LIMELIGHT')
 
     drive: Drive
     align: Align
@@ -33,19 +33,24 @@ class Initiation(AutonomousStateMachine):
         self.shot_count = 0
         self.completed_trench = False
 
-    @state(first=True)
-    def trench_first_forward(self, tm, state_tm, initial_call):
+    @follower_state(first=True, trajectory_name='trench-first-forward', next_state='align')
+    def trench_first_forward(self):
         self.intake.spin(-1)
-        self.follower.follow_trajectory('trench-first-forward', state_tm)
-        if self.follower.is_finished('trench-first-forward'):
-            self.next_state('spinup')
+
+    @follower_state(trajectory_name='trench-second-forward', next_state='align')
+    def trench_second_forward(self):
+        self.intake.spin(-1)
+        self.completed_trench = True
 
     @state
-    def trench_second_forward(self, tm, state_tm, initial_call):
-        self.intake.spin(-1)
-        self.follower.follow_trajectory('trench-second-forward', state_tm)
-        if self.follower.is_finished('trench-second-forward'):
-            self.completed_trench = True
+    def align(self):
+        if self.limelight.targetExists():
+            self.drive.set_target(self.limelight.getYaw(), relative=True)
+
+        if self.drive.angle_setpoint is not None:
+            self.drive.align()
+
+        if self.drive.target_locked:
             self.next_state('spinup')
 
     @state

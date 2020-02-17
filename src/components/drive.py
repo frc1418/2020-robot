@@ -48,7 +48,7 @@ class Drive:
         self.angle_setpoint = None
         self.calculated_pid = False
 
-    def set_target(self, angle: float, relative=False):
+    def set_target(self, angle: float, relative=True):
         if relative:
             self.angle_setpoint = (self.angle + angle) % 360
             self.angle_to = self.angle_setpoint
