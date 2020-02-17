@@ -74,7 +74,8 @@ class Limelight():
         rot = Rotation2d.fromDegrees((data[4] + 180) % 360)
         x = 15 * math.cos(rot.degrees()) + (-data[2])
         y = 15 * math.cos(90 - rot.degrees()) + data[0]
-        return Pose2d(x, y, rot)
+        # Change unit from inches to meters
+        return Pose2d(x / 39.37, y / 39.37, rot)
 
     def averagePose(self) -> None:
         pose = self.getPose()
