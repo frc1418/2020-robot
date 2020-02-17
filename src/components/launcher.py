@@ -24,7 +24,9 @@ class Launcher:
 
     def setup(self):
         self.rpm_controller = PIDController(self.RPM_KP, self.RPM_KI, self.RPM_KD, period=20)
+        self.rpm_controller.setTolerance(100, float('inf'))
         self.feedforward = SimpleMotorFeedforwardMeters(0.953, 0.19, 0.00966)
+        self.calculated_pid = False
 
     def setVelocity(self, speed):
         """
@@ -33,6 +35,8 @@ class Launcher:
         self.speed = speed / 60
         self.target_rpm = speed
         self.control_velocity = True
+        self.calculated_pid = False
+        self.rpm_controller.setSetpoint(self.speed)
         # TODO: make dictionary(?) that lets us find speed of motor depending on distance
 
     def setPercentOutput(self, decimal):
@@ -45,7 +49,7 @@ class Launcher:
         self.shoot = True
 
     def at_setpoint(self):
-        return abs(self.rpm_controller.getPositionError()) < 100
+        return self.calculated_pid and self.rpm_controller.atSetpoint()
 
     def execute(self):
         self.flywheel_rpm = self.launcher_encoder.getRate() * 60
@@ -56,8 +60,10 @@ class Launcher:
             self.rpm_controller.setD(self.RPM_KD)
 
             feedforward = self.feedforward.calculate(self.speed, 0)
-            output = feedforward + self.rpm_controller.calculate(self.launcher_encoder.getRate(), self.speed)
-            self.launcher_motors.setVoltage(min(12, output))
+            output = feedforward + self.rpm_controller.calculate(self.launcher_encoder.getRate())
+            self.calculated_pid = True
+            self.launcher_motors.setVoltage(output)
+            self.logger.info(output)
         else:
             self.launcher_motors.set(self.decimal)
             self.target_rpm = 0

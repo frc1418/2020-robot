@@ -11,7 +11,7 @@ class Limelight():
     light_mode = ntproperty('/limelight/ledMode', 0)
     valid_target = ntproperty('/limelight/tv', 0)
     camera_mode = ntproperty('/limelight/camMode', 0)
-    pipeline_number = ntproperty('/limelight/pipeline', 0, writeDefault=False)
+    pipeline_number = ntproperty('/limelight/pipeline', 1)
     target_state = ntproperty('/limelight/target_state', 0)
     pose_data = ntproperty('/limelight/camtran', [0] * 6)
 
@@ -58,7 +58,7 @@ class Limelight():
     def targetExists(self):
         return bool(self.valid_target)
 
-    def changePipieline(self, mode: int):
+    def changePipeline(self, mode: int):
         # 0: close distance pipeline
         # 1: medium distance pipeline
         # 2: far distance pipeline

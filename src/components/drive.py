@@ -43,13 +43,13 @@ class Drive:
         Run setup code on the injected variables (train)
         """
         self.angle_controller = PIDController(self.angle_p, self.angle_i, self.angle_d, period=20)
-        self.angle_controller.setTolerance(2, 5)
+        self.angle_controller.setTolerance(2, float('inf'))
         self.angle_controller.enableContinuousInput(0, 360)
         self.angle_setpoint = None
         self.calculated_pid = False
 
     def set_target(self, angle: float, relative=True):
-        if relative:
+        if relative and angle is not None:
             self.angle_setpoint = (self.angle + angle) % 360
             self.angle_to = self.angle_setpoint
         else:
@@ -99,8 +99,8 @@ class Drive:
         self.angle_reported = self.angle
 
         if self.aligning and self.angle_setpoint is not None:
+            self.right_motors.setInverted(False)
             if self.angle_controller.atSetpoint() and self.calculated_pid:
-                self.logger.info(f'Setpoint: {self.angle_controller.getSetpoint()} Angle: {self.angle} Error: {self.angle_controller.getPositionError()}')
                 self.train.arcadeDrive(0, 0, squareInputs=False)
                 return
 
@@ -120,13 +120,14 @@ class Drive:
                 self.angle_controller.setI(0)
                 self.angle_controller.setIntegratorRange(0, 0)
 
-            self.logger.info(f'Angle: {self.angle} Desired: {self.angle_setpoint} Output: {output} Error: {self.angle_controller.getPositionError()}')
             self.train.arcadeDrive(0, output, squareInputs=False)
             self.calculated_pid = True
         elif self.auto:
+            self.right_motors.setInverted(True)
             self.right_motors.setVoltage(self.right_voltage)
             self.left_motors.setVoltage(self.left_voltage)
         else:
+            self.right_motors.setInverted(False)
             self.train.arcadeDrive(
                 self.speed_constant * self.y,
                 self.rotational_constant * self.rot,
