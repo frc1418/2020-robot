@@ -61,6 +61,9 @@ class BallsFirst(AutonomousStateMachine):
         if initial_call:
             self.shot_count += 1
 
+        if self.shot_count > 2:
+            self.intake.spin(-1)
+
         self.launcher.setVelocity(2100)
 
         if state_tm < 0.25:
