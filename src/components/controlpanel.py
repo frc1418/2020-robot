@@ -105,7 +105,6 @@ class ControlPanel:
             self.flush = True
 
         if self.solenoid_state == DoubleSolenoid.Value.kForward:
-            self.ultrasonic.ping()
             self.logger.info(self.ultrasonic.getRangeInches())
             if self.ultrasonic.getRangeInches() > 3:
                 self.aligning = True
