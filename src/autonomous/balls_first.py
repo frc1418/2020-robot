@@ -12,6 +12,8 @@ from . import follower_state
 class BallsFirst(AutonomousStateMachine):
     MODE_NAME = 'BallsFirst'
 
+    starting_pos = ntproperty('/autonomous/starting_position', StartingPosition.LEFT.name)
+
     drive: Drive
     follower: Follower
     odometry: Odometry
@@ -21,8 +23,13 @@ class BallsFirst(AutonomousStateMachine):
     launcher: Launcher
 
     def on_enable(self):
-        self.shot_count = 0
         super().on_enable()
+        self.shot_count = 0
+        start_pos = self.starting_pos
+        if start_pos == 'LIMELIGHT':
+            self.odometry.reset(self.limelight.getAveragedPose())
+        else:
+            self.odometry.reset(StartingPosition[start_pos].value)
 
     @follower_state(trajectory_name='trench-forward', next_state='align')
     def move_trench(self, tm, state_tm, initial_call):
