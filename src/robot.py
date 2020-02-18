@@ -130,7 +130,7 @@ class Robot(magicbot.MagicRobot):
         self.cp_motor.setIdleMode(IdleMode.kBrake)
         self.control_panel_switch = wpilib.DigitalInput(4)
         self.ultrasonic = Ultrasonic(4, 5)
-        self.ultrasonic.setAutomaticMode(False)
+        self.ultrasonic.setAutomaticMode(True)
         self.ultrasonic.setEnabled(True)
 
         # Intake
