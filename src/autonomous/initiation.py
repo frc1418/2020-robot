@@ -13,7 +13,7 @@ class Initiation(AutonomousStateMachine):
     DEFAULT = True
     MODE_NAME = 'Initiation'
 
-    starting_pos = ntproperty('/autonomous/starting_position', 'LEFT')
+    starting_pos = ntproperty('/autonomous/starting_position', StartingPosition.LEFT.name)
 
     drive: Drive
     follower: Follower
@@ -32,14 +32,11 @@ class Initiation(AutonomousStateMachine):
         self.shot_count = 0
         self.completed_trench = False
 
-    @state
+    @follower_state(trajectory_name='trench-forward', next_state='align')
     def trench_move(self, tm, state_tm, initial_call):
         self.shot_count = 0
         self.intake.spin(-1)
-        self.follower.follow_trajectory('trench-forward', state_tm)
-        if self.follower.is_finished('trench-forward'):
-            self.completed_trench = True
-            self.next_state('align')
+        self.completed_trench = True
 
     @state(first=True)
     def align(self):
