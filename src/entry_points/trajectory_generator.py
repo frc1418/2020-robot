@@ -67,8 +67,8 @@ POWER_PORT = Pose2d(0.2, -2.437, Rotation2d())
 
 # Starting positions are relative to the field's top left coordinate facing down the field
 class StartingPosition(Enum):
-    # LEFT is touching the LEFT wall relative to the Power port (and facing the power port).
-    LEFT = Pose2d(3.2, -0.342, Rotation2d.fromDegrees(180)).relativeTo(POWER_PORT)
+    # LEFT is one foot off the LEFT wall relative to the Power port (and facing the power port).
+    LEFT = Pose2d(3.2, -0.6468, Rotation2d.fromDegrees(180)).relativeTo(POWER_PORT)
     CENTER = Pose2d(3.2, 0, Rotation2d.fromDegrees(180)).relativeTo(POWER_PORT)
     RIGHT = Pose2d(3.2, -3.25, Rotation2d.fromDegrees(180)).relativeTo(POWER_PORT)
 
