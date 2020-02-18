@@ -60,15 +60,18 @@ class TrajectoryData:
     field_relative: bool = True
     reverse: bool = False
 
+# The POWER PORT's Pose relative to the top left coordinate of the field as provided by Path weaver.
+POWER_PORT = Pose2d(0.2, -2.437, Rotation2d())
 
-# Starting positions are relative to the power port's center facing towards the field
+# Starting positions are relative to the field's top left coordinate facing down the field
 class StartingPosition(Enum):
-    LEFT = Pose2d(3.0734, 1.08, Rotation2d.fromDegrees(180))
-    CENTER = Pose2d(3.0734, 0, Rotation2d.fromDegrees(180))
-    RIGHT = Pose2d(3.0734, -1.25, Rotation2d.fromDegrees(180))
+    # LEFT is touching the LEFT wall relative to the Power port (and facing the power port).
+    LEFT = Pose2d(3.2, -0.342, Rotation2d.fromDegrees(180)).relativeTo(POWER_PORT)
+    CENTER = Pose2d(3.2, 0, Rotation2d.fromDegrees(180)).relativeTo(POWER_PORT)
+    RIGHT = Pose2d(3.2, -3.25, Rotation2d.fromDegrees(180)).relativeTo(POWER_PORT)
 
 
-# ALL trajectory points should be relative to the power port's center facing towards the field
+# ALL trajectory points should be relative to the field's top left coordinate down the field
 # Trajectories that aren't field relative are generated with respect to ALL Starting Positions
 # E.x. "charge-LEFT", "charge-CENTER", "charge-RIGHT"
 # We do this to allow for trajectory chaining, which requires field-relativity
@@ -81,24 +84,18 @@ TRAJECTORIES = {
         Pose2d(), [Translation2d(1, 0.3)], Pose2d(2, 0, Rotation2d()),
         field_relative=False
     ),
-    "trench": TrajectoryData(
-        StartingPosition.LEFT.value, [Translation2d(5.341, 1.674), Translation2d(6.749, 1.605), Translation2d(7.097, 0.77), Translation2d(6.297, -0.099)], Pose2d(4.437, 0.127, Rotation2d(math.radians(183.56))),
-        reverse=True
-    ),
     "trench-forward": TrajectoryData(
-        StartingPosition.LEFT.value, [], Pose2d(7.349, 1.08, Rotation2d.fromDegrees(180)),
-        reverse=True
-    ),
-    "trench-return": TrajectoryData(
-        Pose2d(7.349, 1.7018, Rotation2d.fromDegrees(180)), [], StartingPosition.LEFT.value
-    ),
-    "trench-first-forward": TrajectoryData(
-        StartingPosition.LEFT.value, [], Pose2d(6.149, 1.08, Rotation2d.fromDegrees(180)),
-        reverse=True
-    ),
-    "trench-second-forward": TrajectoryData(
-        Pose2d(6.749, 1.08, Rotation2d.fromDegrees(180)), [], Pose2d(7.349, 1.08, Rotation2d.fromDegrees(180)),
-        reverse=True
+        StartingPosition.LEFT.value,
+        [
+            Translation2d(5.402, -0.722),
+            Translation2d(6.184, -0.722),
+            Translation2d(7.067, -0.722),
+            Translation2d(7.621, -0.772),
+            Translation2d(7.47, -1.504),
+            Translation2d(5.427, -1.176),
+            Translation2d(4.216, -1.655)
+        ],
+        Pose2d(4.822, -2.21, Rotation2d.fromDegrees(185)), reverse=True
     )
 }
 
@@ -152,12 +149,15 @@ def generate_trajectories(options, robot_class):
             start_pos: StartingPosition
             for start_pos in StartingPosition:
                 # The subtracted Pose2d here is the ORIGIN of the field (The power port).
+                # All trajectories are now relative to the POWER PORT.
                 transformed_trajectory = generate_trajectory(traj_data).transformBy(start_pos.value - Pose2d())
                 new_trajectories[f'{key}-{start_pos.name}'] = transformed_trajectory
         else:
-            new_trajectories[key] = generate_trajectory(traj_data)
+            # Transforms Pathweaver trajectories which are relative to the field's top left coordinate
+            # to being relative to the POWER PORT
+            new_trajectories[key] = generate_trajectory(traj_data).relativeTo(POWER_PORT)
 
-        # All trajectories should be FIELD relative at this point
+        # All trajectories should be POWER PORT relative at this point
         generated_trajectories.update({k: TrajectoryUtil.serializeTrajectory(v) for k, v in new_trajectories.items()})
 
     print('Done')
