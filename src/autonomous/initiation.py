@@ -2,7 +2,7 @@ import wpilib
 from magicbot import AutonomousStateMachine, default_state, timed_state, state
 from networktables.util import ntproperty
 
-from entry_points.trajectory_generator import StartingPosition
+from entry_points.trajectory_generator import StartingPosition, TRAJECTORIES
 from common.rev import CANSparkMax
 from common.limelight import Limelight
 from components import Align, Drive, Odometry, Follower, Intake, Launcher
@@ -13,8 +13,6 @@ class Initiation(AutonomousStateMachine):
     DEFAULT = True
     MODE_NAME = 'Initiation'
 
-    starting_pos = ntproperty('/autonomous/starting_position', StartingPosition.LEFT.name)
-
     drive: Drive
     follower: Follower
     odometry: Odometry
@@ -23,14 +21,10 @@ class Initiation(AutonomousStateMachine):
     launcher: Launcher
 
     def on_enable(self):
-        super().on_enable()
-        start_pos = self.starting_pos
-        if start_pos == 'LIMELIGHT':
-            self.odometry.reset(self.limelight.getAveragedPose())
-        else:
-            self.odometry.reset(StartingPosition[start_pos].value)
+        self.odometry.reset(TRAJECTORIES['trench'].start)
         self.shot_count = 0
         self.completed_trench = False
+        super().on_enable()
 
     @follower_state(trajectory_name='trench', next_state='trench-return')
     def trench_move(self, tm, state_tm, initial_call):
