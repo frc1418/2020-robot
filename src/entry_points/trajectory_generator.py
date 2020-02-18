@@ -60,8 +60,10 @@ class TrajectoryData:
     field_relative: bool = True
     reverse: bool = False
 
+
 # The POWER PORT's Pose relative to the top left coordinate of the field as provided by Path weaver.
 POWER_PORT = Pose2d(0.2, -2.437, Rotation2d())
+
 
 # Starting positions are relative to the field's top left coordinate facing down the field
 class StartingPosition(Enum):
@@ -83,6 +85,13 @@ TRAJECTORIES = {
     "curve": TrajectoryData(
         Pose2d(), [Translation2d(1, 0.3)], Pose2d(2, 0, Rotation2d()),
         field_relative=False
+    ),
+    "trench": TrajectoryData(
+        Pose2d(3.2, -0.7, Rotation2d.fromDegrees(180)), [Translation2d(6.083, -0.696)],
+        Pose2d(7.975, -0.696, Rotation2d.fromDegrees(180)), reverse=True
+    ),
+    "trench-return": TrajectoryData(
+        Pose2d(7.975, -0.696, Rotation2d.fromDegrees(180)), [], Pose2d(6.083, -0.696, Rotation2d.fromDegrees(180))
     ),
     "trench-forward": TrajectoryData(
         StartingPosition.LEFT.value,
