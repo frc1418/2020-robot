@@ -87,7 +87,7 @@ TRAJECTORIES = {
         field_relative=False
     ),
     "trench": TrajectoryData(
-        Pose2d(3.2, -0.7, Rotation2d.fromDegrees(180)), [Translation2d(6.083, -0.696)],
+        Pose2d(3.2, -0.696, Rotation2d.fromDegrees(180)), [Translation2d(6.083, -0.696)],
         Pose2d(7.975, -0.696, Rotation2d.fromDegrees(180)), reverse=True
     ),
     "trench-return": TrajectoryData(

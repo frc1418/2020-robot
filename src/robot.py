@@ -74,7 +74,7 @@ class Robot(magicbot.MagicRobot):
         self.btn_intake_out = JoystickButton(self.joystick_alt, 5)
         self.btn_cp_extend = Toggle(self.joystick_left, 4)
         self.btn_winch = JoystickButton(self.joystick_alt, 6)
-        self.btn_cp_motor = JoystickButton(self.joystick_left, 3)
+        self.btn_cp_motor = Toggle(self.joystick_left, 3)
         self.btn_launcher_motor = JoystickButton(self.joystick_alt, 12)
         self.btn_launcher_motor70 = JoystickButton(self.joystick_alt, 11)
         self.btn_launcher_resting = Toggle(self.joystick_alt, 10)
@@ -173,11 +173,7 @@ class Robot(magicbot.MagicRobot):
         super().autonomous()
         self.limelight.changePipeline(0)
 
-    def disabledInit(self):
-        self.limelight.changePipeline(1)
-
     def disabledPeriodic(self):
-        self.limelight.changePipeline(1)
         self.limelight.averagePose()
 
     def teleopInit(self):
@@ -226,9 +222,9 @@ class Robot(magicbot.MagicRobot):
         else:
             self.ntSolenoid_state = False
         if self.btn_scissor_extend.get():
-            self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
-        else:
             self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kForward)
+        else:
+            self.scissor_solenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
 
         # Color Sensor
         if self.btn_color_sensor.get():
@@ -244,7 +240,7 @@ class Robot(magicbot.MagicRobot):
         if self.btn_launcher_motor.get():
             self.launcher.setVelocity(2100)
         elif self.btn_launcher_motor70.get():
-            self.launcher.setVelocity(1950)
+            self.launcher.setVelocity(1900)
 
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()
