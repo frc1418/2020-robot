@@ -51,7 +51,8 @@ class Launcher:
         self.shoot = True
 
     def at_setpoint(self):
-        return self.calculated_pid and (self.rpm_controller.getPositionError()) < 100
+        self.logger.info(f'POS ERR: {self.rpm_controller.getPositionError()} AT: {self.rpm_controller.atSetpoint()}')
+        return self.calculated_pid and (self.rpm_controller.getPositionError()) < 1.6666
 
     def execute(self):
         current_rpm = self.rpm_filter.calculate(self.flywheel_rpm)

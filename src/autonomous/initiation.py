@@ -28,6 +28,7 @@ class Initiation(AutonomousStateMachine):
 
     @follower_state(trajectory_name='trench', next_state='trench-return')
     def trench_move(self, tm, state_tm, initial_call):
+        self.logger.info('Following trench')
         self.launcher.setVelocity(1000)
         self.shot_count = 0
         self.intake.spin(-1)
@@ -44,7 +45,6 @@ class Initiation(AutonomousStateMachine):
 
         if self.drive.angle_setpoint is not None:
             self.drive.align()
-        self.logger.info(f'PID: {self.drive.calculated_pid} ANGLE: {self.drive.angle_controller.atSetpoint()}')
         if self.drive.target_locked:
             self.next_state('spinup')
 
@@ -65,8 +65,7 @@ class Initiation(AutonomousStateMachine):
     @timed_state(duration=0.5, next_state='spinup')
     def shoot(self, state_tm, initial_call):
         self.logger.info('Shooting')
-        if initial_call:
-            self.shot_count += 1
+        self.shot_count += 1
 
         self.launcher.setVelocity(2100 if self.completed_trench else 1950)
 
