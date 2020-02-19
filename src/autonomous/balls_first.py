@@ -36,7 +36,7 @@ class BallsFirst(AutonomousStateMachine):
         if state_tm < 4:
             self.intake.spin(-1)
 
-    @state
+    @state(first=True)
     def align(self):
         if self.limelight.targetExists():
             self.drive.set_target(self.limelight.getYaw(), relative=True)

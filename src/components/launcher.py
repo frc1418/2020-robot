@@ -26,6 +26,7 @@ class Launcher:
         self.rpm_controller = PIDController(self.RPM_KP, self.RPM_KI, self.RPM_KD, period=20)
         self.rpm_controller.setTolerance(100, float('inf'))
         self.feedforward = SimpleMotorFeedforwardMeters(0.933, 0.197, 0.0169)
+        self.rpm_filter: wpilib.LinearFilter = wpilib.LinearFilter.movingAverage(8)
         self.calculated_pid = False
 
     def setVelocity(self, speed):
@@ -53,7 +54,8 @@ class Launcher:
         return self.calculated_pid and (self.rpm_controller.getPositionError()) < 100
 
     def execute(self):
-        self.flywheel_rpm = self.launcher_encoder.getRate() * 60
+        current_rpm = self.rpm_filter.calculate(self.flywheel_rpm)
+        self.flywheel_rpm = current_rpm * 60
 
         if self.control_velocity:
             self.rpm_controller.setP(self.RPM_KP)
@@ -61,6 +63,7 @@ class Launcher:
             self.rpm_controller.setD(self.RPM_KD)
 
             feedforward = self.feedforward.calculate(self.speed, 0)
+            # output = feedforward + self.rpm_controller.calculate(current_rpm)
             output = feedforward + self.rpm_controller.calculate(self.launcher_encoder.getRate())
             self.calculated_pid = True
             self.launcher_motors.setVoltage(output)

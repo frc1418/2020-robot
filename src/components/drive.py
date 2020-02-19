@@ -56,10 +56,10 @@ class Drive:
             self.angle_setpoint = angle
 
         if angle is not None:
-            self.calculated_pid = False
             self.angle_controller.setSetpoint(self.angle_setpoint)
             self.limelight.TurnLightOn(True)
         else:
+            self.calculated_pid = False
             self.angle_controller.reset()
             self.limelight.TurnLightOn(False)
 

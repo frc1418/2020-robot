@@ -104,6 +104,8 @@ class ControlPanel:
         if self.control_panel_switch.get():
             self.flush = True
 
+        self.logger.info(f'Current: {self.detected_color} Target: {self.turn_to_color}')
+
         if self.solenoid_state == DoubleSolenoid.Value.kForward:
             self.logger.info(self.ultrasonic.getRangeInches())
             if self.ultrasonic.getRangeInches() > 3:

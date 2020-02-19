@@ -44,13 +44,14 @@ class Initiation(AutonomousStateMachine):
 
         if self.drive.angle_setpoint is not None:
             self.drive.align()
-
+        self.logger.info(f'PID: {self.drive.calculated_pid} ANGLE: {self.drive.angle_controller.atSetpoint()}')
         if self.drive.target_locked:
             self.next_state('spinup')
 
     @state
     def spinup(self, state_tm):
-        if self.shot_count == 3:
+        self.logger.info('Spinning up')
+        if self.shot_count == 4:
             if self.completed_trench:
                 self.done()
             else:
@@ -63,6 +64,7 @@ class Initiation(AutonomousStateMachine):
 
     @timed_state(duration=0.5, next_state='spinup')
     def shoot(self, state_tm, initial_call):
+        self.logger.info('Shooting')
         if initial_call:
             self.shot_count += 1
 
