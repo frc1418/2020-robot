@@ -51,11 +51,13 @@ class Initiation(AutonomousStateMachine):
     @state
     def spinup(self, state_tm):
         self.logger.info('Spinning up')
-        if self.shot_count == 4:
+        if self.shot_count >= 4:
             if self.completed_trench:
                 self.done()
+                return
             else:
                 self.next_state('trench_move')
+                return
 
         # Wait until shooter motor is ready
         self.launcher.setVelocity(2100 if self.completed_trench else 1950)
@@ -65,7 +67,8 @@ class Initiation(AutonomousStateMachine):
     @timed_state(duration=0.5, next_state='spinup')
     def shoot(self, state_tm, initial_call):
         self.logger.info('Shooting')
-        self.shot_count += 1
+        if initial_call:
+            self.shot_count += 1
 
         self.launcher.setVelocity(2100 if self.completed_trench else 1950)
 
