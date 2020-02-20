@@ -58,8 +58,10 @@ class Drive:
         if angle is not None:
             self.calculated_pid = False
             self.angle_controller.setSetpoint(self.angle_setpoint)
+            self.limelight.TurnLightOn(True)
         else:
             self.angle_controller.reset()
+            self.limelight.TurnLightOn(False)
 
     def align(self):
         self.aligning = True
