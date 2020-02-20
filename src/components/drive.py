@@ -98,6 +98,7 @@ class Drive:
         self.train.setDeadband(self.deadband)
         self.angle_reported = self.angle
 
+        self.limelight.TurnLightOn(self.aligning)
         if self.aligning and self.angle_setpoint is not None:
             self.right_motors.setInverted(False)
             if self.angle_controller.atSetpoint() and self.calculated_pid:

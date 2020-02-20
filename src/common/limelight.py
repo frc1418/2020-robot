@@ -50,6 +50,12 @@ class Limelight():
         # 3: force on
         self.light_mode = mode
 
+    def TurnLightOn(self, on: bool):
+        if on:
+            self.setLightMode(0)
+        else:
+            self.setLightMode(1)
+
     def setCamMode(self, mode: bool):
         # true: Driver Camera
         # false: Vision Processor
