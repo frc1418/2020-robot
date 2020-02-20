@@ -51,8 +51,7 @@ class Launcher:
         self.shoot = True
 
     def at_setpoint(self):
-        self.logger.info(f'POS ERR: {self.rpm_controller.getPositionError()} AT: {self.rpm_controller.atSetpoint()}')
-        return self.calculated_pid and (self.rpm_controller.getPositionError()) < 1.6666
+        return self.calculated_pid and (self.rpm_controller.getPositionError()) < 1.222
 
     def execute(self):
         current_rpm = self.rpm_filter.calculate(self.flywheel_rpm)
@@ -68,7 +67,6 @@ class Launcher:
             output = feedforward + self.rpm_controller.calculate(self.launcher_encoder.getRate())
             self.calculated_pid = True
             self.launcher_motors.setVoltage(output)
-            self.logger.info(output)
         else:
             self.launcher_motors.set(self.decimal)
             self.target_rpm = 0

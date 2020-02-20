@@ -84,6 +84,7 @@ class Drive:
 
     @property
     def target_locked(self):
+        self.logger.info(f'SET {self.angle_controller.getSetpoint()} ANG {self.navx.getAngle()}')
         return self.angle_controller.atSetpoint() and self.calculated_pid
 
     @property
@@ -129,6 +130,7 @@ class Drive:
             self.right_motors.setInverted(True)
             self.right_motors.setVoltage(self.right_voltage)
             self.left_motors.setVoltage(self.left_voltage)
+            self.logger.info(f'LEFT: {self.left_voltage} RIGHT: {self.right_voltage}')
         else:
             self.right_motors.setInverted(False)
             self.train.arcadeDrive(

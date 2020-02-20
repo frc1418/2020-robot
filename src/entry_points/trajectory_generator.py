@@ -26,7 +26,7 @@ KS = 0.161  # Units: volts
 KV = 1.96  # volts * seconds / distance
 KA = 0.49  # volts * seconds^2 / distance
 TRACK_WIDTH = 0.51  # Units: meters
-MAX_GENERATION_VELOCITY = 2.6  # Units: m/s
+MAX_GENERATION_VELOCITY = 1.5  # Units: m/s
 MAX_GENERATION_VOLTAGE = 5  # Units: volts
 
 TRAJECTORY_DIRECTORY = 'trajectories'
@@ -38,7 +38,7 @@ PICKLE_FILE = path.join(
 )
 
 # Unimportant due to DifferentialDriveVoltageConstraint
-MAX_GENERATION_ACCELERATION = 2  # Units: m/s^2.
+MAX_GENERATION_ACCELERATION = 1.2  # Units: m/s^2.
 
 DRIVE_FEEDFORWARD = SimpleMotorFeedforwardMeters(KS, KV, KA)
 KINEMATICS = DifferentialDriveKinematics(TRACK_WIDTH)
@@ -68,7 +68,7 @@ POWER_PORT = Pose2d(0.2, -2.437, Rotation2d())
 # Starting positions are relative to the field's top left coordinate facing down the field
 class StartingPosition(Enum):
     # LEFT is one foot off the LEFT wall relative to the Power port (and facing the power port).
-    LEFT = Pose2d(3.2, -0.6468, Rotation2d.fromDegrees(180)).relativeTo(POWER_PORT)
+    LEFT = Pose2d(3.2, -0.6468, Rotation2d.fromDegrees(180))
     CENTER = Pose2d(3.2, 0, Rotation2d.fromDegrees(180)).relativeTo(POWER_PORT)
     RIGHT = Pose2d(3.2, -3.25, Rotation2d.fromDegrees(180)).relativeTo(POWER_PORT)
 
@@ -87,11 +87,11 @@ TRAJECTORIES = {
         field_relative=False
     ),
     "trench": TrajectoryData(
-        Pose2d(3.2, -0.696, Rotation2d.fromDegrees(180)), [Translation2d(6.083, -0.696)],
-        Pose2d(7.975, -0.696, Rotation2d.fromDegrees(180)), reverse=True
+        Pose2d(3.2, 0, Rotation2d.fromDegrees(180)), [],
+        Pose2d(6.3, 0, Rotation2d.fromDegrees(180)), reverse=True
     ),
     "trench-return": TrajectoryData(
-        Pose2d(7.975, -0.696, Rotation2d.fromDegrees(180)), [], Pose2d(6.083, -0.696, Rotation2d.fromDegrees(180))
+        Pose2d(6.3, 0, Rotation2d.fromDegrees(180)), [], Pose2d(5.77, 0, Rotation2d.fromDegrees(180))
     ),
     "trench-forward": TrajectoryData(
         StartingPosition.LEFT.value,
@@ -164,7 +164,7 @@ def generate_trajectories(options, robot_class):
         else:
             # Transforms Pathweaver trajectories which are relative to the field's top left coordinate
             # to being relative to the POWER PORT
-            new_trajectories[key] = generate_trajectory(traj_data).relativeTo(POWER_PORT)
+            new_trajectories[key] = generate_trajectory(traj_data)
 
         # All trajectories should be POWER PORT relative at this point
         generated_trajectories.update({k: TrajectoryUtil.serializeTrajectory(v) for k, v in new_trajectories.items()})

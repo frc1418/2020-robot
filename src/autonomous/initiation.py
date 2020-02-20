@@ -26,17 +26,22 @@ class Initiation(AutonomousStateMachine):
         self.completed_trench = False
         super().on_enable()
 
-    @follower_state(trajectory_name='trench', next_state='trench-return')
+    @state
     def trench_move(self, tm, state_tm, initial_call):
-        self.logger.info('Following trench')
+        self.follower.follow_trajectory('trench', state_tm)
         self.launcher.setVelocity(1000)
         self.shot_count = 0
         self.intake.spin(-1)
+        if self.follower.is_finished('trench'):
+            self.next_state('trench_return')
 
-    @follower_state(trajectory_name='trench-return', next_state='align')
+    @state
     def trench_return(self, tm, state_tm, initial_call):
         self.launcher.setVelocity(1000)
         self.completed_trench = True
+        self.follower.follow_trajectory('trench-return', state_tm)
+        if self.follower.is_finished('trench-return'):
+            self.next_state('align')
 
     @state(first=True)
     def align(self):
@@ -49,14 +54,22 @@ class Initiation(AutonomousStateMachine):
             self.next_state('spinup')
 
     @state
+    def align_for_trench(self):
+        self.drive.set_target(0, relative=False)
+
+        if self.drive.angle_setpoint is not None:
+            self.drive.align()
+        if self.drive.target_locked:
+            self.next_state('trench_move')
+
+    @state
     def spinup(self, state_tm):
-        self.logger.info('Spinning up')
         if self.shot_count >= 4:
             if self.completed_trench:
                 self.done()
                 return
             else:
-                self.next_state('trench_move')
+                self.next_state('align_for_trench')
                 return
 
         # Wait until shooter motor is ready
@@ -64,9 +77,8 @@ class Initiation(AutonomousStateMachine):
         if self.launcher.at_setpoint():
             self.next_state('shoot')
 
-    @timed_state(duration=0.5, next_state='spinup')
+    @timed_state(duration=0.75, next_state='spinup')
     def shoot(self, state_tm, initial_call):
-        self.logger.info('Shooting')
         if initial_call:
             self.shot_count += 1
 
@@ -74,3 +86,5 @@ class Initiation(AutonomousStateMachine):
 
         if state_tm < 0.25:
             self.launcher.fire()
+        elif self.shot_count == 1:
+            self.intake.spin(-1)

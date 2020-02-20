@@ -45,7 +45,6 @@ class ControlPanel:
     cp_motor: CANSparkMax
     cp_solenoid: wpilib.DoubleSolenoid
     colorSensor: ColorSensorV3
-    control_panel_switch: wpilib.DigitalInput
     drive: Drive
     ultrasonic: Ultrasonic
     joystick_left: Joystick
@@ -100,15 +99,11 @@ class ControlPanel:
 
         self.cp_motor.set(self.speed)
         self.cp_solenoid.set(self.solenoid_state)
-
-        if self.control_panel_switch.get():
-            self.flush = True
-
-        self.logger.info(f'Current: {self.detected_color} Target: {self.turn_to_color}')
-
+            
         if self.solenoid_state == DoubleSolenoid.Value.kForward:
             self.logger.info(self.ultrasonic.getRangeInches())
             if self.ultrasonic.getRangeInches() > 3:
+                self.flush = True
                 self.aligning = True
             if self.ultrasonic.getRangeInches() <= 3 and self.aligning is True:
                 self.drive.deadband = 1

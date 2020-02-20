@@ -128,7 +128,6 @@ class Robot(magicbot.MagicRobot):
         self.cp_solenoid = wpilib.DoubleSolenoid(5, 4)  # Reversed numbers so kForward is extended
         self.cp_motor = CANSparkMax(10, MotorType.kBrushed)
         self.cp_motor.setIdleMode(IdleMode.kBrake)
-        self.control_panel_switch = wpilib.DigitalInput(4)
         self.ultrasonic = Ultrasonic(4, 5)
         self.ultrasonic.setAutomaticMode(True)
         self.ultrasonic.setEnabled(True)
@@ -172,6 +171,9 @@ class Robot(magicbot.MagicRobot):
         self.right_motors.setInverted(True)
         super().autonomous()
         self.limelight.changePipeline(0)
+
+    def disabledInit(self):
+        self.navx.reset()
 
     def disabledPeriodic(self):
         self.limelight.averagePose()
