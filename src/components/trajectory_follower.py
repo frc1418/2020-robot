@@ -20,8 +20,8 @@ class Follower:
 
     def setup(self):
         self.trajectory_name = None
-        self.left_controller = PIDController(0.05, 0, 0)
-        self.right_controller = PIDController(0.05, 0, 0)
+        self.left_controller = PIDController(0.07, 0, 0)
+        self.right_controller = PIDController(0.07, 0, 0)
 
     def setup_trajectory(self, trajectory: Trajectory):
         self.controller = RamseteController()
@@ -55,7 +55,7 @@ class Follower:
             self.logger.warning('Method "is_finished" called with no trajectory running.')
             return True
 
-        return self.prev_time >= self.trajectory.totalTime()
+        return self.prev_time >= self.trajectory.totalTime() + 1
 
     def execute(self):
         if self.trajectory is None:

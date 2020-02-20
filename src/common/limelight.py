@@ -10,6 +10,7 @@ class Limelight():
     pitch_angle = ntproperty('/limelight/ty', 0)
     light_mode = ntproperty('/limelight/ledMode', 0)
     valid_target = ntproperty('/limelight/tv', 0)
+    skew = ntproperty('/limelight/ts', 0)
     camera_mode = ntproperty('/limelight/camMode', 0)
     pipeline_number = ntproperty('/limelight/pipeline', 1)
     target_state = ntproperty('/limelight/target_state', 0)
