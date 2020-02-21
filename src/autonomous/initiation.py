@@ -44,7 +44,9 @@ class Initiation(AutonomousStateMachine):
             self.next_state('align')
 
     @state(first=True)
-    def align(self):
+    def align(self, initial_call):
+        if initial_call:
+            self.drive.calculated_pid = False
         if self.limelight.targetExists():
             self.drive.set_target(self.limelight.getYaw(), relative=True)
 
