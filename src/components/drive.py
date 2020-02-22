@@ -82,7 +82,7 @@ class Drive:
 
     @property
     def target_locked(self):
-        self.logger.info(f'SET {self.angle_controller.getSetpoint()} ANG {self.navx.getAngle()}')
+        # self.logger.info(f'SET {self.angle_controller.getSetpoint()} ANG {self.navx.getAngle()}')
         return self.angle_controller.atSetpoint() and self.calculated_pid
 
     @property

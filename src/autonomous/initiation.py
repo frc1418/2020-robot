@@ -88,7 +88,7 @@ class Initiation(AutonomousStateMachine):
                 return
 
         # Wait until shooter motor is ready
-        self.launcher.setVelocity(2100 if self.completed_trench else 1900)
+        self.launcher.setVelocity(2000 if self.completed_trench else 1900)
         if self.launcher.at_setpoint(tolerance=1):
             self.next_state('shoot')
 
@@ -97,7 +97,7 @@ class Initiation(AutonomousStateMachine):
         if initial_call:
             self.shot_count += 1
 
-        self.launcher.setVelocity(2100 if self.completed_trench else 1900)
+        self.launcher.setVelocity(2000 if self.completed_trench else 1900)
 
         if state_tm < 0.25:
             self.launcher.fire()

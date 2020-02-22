@@ -35,7 +35,7 @@ class PanelSpinner(StateMachine):
         if self.control_panel.detected_color != self.last_color:
             self.rotations += 1
             self.last_color = self.control_panel.detected_color
-        self.control_panel.spin(0.15)
+        self.control_panel.spin(0.27)
         if self.rotations >= 27:
             self.isSpinningRotation = False
             self.done()
@@ -49,7 +49,7 @@ class PanelSpinner(StateMachine):
             # print(f'Detected: {self.detected_color.red}, {self.detected_color.green}, {self.detected_color.blue}  Towards: {self.turn_to_color.red}, {self.turn_to_color.green}, {self.turn_to_color.blue}')
             direction = math.copysign(1, self.control_panel.colors.index(
                 self.control_panel.detected_color) - self.control_panel.colors.index(self.control_panel.turn_to_color))
-            self.control_panel.spin(direction * 0.15)
+            self.control_panel.spin(direction * 0.2)
             self.resting_timestamp = None
         else:
             if self.resting_timestamp is None:
