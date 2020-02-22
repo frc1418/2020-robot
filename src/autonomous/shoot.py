@@ -39,6 +39,7 @@ class Shoot(AutonomousStateMachine):
             self.drive.align()
         if self.drive.target_locked:
             self.next_state('spinup')
+
     @state
     def spinup(self, state_tm):
         if self.shot_count >= 5:

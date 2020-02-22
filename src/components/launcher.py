@@ -55,7 +55,7 @@ class Launcher:
         self.balls_collected = 0
         self.shoot = True
 
-    def at_setpoint(self, tolerance = 1.5):
+    def at_setpoint(self, tolerance=1.5):
         return self.calculated_pid and abs(self.rpm_controller.getPositionError()) < tolerance
 
     def execute(self):
