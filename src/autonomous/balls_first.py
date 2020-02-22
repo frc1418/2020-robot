@@ -40,11 +40,11 @@ class BallsFirst(AutonomousStateMachine):
             self.next_state('trench_return')
 
         if state_tm < 4 and state_tm > 1:
+            self.limelight.TurnLightOn(True)
             self.intake.spin(-1)
 
     @state
     def trench_return(self, state_tm):
-        self.limelight.TurnLightOn(True)
         self.follower.follow_trajectory('trench-return', state_tm)
         if self.follower.is_finished('trench-return'):
             self.next_state('align')

@@ -57,11 +57,9 @@ class Drive:
 
         if angle is not None:
             self.angle_controller.setSetpoint(self.angle_setpoint)
-            self.limelight.TurnLightOn(True)
         else:
             self.calculated_pid = False
             self.angle_controller.reset()
-            self.limelight.TurnLightOn(False)
 
     def align(self):
         self.aligning = True
@@ -101,7 +99,6 @@ class Drive:
         self.train.setDeadband(self.deadband)
         self.angle_reported = self.angle
 
-        self.limelight.TurnLightOn(self.aligning)
         if self.aligning and self.angle_setpoint is not None:
             self.right_motors.setInverted(False)
             if self.angle_controller.atSetpoint() and self.calculated_pid:
@@ -130,7 +127,6 @@ class Drive:
             self.right_motors.setInverted(True)
             self.right_motors.setVoltage(self.right_voltage)
             self.left_motors.setVoltage(self.left_voltage)
-            self.logger.info(f'LEFT: {self.left_voltage} RIGHT: {self.right_voltage}')
         else:
             self.right_motors.setInverted(False)
             self.train.arcadeDrive(

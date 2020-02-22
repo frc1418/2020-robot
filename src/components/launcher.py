@@ -3,13 +3,16 @@ from magicbot import will_reset_to, tunable
 import wpilib
 from wpilib.controller import SimpleMotorFeedforwardMeters
 from wpilib.controller import PIDController
+from networktables.util import ntproperty
 
 
 class Launcher:
     launcher_motors: wpilib.SpeedControllerGroup
     launcher_solenoid: wpilib.Solenoid
     launcher_encoder: wpilib.Encoder
+    launcher_sensor: wpilib.Ultrasonic
 
+    balls_collected = ntproperty("/components/intake/ballsCollected", 0)
     target_rpm = tunable(0)
     flywheel_rpm = tunable(0)
 
@@ -48,10 +51,12 @@ class Launcher:
         # return self.encoder.getVelocity()
 
     def fire(self):
+        self.logger.info('Shooting ball')
+        self.balls_collected = 0
         self.shoot = True
 
-    def at_setpoint(self):
-        return self.calculated_pid and (self.rpm_controller.getPositionError()) < 1.222
+    def at_setpoint(self, tolerance = 1.5):
+        return self.calculated_pid and abs(self.rpm_controller.getPositionError()) < tolerance
 
     def execute(self):
         current_rpm = self.rpm_filter.calculate(self.flywheel_rpm)
