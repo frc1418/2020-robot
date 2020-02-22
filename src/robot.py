@@ -71,16 +71,16 @@ class Robot(magicbot.MagicRobot):
         self.btn_launcher_solenoid = JoystickButton(self.joystick_alt, 1)
         self.btn_align = JoystickButton(self.joystick_alt, 2)
         self.btn_intake_in = JoystickButton(self.joystick_alt, 3)
-        self.btn_intake_out = JoystickButton(self.joystick_alt, 5)
+        self.btn_intake_out = JoystickButton(self.joystick_alt, 4)
         self.btn_cp_extend = Toggle(self.joystick_left, 4)
-        self.btn_winch = JoystickButton(self.joystick_alt, 6)
+        self.btn_winch = JoystickButton(self.joystick_alt, 8)
         self.btn_cp_motor = Toggle(self.joystick_left, 3)
         self.btn_launcher_motor = JoystickButton(self.joystick_alt, 12)
         self.btn_launcher_motor70 = JoystickButton(self.joystick_alt, 11)
         self.btn_launcher_resting = Toggle(self.joystick_alt, 10)
-        self.btn_slow_movement = Toggle(self.joystick_right, 3)
+        self.btn_slow_movement = JoystickButton(self.joystick_right, 1)
         self.btn_intake_solenoid = Toggle(self.joystick_right, 5)
-        self.btn_scissor_extend = Toggle(self.joystick_alt, 4)
+        self.btn_scissor_extend = Toggle(self.joystick_alt, 7)
         self.btn_color_sensor = JoystickButton(self.joystick_left, 5)
         self.btn_cp_stop = JoystickButton(self.joystick_left, 2)
         self.btn_invert_y_axis = JoystickButton(self.joystick_left, 1)
@@ -146,6 +146,9 @@ class Robot(magicbot.MagicRobot):
         self.launcher_encoder = wpilib.Encoder(1, 2, True)
         self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV * self.LAUNCHER_GEARING))
         self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
+        self.launcher_sensor = wpilib.Ultrasonic(6, 7)
+        self.launcher_sensor.setAutomaticMode(True)
+        self.launcher_sensor.setEnabled(True)
 
         self.launcher_encoder.reset()
 
@@ -208,11 +211,13 @@ class Robot(magicbot.MagicRobot):
             self.drive.set_target(self.limelight.getYaw(), relative=True)
 
         if self.btn_align.get():
+            self.limelight.TurnLightOn(True)
             self.drive.align()
         else:
+            self.limelight.TurnLightOn(False)
             self.drive.set_target(None)
 
-        if self.btn_slow_movement:
+        if self.btn_slow_movement.get():
             # 10% of original values
             self.drive.rotational_constant = 0.08
             self.drive.speed_constant = 0.105

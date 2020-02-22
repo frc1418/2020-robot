@@ -26,7 +26,7 @@ KS = 0.161  # Units: volts
 KV = 1.96  # volts * seconds / distance
 KA = 0.49  # volts * seconds^2 / distance
 TRACK_WIDTH = 0.51  # Units: meters
-MAX_GENERATION_VELOCITY = 1.5  # Units: m/s
+MAX_GENERATION_VELOCITY = 1.8  # Units: m/s
 MAX_GENERATION_VOLTAGE = 5  # Units: volts
 
 TRAJECTORY_DIRECTORY = 'trajectories'
@@ -89,6 +89,13 @@ TRAJECTORIES = {
     "trench": TrajectoryData(
         Pose2d(3.2, 0, Rotation2d.fromDegrees(180)), [],
         Pose2d(6.3, 0, Rotation2d.fromDegrees(180)), reverse=True
+    ),
+    "trench-far": TrajectoryData(
+        Pose2d(3.2, 0, Rotation2d.fromDegrees(180)), [],
+        Pose2d(6.9, 0, Rotation2d.fromDegrees(180)), reverse=True
+    ),
+    "trench-far-return": TrajectoryData(
+        Pose2d(6.9, 0, Rotation2d.fromDegrees(180)), [], Pose2d(5.77, 0, Rotation2d.fromDegrees(180))
     ),
     "trench-return": TrajectoryData(
         Pose2d(6.3, 0, Rotation2d.fromDegrees(180)), [], Pose2d(5.77, 0, Rotation2d.fromDegrees(180))

@@ -7,9 +7,11 @@ from typing import Optional
 
 class AutoShoot(StateMachine):
     launcher: Launcher
+    launcher_sensor: wpilib.Ultrasonic
 
     def setup(self):
         self.speed = None
+        self.range_filter = wpilib.MedianFilter(3)
 
     def fire_when_ready(self, speed: Optional[float] = None):
         self.speed = speed
@@ -20,8 +22,7 @@ class AutoShoot(StateMachine):
         if self.speed is not None:
             self.launcher.setVelocity(self.speed)
 
-        self.logger.info(f'At: {self.launcher.at_setpoint()} State_tm: {state_tm}')
-        if self.launcher.at_setpoint() and state_tm > 0.25:
+        if self.launcher.at_setpoint() and state_tm > 0.25 and self.range_filter.calculate(self.launcher_sensor.getRangeInches()) <= 3:
             self.next_state('shoot')
 
     @timed_state(duration=0.5, next_state='spinup')

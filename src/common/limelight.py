@@ -53,9 +53,9 @@ class Limelight():
 
     def TurnLightOn(self, on: bool):
         if on:
-            self.setLightMode(0)
+            self.setLightMode(3)
         else:
-            self.setLightMode(1)
+            self.setLightMode(0)
 
     def setCamMode(self, mode: bool):
         # true: Driver Camera

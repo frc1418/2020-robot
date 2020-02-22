@@ -21,29 +21,40 @@ class Initiation(AutonomousStateMachine):
     launcher: Launcher
 
     def on_enable(self):
-        self.odometry.reset(TRAJECTORIES['trench'].start)
+        self.odometry.reset(TRAJECTORIES['trench-far'].start)
         self.shot_count = 0
         self.completed_trench = False
         super().on_enable()
 
     @state
     def trench_move(self, tm, state_tm, initial_call):
-        self.follower.follow_trajectory('trench', state_tm)
+        if initial_call:
+            self.logger.info('Starting trench move')
+            self.logger.info(f'Sample time: {state_tm}')
+        if state_tm == 0:
+            state_tm = 0.01
+        self.follower.follow_trajectory('trench-far', state_tm)
         self.launcher.setVelocity(1000)
         self.shot_count = 0
-        self.intake.spin(-1)
-        if self.follower.is_finished('trench'):
-            self.next_state('trench_return')
-
-    @state
-    def trench_return(self, tm, state_tm, initial_call):
-        self.launcher.setVelocity(1000)
         self.completed_trench = True
-        self.follower.follow_trajectory('trench-return', state_tm)
-        if self.follower.is_finished('trench-return'):
+        self.intake.spin(-1)
+        if self.follower.is_finished('trench-far'):
+            self.logger.info('Finished trench move')
             self.next_state('align')
 
-    @state(first=True)
+    # @state
+    # def trench_return(self, tm, state_tm, initial_call):
+    #     self.launcher.setVelocity(1000)
+    #     self.completed_trench = True
+    #     self.follower.follow_trajectory('trench-far-return', state_tm)
+    #     if self.follower.is_finished('trench-far-return'):
+    #         self.next_state('align')
+
+    @timed_state(first=True, duration=0.25, next_state='align')
+    def wait_for_target(self):
+        self.limelight.TurnLightOn(True)
+
+    @state
     def align(self, initial_call):
         if initial_call:
             self.drive.calculated_pid = False
@@ -56,7 +67,9 @@ class Initiation(AutonomousStateMachine):
             self.next_state('spinup')
 
     @state
-    def align_for_trench(self):
+    def align_for_trench(self, initial_call):
+        if initial_call:
+            self.drive.calculated_pid = False
         self.drive.set_target(0, relative=False)
 
         if self.drive.angle_setpoint is not None:
@@ -75,8 +88,8 @@ class Initiation(AutonomousStateMachine):
                 return
 
         # Wait until shooter motor is ready
-        self.launcher.setVelocity(2100 if self.completed_trench else 1950)
-        if self.launcher.at_setpoint():
+        self.launcher.setVelocity(2100 if self.completed_trench else 1900)
+        if self.launcher.at_setpoint(tolerance=1):
             self.next_state('shoot')
 
     @timed_state(duration=0.75, next_state='spinup')
@@ -84,9 +97,9 @@ class Initiation(AutonomousStateMachine):
         if initial_call:
             self.shot_count += 1
 
-        self.launcher.setVelocity(2100 if self.completed_trench else 1950)
+        self.launcher.setVelocity(2100 if self.completed_trench else 1900)
 
         if state_tm < 0.25:
             self.launcher.fire()
-        elif self.shot_count == 1:
+        elif self.shot_count >= 1:
             self.intake.spin(-1)

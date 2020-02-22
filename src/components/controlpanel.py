@@ -99,7 +99,8 @@ class ControlPanel:
 
         self.cp_motor.set(self.speed)
         self.cp_solenoid.set(self.solenoid_state)
-            
+        # self.logger.info(f'Dis: {self.ultrasonic.getRangeInches()}')
+
         if self.solenoid_state == DoubleSolenoid.Value.kForward:
             self.logger.info(self.ultrasonic.getRangeInches())
             if self.ultrasonic.getRangeInches() > 3:
