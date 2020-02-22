@@ -55,6 +55,7 @@ class Robot(magicbot.MagicRobot):
 
     flipped = tunable(False)
     ntSolenoid_state = ntproperty("/robot/ntSolenoid_state", 0)
+    ds_velocity_setpoint = ntproperty('/components/launcher/DS_VEL_SETPOINT', 2100)
 
     WHEEL_DIAMETER = 0.1524  # Units: Meters
     ENCODER_PULSES_PER_REV = 1024  # Ignore quadrature decoding (4x)
@@ -77,6 +78,7 @@ class Robot(magicbot.MagicRobot):
         self.btn_cp_motor = JoystickButton(self.joystick_left, 3)
         self.btn_launcher_motor = JoystickButton(self.joystick_alt, 12)
         self.btn_launcher_motor70 = JoystickButton(self.joystick_alt, 11)
+        self.btn_launcher_motor_dynamic = JoystickButton(self.joystick_alt, 9)
         self.btn_launcher_resting = Toggle(self.joystick_alt, 10)
         self.btn_slow_movement = JoystickButton(self.joystick_right, 1)
         self.btn_intake_solenoid = Toggle(self.joystick_right, 5)
@@ -248,6 +250,8 @@ class Robot(magicbot.MagicRobot):
             self.launcher.setVelocity(2100)
         elif self.btn_launcher_motor70.get():
             self.launcher.setVelocity(1900)
+        elif self.btn_launcher_motor_dynamic.get():
+            self.launcher.setVelocity(self.ds_velocity_setpoint)
 
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()
