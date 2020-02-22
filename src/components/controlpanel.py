@@ -88,11 +88,15 @@ class ControlPanel:
         try:
             # The "confidence" argument here is meant to be a double reference, so it
             # would be set to the confidence in C++ code. Unused here.
-            result_color = self.colorMatcher.matchClosestColor(self.colorSensor.getColor(), confidence=0)
+            read_color = self.colorSensor.getColor()
+            if self.solenoid_state == DoubleSolenoid.Value.kForward:
+                self.logger.info(f'Read Color: ({read_color.red}, {read_color.green}, {read_color.blue})')
+            result_color = self.colorMatcher.matchClosestColor(read_color, confidence=0)
         except IOError:
             pass
         else:
             # Sometimes black is returned but we don't want it
+            # self.logger.info(f'Color: {result_color.red}, {result_color.green}, {result_color.blue}')
             if Color.from_wpilib(result_color) != wpilib.Color.kBlack:
                 self.detected_color = Color.from_wpilib(result_color)
                 self.detected_color = list(sorted(self.colors, key=lambda c: self.calculate_distance(c, self.detected_color)))[0]
@@ -102,7 +106,7 @@ class ControlPanel:
         # self.logger.info(f'Dis: {self.ultrasonic.getRangeInches()}')
 
         if self.solenoid_state == DoubleSolenoid.Value.kForward:
-            self.logger.info(self.ultrasonic.getRangeInches())
+            # self.logger.info(self.ultrasonic.getRangeInches())
             if self.ultrasonic.getRangeInches() > 3:
                 self.flush = True
                 self.aligning = True

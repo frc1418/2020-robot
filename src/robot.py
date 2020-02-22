@@ -69,12 +69,12 @@ class Robot(magicbot.MagicRobot):
 
         # Buttons
         self.btn_launcher_solenoid = JoystickButton(self.joystick_alt, 1)
-        self.btn_align = JoystickButton(self.joystick_alt, 2)
+        self.btn_align = JoystickButton(self.joystick_left, 1)
         self.btn_intake_in = JoystickButton(self.joystick_alt, 3)
         self.btn_intake_out = JoystickButton(self.joystick_alt, 4)
         self.btn_cp_extend = Toggle(self.joystick_left, 4)
         self.btn_winch = JoystickButton(self.joystick_alt, 8)
-        self.btn_cp_motor = Toggle(self.joystick_left, 3)
+        self.btn_cp_motor = JoystickButton(self.joystick_left, 3)
         self.btn_launcher_motor = JoystickButton(self.joystick_alt, 12)
         self.btn_launcher_motor70 = JoystickButton(self.joystick_alt, 11)
         self.btn_launcher_resting = Toggle(self.joystick_alt, 10)
@@ -83,7 +83,7 @@ class Robot(magicbot.MagicRobot):
         self.btn_scissor_extend = Toggle(self.joystick_alt, 7)
         self.btn_color_sensor = JoystickButton(self.joystick_left, 5)
         self.btn_cp_stop = JoystickButton(self.joystick_left, 2)
-        self.btn_invert_y_axis = JoystickButton(self.joystick_left, 1)
+        self.btn_invert_y_axis = JoystickButton(self.joystick_left, 6)
         self.btn_rotation_sensitivity = JoystickButton(self.joystick_right, 1)
 
         # Set up motors for encoders
@@ -268,7 +268,7 @@ class Robot(magicbot.MagicRobot):
 
         # Winch
         if self.btn_winch.get():
-            self.winch_motors.set(1)
+            self.winch_motors.set(0.8)
         else:
             self.winch_motors.set(0)  # Must use set(0) when not pressed because there is no component
 

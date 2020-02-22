@@ -92,10 +92,10 @@ TRAJECTORIES = {
     ),
     "trench-far": TrajectoryData(
         Pose2d(3.2, 0, Rotation2d.fromDegrees(180)), [],
-        Pose2d(6.9, 0, Rotation2d.fromDegrees(180)), reverse=True
+        Pose2d(7.1, 0, Rotation2d.fromDegrees(180)), reverse=True
     ),
     "trench-far-return": TrajectoryData(
-        Pose2d(6.9, 0, Rotation2d.fromDegrees(180)), [], Pose2d(5.77, 0, Rotation2d.fromDegrees(180))
+        Pose2d(7.1, 0, Rotation2d.fromDegrees(180)), [], Pose2d(5.77, 0, Rotation2d.fromDegrees(180))
     ),
     "trench-return": TrajectoryData(
         Pose2d(6.3, 0, Rotation2d.fromDegrees(180)), [], Pose2d(5.77, 0, Rotation2d.fromDegrees(180))
