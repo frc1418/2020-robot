@@ -11,6 +11,9 @@ from . import follower_state
 
 class Nothing(AutonomousStateMachine):
     MODE_NAME = 'Nothing'
+    """
+    Do nothing during auto period.
+    """
 
     drive: Drive
 
