@@ -130,7 +130,7 @@ class Robot(magicbot.MagicRobot):
         self.cp_solenoid = wpilib.DoubleSolenoid(5, 4)  # Reversed numbers so kForward is extended
         self.cp_motor = CANSparkMax(10, MotorType.kBrushed)
         self.cp_motor.setIdleMode(IdleMode.kBrake)
-        self.ultrasonic = Ultrasonic(4, 5)
+        self.ultrasonic = Ultrasonic(3, 4)
         self.ultrasonic.setAutomaticMode(True)
         self.ultrasonic.setEnabled(True)
 
@@ -138,17 +138,17 @@ class Robot(magicbot.MagicRobot):
         self.intake_motor = WPI_VictorSPX(1)
         self.intake_wheels = WPI_VictorSPX(4)
         self.intake_solenoid = wpilib.DoubleSolenoid(2, 1)
-        self.intake_switch = wpilib.DigitalInput(3)
+        self.intake_switch = wpilib.DigitalInput(2)
 
         # Launcher
         # self.launcher_spark = CANSparkMax(40, MotorType.kBrushed)
         # self.launcher_spark.setInverted(True)
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
-        self.launcher_encoder = wpilib.Encoder(1, 2, True)
+        self.launcher_encoder = wpilib.Encoder(5, 6, True)
         self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV * self.LAUNCHER_GEARING))
         self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
-        self.launcher_sensor = wpilib.Ultrasonic(6, 7)
+        self.launcher_sensor = wpilib.Ultrasonic(0, 1)
         self.launcher_sensor.setAutomaticMode(True)
         self.launcher_sensor.setEnabled(True)
 
@@ -274,7 +274,7 @@ class Robot(magicbot.MagicRobot):
 
         # Winch
         if self.btn_winch.get():
-            self.winch_motors.set(0.8)
+            self.winch_motors.set(0.65)
         else:
             self.winch_motors.set(0)  # Must use set(0) when not pressed because there is no component
 
