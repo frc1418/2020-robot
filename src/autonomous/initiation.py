@@ -12,6 +12,9 @@ from . import follower_state
 class Initiation(AutonomousStateMachine):
     DEFAULT = True
     MODE_NAME = 'Initiation'
+    """
+    Align and shoot 3 balls, then drive back to pick up 3 more balls and shoot again.
+    """
 
     drive: Drive
     follower: Follower

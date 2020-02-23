@@ -12,6 +12,9 @@ from . import follower_state
 
 class BallsFirst(AutonomousStateMachine):
     MODE_NAME = 'BallsFirst'
+    """
+    Back up to pick up two balls, then drive back and shoot all five balls.
+    """
 
     starting_pos = ntproperty('/autonomous/starting_position', StartingPosition.LEFT.name)
 
