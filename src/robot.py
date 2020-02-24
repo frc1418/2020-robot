@@ -263,8 +263,8 @@ class Robot(magicbot.MagicRobot):
 
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()
-
-        self.launcher_solenoid.set(self.btn_manual_launcher_solenoid.get())
+        elif self.btn_manual_launcher_solenoid.get():
+            self.launcher.fire()
 
         if self.btn_cp_stop.get():
             self.panel_spinner.done()
