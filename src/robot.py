@@ -70,6 +70,7 @@ class Robot(magicbot.MagicRobot):
 
         # Buttons
         self.btn_launcher_solenoid = JoystickButton(self.joystick_alt, 1)
+        self.btn_manual_launcher_solenoid = JoystickButton(self.joystick_alt, 5)
         self.btn_align = JoystickButton(self.joystick_left, 1)
         self.btn_intake_in = JoystickButton(self.joystick_alt, 3)
         self.btn_intake_out = JoystickButton(self.joystick_alt, 4)
@@ -145,7 +146,7 @@ class Robot(magicbot.MagicRobot):
         # self.launcher_spark.setInverted(True)
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
-        self.launcher_encoder = wpilib.Encoder(5, 6, True)
+        self.launcher_encoder = wpilib.Encoder(6, 5, True)
         self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV * self.LAUNCHER_GEARING))
         self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
         self.launcher_sensor = wpilib.Ultrasonic(0, 1)
@@ -197,6 +198,7 @@ class Robot(magicbot.MagicRobot):
         #     self.inverse *= -1
         # else:
         #     self.flipped = False
+        self.logger.info(self.ultrasonic.getRangeInches())
 
         if self.btn_invert_y_axis.get():
             self.inverse = 1
@@ -249,14 +251,15 @@ class Robot(magicbot.MagicRobot):
         if self.btn_launcher_motor.get():
             self.launcher.setVelocity(2100)
         elif self.btn_launcher_motor70.get():
-            self.launcher.setVelocity(1900)
+            self.launcher.setVelocity(1825)
         elif self.btn_launcher_motor_dynamic.get():
             self.launcher.setVelocity(self.ds_velocity_setpoint)
 
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()
-            if not self.btn_intake_in.get():
-                self.intake.spin(-1)
+
+        if self.btn_manual_launcher_solenoid.get():
+            self.launcher_solenoid.set(not self.launcher_solenoid.get())
 
         if self.btn_cp_stop.get():
             self.panel_spinner.done()
