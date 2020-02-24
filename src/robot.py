@@ -56,6 +56,7 @@ class Robot(magicbot.MagicRobot):
     flipped = tunable(False)
     ntSolenoid_state = ntproperty("/robot/ntSolenoid_state", 0)
     ds_velocity_setpoint = ntproperty('/components/launcher/DS_VEL_SETPOINT', 2100)
+    limelight_stream_mode = ntproperty('/limelight/stream', 2)
 
     WHEEL_DIAMETER = 0.1524  # Units: Meters
     ENCODER_PULSES_PER_REV = 1024  # Ignore quadrature decoding (4x)
@@ -88,6 +89,7 @@ class Robot(magicbot.MagicRobot):
         self.btn_cp_stop = JoystickButton(self.joystick_left, 2)
         self.btn_invert_y_axis = JoystickButton(self.joystick_left, 6)
         self.btn_rotation_sensitivity = JoystickButton(self.joystick_right, 1)
+        self.btn_test_launcher_rpm = JoystickButton(self.joystick_alt, 6)
 
         # Set up motors for encoders
         self.master_left = CANSparkMax(1, MotorType.kBrushless)
@@ -147,6 +149,7 @@ class Robot(magicbot.MagicRobot):
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
         self.launcher_encoder = wpilib.Encoder(6, 5, True)
+        self.launcher_encoder.setSamplesToAverage(8)
         self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV * self.LAUNCHER_GEARING))
         self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
         self.launcher_sensor = wpilib.Ultrasonic(0, 1)
@@ -180,6 +183,7 @@ class Robot(magicbot.MagicRobot):
 
     def disabledInit(self):
         self.navx.reset()
+        self.limelight_stream_mode = 2
 
     def disabledPeriodic(self):
         self.limelight.averagePose()
@@ -198,7 +202,9 @@ class Robot(magicbot.MagicRobot):
         #     self.inverse *= -1
         # else:
         #     self.flipped = False
-        self.logger.info(self.ultrasonic.getRangeInches())
+
+        # self.logger.info(self.ultrasonic.getRangeInches())
+        self.logger.info(self.launcher_encoder.getRate() * 60)
 
         if self.btn_invert_y_axis.get():
             self.inverse = 1

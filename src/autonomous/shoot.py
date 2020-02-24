@@ -43,7 +43,7 @@ class Shoot(AutonomousStateMachine):
     @state
     def spinup(self, state_tm):
         if self.shot_count >= 5:
-            self.done()
+            self.next_state('move_backward')
 
         # Wait until shooter motor is ready
         self.launcher.setVelocity(1950)
@@ -61,3 +61,7 @@ class Shoot(AutonomousStateMachine):
             self.launcher.fire()
         elif self.shot_count >= 1:
             self.intake.spin(-1)
+
+    @timed_state(duration=0.3)
+    def move_backward(self):
+        self.drive.move(-0.3)
