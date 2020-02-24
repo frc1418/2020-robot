@@ -183,7 +183,7 @@ class Robot(magicbot.MagicRobot):
 
     def disabledInit(self):
         self.navx.reset()
-        self.limelight_stream_mode = 2
+        self.limelight_stream_mode = 0
 
     def disabledPeriodic(self):
         self.limelight.averagePose()
@@ -229,8 +229,8 @@ class Robot(magicbot.MagicRobot):
 
         if self.btn_slow_movement.get():
             # 10% of original values
-            self.drive.rotational_constant = 0.08
-            self.drive.speed_constant = 0.105
+            self.drive.rotational_constant = 0.54
+            self.drive.speed_constant = 0.5
 
         # Control Panel Spinner
         self.control_panel.set_solenoid(self.btn_cp_extend.get())
@@ -264,8 +264,7 @@ class Robot(magicbot.MagicRobot):
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()
 
-        if self.btn_manual_launcher_solenoid.get():
-            self.launcher_solenoid.set(not self.launcher_solenoid.get())
+        self.launcher_solenoid.set(self.btn_manual_launcher_solenoid.get())
 
         if self.btn_cp_stop.get():
             self.panel_spinner.done()
