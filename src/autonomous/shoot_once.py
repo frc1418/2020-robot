@@ -72,7 +72,7 @@ class ShootOnce(AutonomousStateMachine):
 
     @state
     def spinup(self, state_tm):
-        if self.shot_count >= 4:
+        if self.shot_count >= 3:
             self.next_state('align_for_trench')
             return
 
