@@ -78,7 +78,7 @@ class ShootOnce(AutonomousStateMachine):
 
         # Wait until shooter motor is ready
         self.launcher.setVelocity(1900)
-        if self.launcher.at_setpoint(1.5):
+        if self.launcher.at_setpoint(1.5) and self.launcher.ball_found():
             self.next_state('shoot')
 
     @timed_state(duration=0.75, next_state='spinup')

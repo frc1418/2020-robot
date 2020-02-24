@@ -15,7 +15,6 @@ class Intake:
     speed = will_reset_to(0)
     solenoid_state = will_reset_to(wpilib.DoubleSolenoid.Value.kForward)
 
-    ball_count = 0
     previous_limit = False
 
     def spin(self, speed: float):
@@ -36,7 +35,6 @@ class Intake:
 
         if self.intake_switch.get():
             if self.intake_switch.get() is not self.previous_limit:
-                self.ball_count += 1
+                self.balls_collected += 1
         self.previous_limit = self.intake_switch.get()
-        self.balls_collected = self.ball_count
         self.intake_solenoid.set(self.solenoid_state)

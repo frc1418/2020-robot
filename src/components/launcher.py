@@ -31,6 +31,7 @@ class Launcher:
         self.feedforward = SimpleMotorFeedforwardMeters(0.933, 0.197, 0.0169)
         self.rpm_filter: wpilib.LinearFilter = wpilib.LinearFilter.movingAverage(8)
         self.calculated_pid = False
+        self.range_filter = wpilib.MedianFilter(3)
 
     def setVelocity(self, speed):
         """
@@ -51,9 +52,11 @@ class Launcher:
         # return self.encoder.getVelocity()
 
     def fire(self):
-        self.logger.info('Shooting ball')
         self.balls_collected = 0
         self.shoot = True
+
+    def ball_found(self):
+        return self.range_filter.calculate(self.launcher_sensor.getRangeInches()) <= 3
 
     def at_setpoint(self, tolerance=1.5):
         return self.calculated_pid and abs(self.rpm_controller.getPositionError()) < tolerance
@@ -77,3 +80,4 @@ class Launcher:
             self.target_rpm = 0
 
         self.launcher_solenoid.set(self.shoot)
+        self.range_filter.calculate(self.launcher_sensor.getRangeInches())
