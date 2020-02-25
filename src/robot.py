@@ -43,9 +43,6 @@ Counter-Clockwise is Positive
 # 3878 RPM (INITIATION LINE)
 # 4530 RPM (FRONT OF TRENCH)
 
-# 11 White line
-# 12 Front of trench
-# 8 back of trench
 
 class Robot(magicbot.MagicRobot):
     # Order of components determines order that execute methods are run
@@ -87,9 +84,9 @@ class Robot(magicbot.MagicRobot):
         self.btn_winch = JoystickButton(self.joystick_alt, 8)
         self.btn_cp_motor = JoystickButton(self.joystick_left, 3)
         self.btn_launcher_motor = JoystickButton(self.joystick_alt, 12)
-        self.btn_launcher_motor70 = JoystickButton(self.joystick_alt, 11)  # Initiation Line
+        self.btn_launcher_motor_far = JoystickButton(self.joystick_alt, 10)
+        self.btn_launcher_motor_close = JoystickButton(self.joystick_alt, 11)  # Initiation Line
         self.btn_launcher_motor_dynamic = JoystickButton(self.joystick_alt, 9)
-        self.btn_launcher_resting = Toggle(self.joystick_alt, 10)
         self.btn_slow_movement = JoystickButton(self.joystick_right, 1)
         self.btn_intake_solenoid = Toggle(self.joystick_right, 5)
         self.btn_scissor_extend = Toggle(self.joystick_alt, 7)
@@ -258,13 +255,12 @@ class Robot(magicbot.MagicRobot):
             self.control_panel.spin(0.5)
 
         # Launcher
-        if self.btn_launcher_resting.get():
-            self.launcher.setVelocity(2000)  # old = 2125
-
         if self.btn_launcher_motor.get():
-            self.launcher.setVelocity(4630)
-        elif self.btn_launcher_motor70.get():
+            self.launcher.setVelocity(4530)
+        elif self.btn_launcher_motor_close.get():
             self.launcher.setVelocity(3878)
+        elif self.btn_launcher_motor_far.get():
+            self.launcher.setVelocity(4800)
         elif self.btn_launcher_motor_dynamic.get():
             self.launcher.setVelocity(self.ds_velocity_setpoint)
 
