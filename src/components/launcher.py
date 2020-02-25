@@ -15,21 +15,21 @@ class Launcher:
     balls_collected = ntproperty("/components/intake/ballsCollected", 0)
     target_rpm = tunable(0)
     flywheel_rpm = tunable(0)
+    filtered_rpm = tunable(0)
 
     speed = will_reset_to(0)
     decimal = will_reset_to(0)
     control_velocity = will_reset_to(False)
     shoot = will_reset_to(False)
 
-    RPM_KP = tunable(0.1)
-    RPM_KI = tunable(0.002)
-    RPM_KD = tunable(0.008)
+    RPM_KP = tunable(0.7)
+    RPM_KI = tunable(0)
+    RPM_KD = tunable(0)
 
     def setup(self):
         self.rpm_controller = PIDController(self.RPM_KP, self.RPM_KI, self.RPM_KD, period=20)
         self.rpm_controller.setTolerance(100, float('inf'))
-        self.feedforward = SimpleMotorFeedforwardMeters(0.933, 0.197, 0.0169)
-        self.rpm_filter: wpilib.LinearFilter = wpilib.LinearFilter.movingAverage(8)
+        self.feedforward = SimpleMotorFeedforwardMeters(1.47, 0.0614, 5.77e-5)
         self.calculated_pid = False
         self.range_filter = wpilib.MedianFilter(3)
 
@@ -62,8 +62,7 @@ class Launcher:
         return self.calculated_pid and abs(self.rpm_controller.getPositionError()) < tolerance
 
     def execute(self):
-        current_rpm = self.rpm_filter.calculate(self.flywheel_rpm)
-        self.flywheel_rpm = current_rpm * 60
+        self.filtered_rpm = self.launcher_encoder.getRate() * 60
 
         if self.control_velocity:
             self.rpm_controller.setP(self.RPM_KP)
@@ -71,7 +70,6 @@ class Launcher:
             self.rpm_controller.setD(self.RPM_KD)
 
             feedforward = self.feedforward.calculate(self.speed, 0)
-            # output = feedforward + self.rpm_controller.calculate(current_rpm)
             output = feedforward + self.rpm_controller.calculate(self.launcher_encoder.getRate())
             self.calculated_pid = True
             self.launcher_motors.setVoltage(output)
