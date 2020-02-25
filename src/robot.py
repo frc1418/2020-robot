@@ -40,7 +40,7 @@ Counter-Clockwise is Positive
 
 # 4630 RPM (Furthest ball on trench)
 # 4800 (FURTHEST BACK, touching control panel)
-# 3878 RPM (INITIATION LINE)
+# 3950 RPM (INITIATION LINE)
 # 4530 RPM (FRONT OF TRENCH)
 
 
@@ -258,7 +258,7 @@ class Robot(magicbot.MagicRobot):
         if self.btn_launcher_motor.get():
             self.launcher.setVelocity(4530)
         elif self.btn_launcher_motor_close.get():
-            self.launcher.setVelocity(3878)
+            self.launcher.setVelocity(3950)
         elif self.btn_launcher_motor_far.get():
             self.launcher.setVelocity(4800)
         elif self.btn_launcher_motor_dynamic.get():
