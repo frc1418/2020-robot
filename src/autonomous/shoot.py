@@ -46,7 +46,7 @@ class Shoot(AutonomousStateMachine):
             self.next_state('move_backward')
 
         # Wait until shooter motor is ready
-        self.launcher.setVelocity(1950)
+        self.launcher.setVelocity(4143)
         if self.launcher.at_setpoint():
             self.next_state('shoot')
 
@@ -55,7 +55,7 @@ class Shoot(AutonomousStateMachine):
         if initial_call:
             self.shot_count += 1
 
-        self.launcher.setVelocity(1950)
+        self.launcher.setVelocity(4143)
 
         if state_tm < 0.25:
             self.launcher.fire()
