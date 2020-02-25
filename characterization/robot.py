@@ -11,8 +11,8 @@ except ImportError:
 
 class Robot(wpilib.TimedRobot):
 
-    ENCODER_PULSES_PER_REV = 1024  # Ignore quadrature decoding (4x)
-    GEARING = (3.25 / 1)  # 3.25:1 in gearbox
+    ENCODER_PULSES_PER_REV = 2048  # Ignore quadrature decoding (4x)
+    GEARING = 1  # 3.25:1 in gearbox
 
     encoder_pos = ntproperty('/robot/encoder_pos', 0)
     encoder_rate = ntproperty('/robot/encoder_rate', 0)
@@ -24,13 +24,12 @@ class Robot(wpilib.TimedRobot):
         self.joystick = wpilib.Joystick(0)
 
         self.motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
-        self.motors.setInverted(True)
 
         self.priorAutospeed = 0
         # TODO: Check if we need IdleMode.kBrake
         # self.motor.setIdleMode(IdleMode.kBrake);
 
-        self.encoder = wpilib.Encoder(1, 2, True)
+        self.encoder = wpilib.Encoder(7, 8, 9)
 
         # //
         # // Configure encoder related functions -- getDistance and getrate should
@@ -42,7 +41,7 @@ class Robot(wpilib.TimedRobot):
         # % elif units == 'Radians':
         # double encoderConstant = (1 / GEARING) * 2. * Math.PI;
         # % elif units == 'Rotations':
-        self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV * self.GEARING))
+        self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV))
         self.encoder.setDistancePerPulse(self.encoderConstant)
 
         self.encoder.reset()

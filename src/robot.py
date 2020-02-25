@@ -38,6 +38,14 @@ Counter-Clockwise is Positive
    -->
 """
 
+# 4630 RPM (Furthest ball on trench)
+# 4800 (FURTHEST BACK, touching control panel)
+# 3878 RPM (INITIATION LINE)
+# 4530 RPM (FRONT OF TRENCH)
+
+# 11 White line
+# 12 Front of trench
+# 8 back of trench
 
 class Robot(magicbot.MagicRobot):
     # Order of components determines order that execute methods are run
@@ -79,7 +87,7 @@ class Robot(magicbot.MagicRobot):
         self.btn_winch = JoystickButton(self.joystick_alt, 8)
         self.btn_cp_motor = JoystickButton(self.joystick_left, 3)
         self.btn_launcher_motor = JoystickButton(self.joystick_alt, 12)
-        self.btn_launcher_motor70 = JoystickButton(self.joystick_alt, 11)
+        self.btn_launcher_motor70 = JoystickButton(self.joystick_alt, 11)  # Initiation Line
         self.btn_launcher_motor_dynamic = JoystickButton(self.joystick_alt, 9)
         self.btn_launcher_resting = Toggle(self.joystick_alt, 10)
         self.btn_slow_movement = JoystickButton(self.joystick_right, 1)
@@ -149,8 +157,8 @@ class Robot(magicbot.MagicRobot):
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
         self.launcher_encoder = wpilib.Encoder(7, 8, 9)
-        self.launcher_encoder.setSamplesToAverage(0)
         self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV))
+        self.launcher_encoder.setSamplesToAverage(8)
         self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
         self.launcher_sensor = wpilib.Ultrasonic(0, 1)
         self.launcher_sensor.setAutomaticMode(True)
@@ -204,7 +212,6 @@ class Robot(magicbot.MagicRobot):
         #     self.flipped = False
 
         # self.logger.info(self.ultrasonic.getRangeInches())
-        self.logger.info(self.launcher_encoder.get())
 
         if self.btn_invert_y_axis.get():
             self.inverse = 1
@@ -252,10 +259,10 @@ class Robot(magicbot.MagicRobot):
 
         # Launcher
         if self.btn_launcher_resting.get():
-            self.launcher.setVelocity(2125)
+            self.launcher.setVelocity(2000)  # old = 2125
 
         if self.btn_launcher_motor.get():
-            self.launcher.setVelocity(4462)
+            self.launcher.setVelocity(4630)
         elif self.btn_launcher_motor70.get():
             self.launcher.setVelocity(3878)
         elif self.btn_launcher_motor_dynamic.get():
