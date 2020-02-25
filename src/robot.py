@@ -59,8 +59,8 @@ class Robot(magicbot.MagicRobot):
     limelight_stream_mode = ntproperty('/limelight/stream', 2)
 
     WHEEL_DIAMETER = 0.1524  # Units: Meters
-    ENCODER_PULSES_PER_REV = 1024  # Ignore quadrature decoding (4x)
-    LAUNCHER_GEARING = (3.25 / 1)  # 3.25:1 in gearbox
+    ENCODER_PULSES_PER_REV = 2048  # Ignore quadrature decoding (4x, 8192)
+    LAUNCHER_GEARING = 1  # No gearing since encoder is on shaft
     GEARING = 7.56  # 7.56:1 gear ratio
 
     def createObjects(self):
@@ -252,12 +252,12 @@ class Robot(magicbot.MagicRobot):
 
         # Launcher
         if self.btn_launcher_resting.get():
-            self.launcher.setVelocity(1000)
+            self.launcher.setVelocity(2125)
 
         if self.btn_launcher_motor.get():
-            self.launcher.setVelocity(2100)
+            self.launcher.setVelocity(4462)
         elif self.btn_launcher_motor70.get():
-            self.launcher.setVelocity(1825)
+            self.launcher.setVelocity(3878)
         elif self.btn_launcher_motor_dynamic.get():
             self.launcher.setVelocity(self.ds_velocity_setpoint)
 
