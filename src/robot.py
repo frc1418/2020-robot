@@ -148,9 +148,9 @@ class Robot(magicbot.MagicRobot):
         # self.launcher_spark.setInverted(True)
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
-        self.launcher_encoder = wpilib.Encoder(6, 5, True)
-        self.launcher_encoder.setSamplesToAverage(8)
-        self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV * self.LAUNCHER_GEARING))
+        self.launcher_encoder = wpilib.Encoder(7, 8, 9)
+        self.launcher_encoder.setSamplesToAverage(0)
+        self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV))
         self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
         self.launcher_sensor = wpilib.Ultrasonic(0, 1)
         self.launcher_sensor.setAutomaticMode(True)
@@ -204,7 +204,7 @@ class Robot(magicbot.MagicRobot):
         #     self.flipped = False
 
         # self.logger.info(self.ultrasonic.getRangeInches())
-        self.logger.info(self.launcher_encoder.getRate() * 60)
+        self.logger.info(self.launcher_encoder.get())
 
         if self.btn_invert_y_axis.get():
             self.inverse = 1
