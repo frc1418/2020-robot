@@ -80,7 +80,7 @@ class Initiation(AutonomousStateMachine):
             self.next_state('trench_move')
 
     @state
-    def spinup(self, state_tm):
+    def spinup(self, state_tm, initial_call):
         if self.shot_count >= 3 and not self.launcher.ball_found():
             if self.completed_trench:
                 self.done()
@@ -91,7 +91,7 @@ class Initiation(AutonomousStateMachine):
 
         # Wait until shooter motor is ready
         self.launcher.setVelocity(4730 if self.completed_trench else 4530)
-        if self.launcher.at_setpoint(1 if self.completed_trench else 1.5) and self.launcher.ball_found():
+        if self.launcher.at_setpoint(1 if self.completed_trench else 1.5) and self.launcher.ball_found() and not initial_call:
             self.next_state('shoot')
 
     @timed_state(duration=0.75, next_state='spinup')
