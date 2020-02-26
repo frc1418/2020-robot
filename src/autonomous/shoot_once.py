@@ -36,7 +36,7 @@ class ShootOnce(AutonomousStateMachine):
         if state_tm == 0:
             state_tm = 0.01
         self.follower.follow_trajectory('trench-far', state_tm)
-        self.launcher.setVelocity(2125)
+        self.launcher.setVelocity(4530)
         self.shot_count = 0
         self.intake.spin(-1)
         if self.follower.is_finished('trench-far'):
@@ -77,7 +77,7 @@ class ShootOnce(AutonomousStateMachine):
             return
 
         # Wait until shooter motor is ready
-        self.launcher.setVelocity(3950)
+        self.launcher.setVelocity(4530)
         if self.launcher.at_setpoint(1.5) and self.launcher.ball_found():
             self.next_state('shoot')
 
@@ -86,7 +86,7 @@ class ShootOnce(AutonomousStateMachine):
         if initial_call:
             self.shot_count += 1
 
-        self.launcher.setVelocity(3950)
+        self.launcher.setVelocity(4530)
 
         if state_tm < 0.25:
             self.launcher.fire()

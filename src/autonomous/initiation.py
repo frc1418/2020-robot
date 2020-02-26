@@ -37,7 +37,7 @@ class Initiation(AutonomousStateMachine):
         if state_tm == 0:
             state_tm = 0.01
         self.follower.follow_trajectory('trench-far', state_tm)
-        self.launcher.setVelocity(1000)
+        self.launcher.setVelocity(2000)
         self.shot_count = 0
         self.completed_trench = True
         self.intake.spin(-1)
@@ -62,7 +62,7 @@ class Initiation(AutonomousStateMachine):
         if initial_call:
             self.drive.calculated_pid = False
         if self.limelight.targetExists():
-            self.drive.set_target(self.limelight.getYaw(), relative=True)
+            self.drive.set_target(self.limelight.getYaw() - 2 if self.completed_trench else self.limelight.getYaw(), relative=True)
 
         if self.drive.angle_setpoint is not None:
             self.drive.align()
@@ -91,7 +91,7 @@ class Initiation(AutonomousStateMachine):
                 return
 
         # Wait until shooter motor is ready
-        self.launcher.setVelocity(4281 if self.completed_trench else 3950)
+        self.launcher.setVelocity(4730 if self.completed_trench else 4530)
         if self.launcher.at_setpoint(1 if self.completed_trench else 1.5) and self.launcher.ball_found():
             self.next_state('shoot')
 
@@ -100,7 +100,7 @@ class Initiation(AutonomousStateMachine):
         if initial_call:
             self.shot_count += 1
 
-        self.launcher.setVelocity(4281 if self.completed_trench else 3950)
+        self.launcher.setVelocity(4730 if self.completed_trench else 4530)
 
         if state_tm < 0.25:
             self.launcher.fire()
