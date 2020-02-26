@@ -37,7 +37,6 @@ class Initiation(AutonomousStateMachine):
         if state_tm == 0:
             state_tm = 0.01
         self.follower.follow_trajectory('trench-far', state_tm)
-        self.launcher.setVelocity(2000)
         self.shot_count = 0
         self.completed_trench = True
         self.intake.spin(-1)
@@ -82,7 +81,7 @@ class Initiation(AutonomousStateMachine):
 
     @state
     def spinup(self, state_tm):
-        if self.shot_count >= 3:
+        if self.shot_count >= 3 and not self.launcher.ball_found():
             if self.completed_trench:
                 self.done()
                 return
