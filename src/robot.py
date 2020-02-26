@@ -38,10 +38,9 @@ Counter-Clockwise is Positive
    -->
 """
 
-# 4630 RPM (Furthest ball on trench)
-# 4800 (FURTHEST BACK, touching control panel)
-# 3950 RPM (INITIATION LINE)
-# 4630 RPM (FRONT OF TRENCH)
+# 4830 RPM (Furthest ball on trench)
+# 4530 RPM (INITIATION LINE)
+# 4530 RPM (FRONT OF TRENCH)
 
 
 class Robot(magicbot.MagicRobot):
@@ -156,7 +155,7 @@ class Robot(magicbot.MagicRobot):
         # Don't use index pin and change to k1X encoding to decrease rate measurement jitter
         self.launcher_encoder = wpilib.Encoder(7, 8, True, encodingType=wpilib.Encoder.EncodingType.k1X)
         self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV))
-        self.launcher_encoder.setSamplesToAverage(8)
+        self.launcher_encoder.setSamplesToAverage(15)
         self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
         self.launcher_sensor = wpilib.Ultrasonic(0, 1)
         self.launcher_sensor.setAutomaticMode(True)
@@ -223,7 +222,10 @@ class Robot(magicbot.MagicRobot):
 
         # Align (Overrides self.drive.move() because it's placed after)
         if self.btn_align.get() and self.limelight.targetExists():
-            self.drive.set_target(self.limelight.getYaw(), relative=True)
+            offset = 0
+            if self.limelight.pitch_angle < 1:
+                offset = 2
+            self.drive.set_target(self.limelight.getYaw() - offset, relative=True)
 
         if self.btn_align.get():
             self.limelight.TurnLightOn(True)
@@ -259,11 +261,13 @@ class Robot(magicbot.MagicRobot):
         if self.btn_launcher_motor.get():
             self.launcher.setVelocity(4630)
         elif self.btn_launcher_motor_close.get():
-            self.launcher.setVelocity(3950)
+            self.launcher.setVelocity(4530)
         elif self.btn_launcher_motor_far.get():
             self.launcher.setVelocity(4800)
         elif self.btn_launcher_motor_dynamic.get():
-            self.launcher.setVelocity(self.ds_velocity_setpoint)
+            self.limelight.TurnLightOn(True)
+            if self.limelight.targetExists():
+                self.launcher.setVelocityFromDistance(self.limelight.pitch_angle)
 
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()
