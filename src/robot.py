@@ -38,7 +38,7 @@ Counter-Clockwise is Positive
    -->
 """
 
-# 4830 RPM (Furthest ball on trench)
+# 4730 RPM (Furthest ball on trench)
 # 4530 RPM (INITIATION LINE)
 # 4530 RPM (FRONT OF TRENCH)
 
@@ -263,7 +263,7 @@ class Robot(magicbot.MagicRobot):
         elif self.btn_launcher_motor_close.get():
             self.launcher.setVelocity(4530)
         elif self.btn_launcher_motor_far.get():
-            self.launcher.setVelocity(4800)
+            self.launcher.setVelocity(4730)
         elif self.btn_launcher_motor_dynamic.get():
             self.limelight.TurnLightOn(True)
             if self.limelight.targetExists():
