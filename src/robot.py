@@ -41,7 +41,7 @@ Counter-Clockwise is Positive
 # 4630 RPM (Furthest ball on trench)
 # 4800 (FURTHEST BACK, touching control panel)
 # 3950 RPM (INITIATION LINE)
-# 4530 RPM (FRONT OF TRENCH)
+# 4630 RPM (FRONT OF TRENCH)
 
 
 class Robot(magicbot.MagicRobot):
@@ -154,7 +154,7 @@ class Robot(magicbot.MagicRobot):
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
         # Don't use index pin and change to k1X encoding to decrease rate measurement jitter
-        self.launcher_encoder = wpilib.Encoder(7, 8, encodingType=wpilib.Encoder.EncodingType.k1X)
+        self.launcher_encoder = wpilib.Encoder(7, 8, True, encodingType=wpilib.Encoder.EncodingType.k1X)
         self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV))
         self.launcher_encoder.setSamplesToAverage(8)
         self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
@@ -257,7 +257,7 @@ class Robot(magicbot.MagicRobot):
 
         # Launcher
         if self.btn_launcher_motor.get():
-            self.launcher.setVelocity(4530)
+            self.launcher.setVelocity(4630)
         elif self.btn_launcher_motor_close.get():
             self.launcher.setVelocity(3950)
         elif self.btn_launcher_motor_far.get():
