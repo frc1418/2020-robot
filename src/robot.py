@@ -153,7 +153,8 @@ class Robot(magicbot.MagicRobot):
         # self.launcher_spark.setInverted(True)
         self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
         self.launcher_solenoid = wpilib.Solenoid(0)
-        self.launcher_encoder = wpilib.Encoder(7, 8, 9)
+        # Don't use index pin and change to k1X encoding to decrease rate measurement jitter
+        self.launcher_encoder = wpilib.Encoder(7, 8, encodingType=wpilib.Encoder.EncodingType.k1X)
         self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV))
         self.launcher_encoder.setSamplesToAverage(8)
         self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
