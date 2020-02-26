@@ -34,7 +34,7 @@ class Initiation(AutonomousStateMachine):
         if initial_call:
             self.logger.info('Starting trench move')
             self.logger.info(f'Sample time: {state_tm}')
-        if state_tm == 0:
+        if state_tm == 0.0:
             state_tm = 0.01
         self.follower.follow_trajectory('trench-far', state_tm)
         self.shot_count = 0
@@ -90,7 +90,7 @@ class Initiation(AutonomousStateMachine):
                 return
 
         # Wait until shooter motor is ready
-        self.launcher.setVelocity(4730 if self.completed_trench else 4530)
+        self.launcher.setVelocity(4750 if self.completed_trench else 4530)
         if self.launcher.at_setpoint(1 if self.completed_trench else 1.5) and self.launcher.ball_found() and not initial_call:
             self.next_state('shoot')
 
@@ -99,7 +99,7 @@ class Initiation(AutonomousStateMachine):
         if initial_call:
             self.shot_count += 1
 
-        self.launcher.setVelocity(4730 if self.completed_trench else 4530)
+        self.launcher.setVelocity(4750 if self.completed_trench else 4530)
 
         if state_tm < 0.25:
             self.launcher.fire()
