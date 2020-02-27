@@ -34,10 +34,10 @@ class Color:
 
 
 COLORS = {
-    'B': Color(0.187, 0.457, 0.376),  # accurate from ~16.2 cm
-    'G': Color(0.178, 0.573, 0.252),  # accurate from ~12.7 cm
-    'R': Color(0.497, 0.365, 0.143),  # accurate from ~12.2 cm
-    'Y': Color(0.317, 0.557, 0.124),  # accurate from ~20 cm
+    'B': Color(0.175, 0.469, 0.356),  # accurate from ~16.2 cm
+    'G': Color(0.188, 0.503, 0.310),  # accurate from ~12.7 cm
+    'R': Color(0.325, 0.453, 0.221),  # accurate from ~12.2 cm
+    'Y': Color(0.269, 0.550, 0.181),  # accurate from ~20 cm
 }
 
 
