@@ -104,7 +104,7 @@ TRAJECTORIES = {
         Pose2d(3.2, 0, Rotation2d.fromDegrees(180)), [], Pose2d(6.1718, 0, Rotation2d.fromDegrees(180)), reverse=True
     ),
     "trench-ball-2-return": TrajectoryData(
-        Pose2d(6.2, 0, Rotation2d.fromDegrees(180)), [], Pose2d(5.3, 0, Rotation2d.fromDegrees(180))
+        Pose2d(6.2, 0, Rotation2d.fromDegrees(180)), [], Pose2d(3.2, 0, Rotation2d.fromDegrees(180))
     ),
     # 117 inches backward
     "trench-forward": TrajectoryData(
