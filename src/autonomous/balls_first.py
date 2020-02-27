@@ -29,33 +29,39 @@ class BallsFirst(AutonomousStateMachine):
     def on_enable(self):
         super().on_enable()
         self.shot_count = 0
-        self.suck = True
         start_pos = self.starting_pos
         # if start_pos == 'LIMELIGHT':
         #     self.odometry.reset(self.limelight.getAveragedPose())
         # else:
-        self.odometry.reset(TRAJECTORIES['trench'].start)
+        self.odometry.reset(TRAJECTORIES['trench-ball-2'].start)
 
     @state(first=True)
     def move_trench(self, tm, state_tm, initial_call):
-        self.follower.follow_trajectory('trench', state_tm)
-        if self.follower.is_finished('trench'):
+        if state_tm == 0.0:
+            state_tm = 0.01
+        self.follower.follow_trajectory('trench-ball-2', state_tm)
+        if self.follower.is_finished('trench-ball-2'):
             self.next_state('trench_return')
 
-        if state_tm < 4 and state_tm > 1:
-            self.limelight.TurnLightOn(True)
-            self.intake.spin(-1)
+        if state_tm < 4:
+            self.intake.spin(-0.45)
 
     @state
     def trench_return(self, state_tm):
-        self.follower.follow_trajectory('trench-return', state_tm)
-        if self.follower.is_finished('trench-return'):
+        if state_tm == 0.0:
+            state_tm = 0.01
+        self.launcher.setVelocity(2000)
+        self.limelight.TurnLightOn(True)
+        self.follower.follow_trajectory('trench-ball-2-return', state_tm)
+        if self.follower.is_finished('trench-ball-2-return'):
             self.next_state('align')
 
     @state
     def align(self):
+        self.launcher.setVelocity(2000)
+        self.limelight.TurnLightOn(True)
         if self.limelight.targetExists():
-            self.drive.set_target(self.limelight.getYaw(), relative=True)
+            self.drive.set_target(self.limelight.getYaw() + 1, relative=True)
 
         if self.drive.angle_setpoint is not None:
             self.drive.align()
@@ -63,25 +69,41 @@ class BallsFirst(AutonomousStateMachine):
             self.next_state('spinup')
 
     @state
-    def spinup(self, state_tm):
-        if self.shot_count >= 10:
-            self.done()
+    def spinup(self, state_tm, initial_call):
+        self.limelight.TurnLightOn(True)
+        if self.shot_count >= 6:
+            self.next_state('realign')
+
+        if self.shot_count >= 3:
+            self.intake.spin(-0.7)
 
         # Wait until shooter motor is ready
-        self.launcher.setVelocity(4730)
-        if self.launcher.at_setpoint():
+        self.launcher.setVelocity(4400)
+        if self.shot_count >= 3 and state_tm < 0.5:
+            return
+        if self.launcher.at_setpoint() and (self.launcher.ball_found() or self.shot_count >= 4) and not initial_call:
             self.next_state('shoot')
 
     @timed_state(duration=0.75, next_state='spinup')
     def shoot(self, state_tm, initial_call):
+        self.limelight.TurnLightOn(True)
         if initial_call:
             self.shot_count += 1
-            self.suck = not self.suck
 
-        if self.shot_count > 2:
-            self.intake.spin(-1 if self.suck else 0.5)
+        if self.shot_count >= 3:
+            self.intake.spin(-0.7)
 
-        self.launcher.setVelocity(4730)
+        self.launcher.setVelocity(4400)
 
         if state_tm < 0.25:
             self.launcher.fire()
+
+    @state
+    def realign(self):
+        self.limelight.TurnLightOn(False)
+        self.drive.calculated_pid = False
+        self.drive.set_target(0, relative=False)
+
+        self.drive.align()
+        if self.drive.target_locked:
+            self.done()

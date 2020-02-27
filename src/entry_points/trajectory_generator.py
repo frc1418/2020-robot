@@ -26,7 +26,7 @@ KS = 0.161  # Units: volts
 KV = 1.96  # volts * seconds / distance
 KA = 0.49  # volts * seconds^2 / distance
 TRACK_WIDTH = 0.51  # Units: meters
-MAX_GENERATION_VELOCITY = 1.8  # Units: m/s
+MAX_GENERATION_VELOCITY = 2.3  # Units: m/s
 MAX_GENERATION_VOLTAGE = 5  # Units: volts
 
 TRAJECTORY_DIRECTORY = 'trajectories'
@@ -38,7 +38,7 @@ PICKLE_FILE = path.join(
 )
 
 # Unimportant due to DifferentialDriveVoltageConstraint
-MAX_GENERATION_ACCELERATION = 1.2  # Units: m/s^2.
+MAX_GENERATION_ACCELERATION = 1.5  # Units: m/s^2.
 
 DRIVE_FEEDFORWARD = SimpleMotorFeedforwardMeters(KS, KV, KA)
 KINEMATICS = DifferentialDriveKinematics(TRACK_WIDTH)
@@ -100,6 +100,13 @@ TRAJECTORIES = {
     "trench-return": TrajectoryData(
         Pose2d(6.3, 0, Rotation2d.fromDegrees(180)), [], Pose2d(5.77, 0, Rotation2d.fromDegrees(180))
     ),
+    "trench-ball-2": TrajectoryData(
+        Pose2d(3.2, 0, Rotation2d.fromDegrees(180)), [], Pose2d(6.1718, 0, Rotation2d.fromDegrees(180)), reverse=True
+    ),
+    "trench-ball-2-return": TrajectoryData(
+        Pose2d(6.2, 0, Rotation2d.fromDegrees(180)), [], Pose2d(5.3, 0, Rotation2d.fromDegrees(180))
+    ),
+    # 117 inches backward
     "trench-forward": TrajectoryData(
         StartingPosition.LEFT.value,
         [

@@ -55,7 +55,7 @@ class Follower:
             self.logger.warning('Method "is_finished" called with no trajectory running.')
             return True
 
-        return self.prev_time >= self.trajectory.totalTime() + 0.25
+        return self.prev_time >= self.trajectory.totalTime() + 0.04
 
     def execute(self):
         if self.trajectory is None:
