@@ -44,7 +44,7 @@ class BallsFirst(AutonomousStateMachine):
             self.next_state('trench_return')
 
         if state_tm:
-            self.intake.spin(-0.45)
+            self.intake.spin(-0.50)
 
     @state
     def trench_return(self, state_tm):
@@ -75,7 +75,7 @@ class BallsFirst(AutonomousStateMachine):
             self.next_state('realign')
 
         if self.shot_count >= 3:
-            self.intake.spin(-0.8)
+            self.intake.spin(-0.93)
 
         # Wait until shooter motor is ready
         self.launcher.setVelocity(4470)
@@ -91,7 +91,7 @@ class BallsFirst(AutonomousStateMachine):
             self.shot_count += 1
 
         if self.shot_count >= 3:
-            self.intake.spin(-0.8)
+            self.intake.spin(-0.93)
 
         self.launcher.setVelocity(4470)
 

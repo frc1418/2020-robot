@@ -2,19 +2,15 @@ import wpilib
 from magicbot import AutonomousStateMachine, default_state, timed_state, state
 from networktables.util import ntproperty
 
-from entry_points.trajectory_generator import StartingPosition
+from entry_points.trajectory_generator import StartingPosition, TRAJECTORIES
 from common.rev import CANSparkMax
 from common.limelight import Limelight
 from components import Align, Drive, Odometry, Follower, Intake, Launcher
-from entry_points.trajectory_generator import TRAJECTORIES
 from . import follower_state
 
 
-class ShootOnce(AutonomousStateMachine):
-    MODE_NAME = 'ShootOnceMoveTrench'
-    """
-    Shoot 3 balls, then drive back and collect 3 more balls, and align without shooting.
-    """
+class Shoot(AutonomousStateMachine):
+    MODE_NAME = 'ShootMoveForward'
 
     drive: Drive
     follower: Follower
@@ -24,23 +20,9 @@ class ShootOnce(AutonomousStateMachine):
     launcher: Launcher
 
     def on_enable(self):
-        self.odometry.reset(TRAJECTORIES['trench-far'].start)
+        self.odometry.reset(TRAJECTORIES['trench'].start)
         self.shot_count = 0
         super().on_enable()
-
-    @state
-    def trench_move(self, tm, state_tm, initial_call):
-        if initial_call:
-            self.logger.info('Starting trench move')
-            self.logger.info(f'Sample time: {state_tm}')
-        if state_tm == 0:
-            state_tm = 0.01
-        self.follower.follow_trajectory('trench-far', state_tm)
-        self.shot_count = 0
-        self.intake.spin(-1)
-        if self.follower.is_finished('trench-far'):
-            self.logger.info('Finished trench move')
-            self.done()
 
     @timed_state(first=True, duration=0.25, next_state='align')
     def wait_for_target(self):
@@ -51,7 +33,7 @@ class ShootOnce(AutonomousStateMachine):
         if initial_call:
             self.drive.calculated_pid = False
         if self.limelight.targetExists():
-            self.drive.set_target(self.limelight.getYaw() + 2, relative=True)
+            self.drive.set_target(self.limelight.getYaw() + 3)
 
         if self.drive.angle_setpoint is not None:
             self.drive.align()
@@ -59,25 +41,13 @@ class ShootOnce(AutonomousStateMachine):
             self.next_state('spinup')
 
     @state
-    def align_for_trench(self, initial_call):
-        if initial_call:
-            self.drive.calculated_pid = False
-        self.drive.set_target(0, relative=False)
-
-        if self.drive.angle_setpoint is not None:
-            self.drive.align()
-        if self.drive.target_locked:
-            self.next_state('trench_move')
-
-    @state
-    def spinup(self, state_tm):
+    def spinup(self, state_tm, initial_call):
         if self.shot_count >= 3:
-            self.next_state('align_for_trench')
-            return
+            self.next_state('move_forward')
 
         # Wait until shooter motor is ready
         self.launcher.setVelocity(4470)
-        if self.launcher.at_setpoint(1.5) and self.launcher.ball_found():
+        if self.launcher.at_setpoint() and self.launcher.ball_found() and not initial_call:
             self.next_state('shoot')
 
     @timed_state(duration=0.75, next_state='spinup')
@@ -91,3 +61,7 @@ class ShootOnce(AutonomousStateMachine):
             self.launcher.fire()
         elif self.shot_count >= 1:
             self.intake.spin(-1)
+
+    @timed_state(duration=0.3)
+    def move_forward(self):
+        self.drive.move(0.3, 0)
