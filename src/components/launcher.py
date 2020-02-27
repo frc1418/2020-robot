@@ -75,7 +75,7 @@ class Launcher:
     def ball_found(self):
         return self.range_filter.calculate(self.launcher_sensor.getRangeInches()) <= 3
 
-    def at_setpoint(self, tolerance=0.8):
+    def at_setpoint(self, tolerance=1):
         return self.calculated_pid and abs(self.rpm_controller.getPositionError()) < tolerance
 
     def execute(self):
