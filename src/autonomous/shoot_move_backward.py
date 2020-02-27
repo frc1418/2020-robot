@@ -10,7 +10,7 @@ from . import follower_state
 
 
 class Shoot(AutonomousStateMachine):
-    MODE_NAME = 'Shoot'
+    MODE_NAME = 'ShootMoveBackward'
 
     drive: Drive
     follower: Follower
@@ -41,13 +41,13 @@ class Shoot(AutonomousStateMachine):
             self.next_state('spinup')
 
     @state
-    def spinup(self, state_tm):
-        if self.shot_count >= 5:
+    def spinup(self, state_tm, initial_call):
+        if self.shot_count >= 3:
             self.next_state('move_backward')
 
         # Wait until shooter motor is ready
         self.launcher.setVelocity(4490)
-        if self.launcher.at_setpoint():
+        if self.launcher.at_setpoint() and self.launcher.ball_found() and not initial_call:
             self.next_state('shoot')
 
     @timed_state(duration=0.75, next_state='spinup')
@@ -64,4 +64,4 @@ class Shoot(AutonomousStateMachine):
 
     @timed_state(duration=0.3)
     def move_backward(self):
-        self.drive.move(-0.3)
+        self.drive.move(-0.3, 0)
