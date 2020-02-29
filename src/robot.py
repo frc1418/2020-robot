@@ -39,7 +39,7 @@ Counter-Clockwise is Positive
 """
 
 # 4730 RPM (Furthest ball on trench)
-# 4530 RPM (INITIATION LINE)
+# 4440 RPM (INITIATION LINE)
 # 4530 RPM (FRONT OF TRENCH)
 
 
@@ -143,7 +143,6 @@ class Robot(magicbot.MagicRobot):
 
         # Intake
         self.intake_motor = WPI_VictorSPX(1)
-        self.intake_wheels = WPI_VictorSPX(4)
         self.intake_solenoid = wpilib.DoubleSolenoid(2, 1)
         self.intake_switch = wpilib.DigitalInput(2)
 
@@ -261,13 +260,13 @@ class Robot(magicbot.MagicRobot):
         if self.btn_launcher_motor.get():
             self.launcher.setVelocity(4630)
         elif self.btn_launcher_motor_close.get():
-            self.launcher.setVelocity(4530)
+            self.launcher.setVelocity(4440)
         elif self.btn_launcher_motor_far.get():
             self.launcher.setVelocity(4730)
         elif self.btn_launcher_motor_dynamic.get():
             self.limelight.TurnLightOn(True)
             if self.limelight.targetExists():
-                self.launcher.setVelocityFromDistance(self.limelight.pitch_angle)
+                self.launcher.setVelocityFromDistance(self.limelight.pitch_angle, 4670)
 
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()

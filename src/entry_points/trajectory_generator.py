@@ -101,7 +101,7 @@ TRAJECTORIES = {
         Pose2d(6.3, 0, Rotation2d.fromDegrees(180)), [], Pose2d(5.77, 0, Rotation2d.fromDegrees(180))
     ),
     "trench-ball-2": TrajectoryData(
-        Pose2d(3.2, 0, Rotation2d.fromDegrees(180)), [], Pose2d(6.1718, 0, Rotation2d.fromDegrees(180)), reverse=True
+        Pose2d(3.2, 0, Rotation2d.fromDegrees(180)), [], Pose2d(6.2, 0, Rotation2d.fromDegrees(180)), reverse=True
     ),
     "trench-ball-2-return": TrajectoryData(
         Pose2d(6.2, 0, Rotation2d.fromDegrees(180)), [], Pose2d(3.2, 0, Rotation2d.fromDegrees(180))
