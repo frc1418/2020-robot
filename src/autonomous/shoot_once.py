@@ -76,7 +76,7 @@ class ShootOnce(AutonomousStateMachine):
             return
 
         # Wait until shooter motor is ready
-        self.launcher.setVelocity(4470)
+        self.launcher.setVelocity(4440)
         if self.launcher.at_setpoint(1.5) and self.launcher.ball_found():
             self.next_state('shoot')
 
@@ -85,7 +85,7 @@ class ShootOnce(AutonomousStateMachine):
         if initial_call:
             self.shot_count += 1
 
-        self.launcher.setVelocity(4470)
+        self.launcher.setVelocity(4440)
 
         if state_tm < 0.25:
             self.launcher.fire()

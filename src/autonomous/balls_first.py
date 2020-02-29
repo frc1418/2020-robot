@@ -78,7 +78,7 @@ class BallsFirst(AutonomousStateMachine):
             self.intake.spin(-0.93)
 
         # Wait until shooter motor is ready
-        self.launcher.setVelocity(4470)
+        self.launcher.setVelocity(4440)
         if self.shot_count >= 3 and state_tm < 0.5:
             return
         if self.launcher.at_setpoint() and (self.launcher.ball_found() or self.shot_count >= 4) and not initial_call:
@@ -93,7 +93,7 @@ class BallsFirst(AutonomousStateMachine):
         if self.shot_count >= 3:
             self.intake.spin(-0.93)
 
-        self.launcher.setVelocity(4470)
+        self.launcher.setVelocity(4440)
 
         if state_tm < 0.25:
             self.launcher.fire()
