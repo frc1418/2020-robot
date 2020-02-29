@@ -83,7 +83,7 @@ class Robot(magicbot.MagicRobot):
         self.btn_winch = JoystickButton(self.joystick_alt, 8)
         self.btn_cp_motor = JoystickButton(self.joystick_left, 3)
         self.btn_launcher_motor = JoystickButton(self.joystick_alt, 12)
-        self.btn_launcher_motor_far = JoystickButton(self.joystick_alt, 10)
+        self.btn_launcher_idle = Toggle(self.joystick_alt, 10)
         self.btn_launcher_motor_close = JoystickButton(self.joystick_alt, 11)  # Initiation Line
         self.btn_launcher_motor_dynamic = JoystickButton(self.joystick_alt, 9)
         self.btn_slow_movement = JoystickButton(self.joystick_right, 1)
@@ -261,12 +261,12 @@ class Robot(magicbot.MagicRobot):
             self.launcher.setVelocity(4630)
         elif self.btn_launcher_motor_close.get():
             self.launcher.setVelocity(4440)
-        elif self.btn_launcher_motor_far.get():
-            self.launcher.setVelocity(4730)
         elif self.btn_launcher_motor_dynamic.get():
             self.limelight.TurnLightOn(True)
             if self.limelight.targetExists():
                 self.launcher.setVelocityFromDistance(self.limelight.pitch_angle, 4670)
+        elif self.btn_launcher_idle.get():
+            self.launcher.setVelocity(2500)
 
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()
