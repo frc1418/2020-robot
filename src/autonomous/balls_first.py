@@ -39,12 +39,12 @@ class BallsFirst(AutonomousStateMachine):
     def move_trench(self, tm, state_tm, initial_call):
         if state_tm == 0.0:
             state_tm = 0.01
+
+        self.intake.spin(-0.50)
+
         self.follower.follow_trajectory('trench-ball-2', state_tm)
         if self.follower.is_finished('trench-ball-2'):
             self.next_state('trench_return')
-
-        if state_tm:
-            self.intake.spin(-0.50)
 
     @state
     def trench_return(self, state_tm):
