@@ -99,6 +99,9 @@ class Initiation(AutonomousStateMachine):
                 self.next_state('align_for_trench')
                 return
 
+        if self.shot_count >= 1:
+            self.intake.spin(-1)
+
         # Wait until shooter motor is ready
         self.launcher.setVelocity(4630 if self.completed_trench else 4440)
         if self.launcher.at_setpoint(1 if self.completed_trench else 1.5) and self.launcher.ball_found() and not initial_call:
