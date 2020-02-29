@@ -40,7 +40,7 @@ class BallsFirst(AutonomousStateMachine):
         if state_tm == 0.0:
             state_tm = 0.01
 
-        self.intake.spin(-0.50)
+        self.intake.spin(-0.53)
 
         self.follower.follow_trajectory('trench-ball-2', state_tm)
         if self.follower.is_finished('trench-ball-2'):
