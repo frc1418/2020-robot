@@ -36,7 +36,7 @@ class PanelSpinner(StateMachine):
             self.rotations += 1
             self.last_color = self.control_panel.detected_color
         self.control_panel.spin(0.27)
-        if self.rotations >= 27:
+        if self.rotations >= 28:
             self.isSpinningRotation = False
             self.done()
 
