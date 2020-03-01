@@ -7,7 +7,7 @@ from common.rev import CANSparkMax
 from common.limelight import Limelight
 from components import Align, Drive, Odometry, Follower, Intake, Launcher
 from entry_points.trajectory_generator import TRAJECTORIES
-from . import follower_state
+from . import follow_path
 
 
 class BallsFirst(AutonomousStateMachine):
@@ -36,25 +36,15 @@ class BallsFirst(AutonomousStateMachine):
         self.odometry.reset(TRAJECTORIES['trench-ball-2'].start)
 
     @state(first=True)
+    @follow_path(trajectory_name='trench-ball-2', next_state='trench_return')
     def move_trench(self, tm, state_tm, initial_call):
-        if state_tm == 0.0:
-            state_tm = 0.01
-
         self.intake.spin(-0.53)
 
-        self.follower.follow_trajectory('trench-ball-2', state_tm)
-        if self.follower.is_finished('trench-ball-2'):
-            self.next_state('trench_return')
-
     @state
-    def trench_return(self, state_tm):
-        if state_tm == 0.0:
-            state_tm = 0.01
+    @follow_path(trajectory_name='trench-ball-2-return', next_state='align')
+    def trench_return(self, tm, state_tm, initial_call):
         self.launcher.setVelocity(2000)
         self.limelight.TurnLightOn(True)
-        self.follower.follow_trajectory('trench-ball-2-return', state_tm)
-        if self.follower.is_finished('trench-ball-2-return'):
-            self.next_state('align')
 
     @state
     def align(self):

@@ -6,7 +6,7 @@ from entry_points.trajectory_generator import StartingPosition, TRAJECTORIES
 from common.rev import CANSparkMax
 from common.limelight import Limelight
 from components import Align, Drive, Odometry, Follower, Intake, Launcher
-from . import follower_state
+from . import follow_path
 
 
 class Initiation(AutonomousStateMachine):
@@ -30,29 +30,16 @@ class Initiation(AutonomousStateMachine):
         super().on_enable()
 
     @state
+    @follow_path(trajectory_name='trench-far', next_state='trench_move_return')
     def trench_move(self, tm, state_tm, initial_call):
-        if initial_call:
-            self.logger.info('Starting trench move')
-            self.logger.info(f'Sample time: {state_tm}')
-        if state_tm == 0.0:
-            state_tm = 0.01
-        self.follower.follow_trajectory('trench-far', state_tm)
         self.shot_count = 0
         self.completed_trench = True
         self.intake.spin(-1)
-        if self.follower.is_finished('trench-far'):
-            self.logger.info('Finished trench move')
-            self.next_state('trench_move_return')
 
     @state
+    @follow_path(trajectory_name='trench-far-return', next_state='align')
     def trench_move_return(self, tm, state_tm, initial_call):
-        if state_tm == 0.0:
-            state_tm = 0.01
-
-        self.follower.follow_trajectory('trench-far-return', state_tm)
-        if self.follower.is_finished('trench-far-return') and not initial_call:
-            self.logger.info('Finished trench return')
-            self.next_state('align')
+        pass
 
     # @state
     # def trench_return(self, tm, state_tm, initial_call):
@@ -103,7 +90,7 @@ class Initiation(AutonomousStateMachine):
             self.intake.spin(-1)
 
         # Wait until shooter motor is ready
-        self.launcher.setVelocity(4630 if self.completed_trench else 4440)
+        self.launcher.setVelocity(4630 if self.completed_trench else 4430)
         if self.launcher.at_setpoint(1 if self.completed_trench else 1.5) and self.launcher.ball_found() and not initial_call:
             self.next_state('shoot')
 
@@ -112,7 +99,7 @@ class Initiation(AutonomousStateMachine):
         if initial_call:
             self.shot_count += 1
 
-        self.launcher.setVelocity(4630 if self.completed_trench else 4440)
+        self.launcher.setVelocity(4630 if self.completed_trench else 4430)
 
         if state_tm < 0.25:
             self.launcher.fire()
