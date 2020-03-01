@@ -85,21 +85,21 @@ class ControlPanel:
         if len(self.ds.getGameSpecificMessage()) > 0 and self.fms_color is None:
             self.getFMSColor()
 
-        try:
-            # The "confidence" argument here is meant to be a double reference, so it
-            # would be set to the confidence in C++ code. Unused here.
-            read_color = self.colorSensor.getColor()
-            if self.solenoid_state == DoubleSolenoid.Value.kForward:
+        if self.solenoid_state == DoubleSolenoid.Value.kForward:
+            try:
+                # The "confidence" argument here is meant to be a double reference, so it
+                # would be set to the confidence in C++ code. Unused here.
+                read_color = self.colorSensor.getColor()
                 self.logger.info(f'Read Color: ({read_color.red}, {read_color.green}, {read_color.blue})')
-            result_color = self.colorMatcher.matchClosestColor(read_color, confidence=0)
-        except IOError:
-            pass
-        else:
-            # Sometimes black is returned but we don't want it
-            # self.logger.info(f'Color: {result_color.red}, {result_color.green}, {result_color.blue}')
-            if Color.from_wpilib(result_color) != wpilib.Color.kBlack:
-                self.detected_color = Color.from_wpilib(result_color)
-                self.detected_color = list(sorted(self.colors, key=lambda c: self.calculate_distance(c, self.detected_color)))[0]
+                result_color = self.colorMatcher.matchClosestColor(read_color, confidence=0)
+            except IOError:
+                pass
+            else:
+                # Sometimes black is returned but we don't want it
+                # self.logger.info(f'Color: {result_color.red}, {result_color.green}, {result_color.blue}')
+                if Color.from_wpilib(result_color) != wpilib.Color.kBlack:
+                    self.detected_color = Color.from_wpilib(result_color)
+                    self.detected_color = list(sorted(self.colors, key=lambda c: self.calculate_distance(c, self.detected_color)))[0]
 
         self.cp_motor.set(self.speed)
         self.cp_solenoid.set(self.solenoid_state)

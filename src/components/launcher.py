@@ -92,7 +92,6 @@ class Launcher:
             output = feedforward + self.rpm_controller.calculate(self.launcher_encoder.getRate())
             self.calculated_pid = True
             self.launcher_motors.setVoltage(min(output, 9))
-            self.logger.info('Speed: ' + str(self.launcher_encoder.getRate()) + ' Output: ' + str(output))
         else:
             self.launcher_motors.set(self.decimal)
             self.target_rpm = 0
