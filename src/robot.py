@@ -300,6 +300,7 @@ class Robot(magicbot.MagicRobot):
             self.hook_motor.set(-0.5)
         else:
             self.hook_motor.set(0)
+
         # slow movement using POV on joystick_alt
         # if self.joystick_alt.getPOV() == 0:
         #     self.drive.move(0.2, 0)

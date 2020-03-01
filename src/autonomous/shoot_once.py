@@ -7,7 +7,7 @@ from common.rev import CANSparkMax
 from common.limelight import Limelight
 from components import Align, Drive, Odometry, Follower, Intake, Launcher
 from entry_points.trajectory_generator import TRAJECTORIES
-from . import follower_state
+from . import follow_path
 
 
 class ShootOnce(AutonomousStateMachine):
@@ -29,18 +29,10 @@ class ShootOnce(AutonomousStateMachine):
         super().on_enable()
 
     @state
+    @follow_path(trajectory_name='trench-far')
     def trench_move(self, tm, state_tm, initial_call):
-        if initial_call:
-            self.logger.info('Starting trench move')
-            self.logger.info(f'Sample time: {state_tm}')
-        if state_tm == 0:
-            state_tm = 0.01
-        self.follower.follow_trajectory('trench-far', state_tm)
         self.shot_count = 0
         self.intake.spin(-1)
-        if self.follower.is_finished('trench-far'):
-            self.logger.info('Finished trench move')
-            self.done()
 
     @timed_state(first=True, duration=0.25, next_state='align')
     def wait_for_target(self):
