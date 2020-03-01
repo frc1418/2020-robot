@@ -22,13 +22,13 @@ class AutoShoot(StateMachine):
         if self.speed is not None:
             self.launcher.setVelocity(self.speed)
 
-        if self.launcher.at_setpoint(tolerance=1) and state_tm > 0.25 and self.range_filter.calculate(self.launcher_sensor.getRangeInches()) <= 3:
+        if self.launcher.at_setpoint(tolerance=1) and self.range_filter.calculate(self.launcher_sensor.getRangeInches()) <= 3:
             self.next_state('shoot')
 
-    @timed_state(duration=0.5, next_state='spinup')
+    @timed_state(duration=0.35, next_state='spinup')
     def shoot(self, state_tm):
         if self.speed is not None:
             self.launcher.setVelocity(self.speed)
 
-        if state_tm < 0.25:
+        if state_tm < 0.2:
             self.launcher.fire()
