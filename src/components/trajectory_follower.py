@@ -23,6 +23,9 @@ class Follower:
         self.left_controller = PIDController(0.07, 0, 0)
         self.right_controller = PIDController(0.07, 0, 0)
 
+    def on_disable(self):
+        self.trajectory_name = None
+
     def setup_trajectory(self, trajectory: Trajectory):
         self.controller = RamseteController()
         self.left_controller.reset()
