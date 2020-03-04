@@ -6,7 +6,6 @@ from entry_points.trajectory_generator import StartingPosition, TRAJECTORIES
 from common.rev import CANSparkMax
 from common.limelight import Limelight
 from components import Align, Drive, Odometry, Follower, Intake, Launcher
-from . import follower_state
 
 
 class Shoot(AutonomousStateMachine):
