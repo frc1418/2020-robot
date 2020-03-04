@@ -6,7 +6,7 @@ from entry_points.trajectory_generator import StartingPosition, TRAJECTORIES
 from common.rev import CANSparkMax
 from common.limelight import Limelight
 from components import Align, Drive, Odometry, Follower, Intake, Launcher
-from . import follow_path
+from . import follower_state
 
 
 class Initiation(AutonomousStateMachine):
@@ -29,15 +29,13 @@ class Initiation(AutonomousStateMachine):
         self.completed_trench = False
         super().on_enable()
 
-    @state
-    @follow_path(trajectory_name='trench-far', next_state='trench_move_return')
+    @follower_state(trajectory_name='trench-far', next_state='trench_move_return')
     def trench_move(self, tm, state_tm, initial_call):
         self.shot_count = 0
         self.completed_trench = True
         self.intake.spin(-1)
 
-    @state
-    @follow_path(trajectory_name='trench-far-return', next_state='align')
+    @follower_state(trajectory_name='trench-far-return', next_state='align')
     def trench_move_return(self, tm, state_tm, initial_call):
         pass
 
