@@ -25,6 +25,8 @@ class Follower:
 
     def on_disable(self):
         self.trajectory_name = None
+        self.left_controller.reset()
+        self.right_controller.reset()
 
     def setup_trajectory(self, trajectory: Trajectory):
         self.controller = RamseteController()
