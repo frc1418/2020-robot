@@ -1,87 +1,138 @@
-
-import wpilib
-from networktables.util import ntproperty
-from networktables import NetworkTablesInstance
 import math
-# Add VictorSPX try import
-try:
-    from ctre import WPI_VictorSPX
-except ImportError:
-    WPI_VictorSPX = type('WPI_VictorSPX', (wpilib.interfaces.SpeedController,), {})
 
-class Robot(wpilib.TimedRobot):
+import magicbot
+import navx
+import wpilib
+from wpilib.drive import DifferentialDrive
+from networktables import NetworkTables, NetworkTablesInstance
+from networktables.util import ntproperty
+from rev import CANSparkMax, MotorType
 
-    ENCODER_PULSES_PER_REV = 2048  # Ignore quadrature decoding (4x)
-    GEARING = 1  # 3.25:1 in gearbox
 
-    encoder_pos = ntproperty('/robot/encoder_pos', 0)
-    encoder_rate = ntproperty('/robot/encoder_rate', 0)
+class Robot(wpilib.IterativeRobot):
+    WHEEL_DIAMETER = 0.1524  # Units: Meters
+    # Currently unused
+    # ENCODER_PULSE_PER_REV = 42 
+    GEARING = 7.56  # 7.56:1 gear ratio
 
-    autoSpeedEntry = ntproperty('/robot/autospeed', 0, writeDefault=False)
-    telemetryEntry = ntproperty('/robot/telemetry', [0, 0, 0, 0, 0, 0], writeDefault=False)
+    auto_speed_entry = ntproperty('/robot/autospeed', 0.0)
+    telemetry_entry = ntproperty('/robot/telemetry', [0.0], writeDefault=False)
+    rotate_entry = ntproperty('/robot/rotate', False)
+
+    l_encoder_pos = ntproperty('/l_encoder_pos', 0)
+    l_encoder_rate = ntproperty('/l_encoder_rate', 0)
+    r_encoder_pos = ntproperty('/r_encoder_pos', 0)
+    r_encoder_rate = ntproperty('/r_encoder_rate', 0)
 
     def robotInit(self):
+        self.prior_autospeed = 0
+
         self.joystick = wpilib.Joystick(0)
 
-        self.motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
+        self.left_motor_master = CANSparkMax(1, MotorType.kBrushless)
+        self.right_motor_master = CANSparkMax(4, MotorType.kBrushless)
 
-        self.priorAutospeed = 0
-        # TODO: Check if we need IdleMode.kBrake
-        # self.motor.setIdleMode(IdleMode.kBrake);
+        # Set up Speed Controller Groups
+        self.left_motors = wpilib.SpeedControllerGroup(
+            self.left_motor_master,
+            CANSparkMax(2, MotorType.kBrushless)
+        )
 
-        self.encoder = wpilib.Encoder(8, 7, True, encodingType=wpilib.Encoder.EncodingType.k1X)
+        self.right_motors = wpilib.SpeedControllerGroup(
+            self.right_motor_master,
+            CANSparkMax(6, MotorType.kBrushless)
+        )
 
-        # //
-        # // Configure encoder related functions -- getDistance and getrate should
-        # // return units and units/s
-        # //
+        # Configure Gyro
 
-        # % if units == 'Degrees':
-        # double encoderConstant = (1 / GEARING) * 360
-        # % elif units == 'Radians':
-        # double encoderConstant = (1 / GEARING) * 2. * Math.PI;
-        # % elif units == 'Rotations':
-        self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV))
-        self.encoder.setDistancePerPulse(self.encoderConstant)
+        # Note that the angle from the NavX and all implementors of wpilib Gyro
+        # must be negated because getAngle returns a clockwise positive angle
+        self.gyro = navx.AHRS.create_spi()
 
-        self.encoder.reset()
+        # Configure drivetrain movement
 
-        NetworkTablesInstance.getDefault().setUpdateRate(0.010)
+        self.drive = DifferentialDrive(self.left_motors, self.right_motors)
+        self.drive.setDeadband(0)
+
+        # Configure encoder related functions -- getDistance and getrate should return
+        # units and units/s
+        self.encoder_constant = (1 / self.GEARING) * self.WHEEL_DIAMETER * math.pi
+
+        self.left_encoder = self.left_motor_master.getEncoder()
+        self.left_encoder.setPositionConversionFactor(self.encoder_constant)
+        self.left_encoder.setVelocityConversionFactor(self.encoder_constant / 60)
+
+        self.right_encoder = self.right_motor_master.getEncoder()
+        self.right_encoder.setPositionConversionFactor(self.encoder_constant)
+        self.right_encoder.setVelocityConversionFactor(self.encoder_constant / 60)
+
+        self.left_encoder.setPosition(0)
+        self.right_encoder.setPosition(0)
+
+        # Set the update rate instead of using flush because of a ntcore bug
+        # -> probably don't want to do this on a robot in competition
+        NetworkTables.getDefault().setUpdateRate(0.010)
 
     def disabledInit(self):
-        self.motors.set(0)
+        print('Robot disabled')
+        self.drive.tankDrive(0, 0)
 
     def robotPeriodic(self):
-        self.encoder_pos = self.encoder.getDistance()
-        self.encoder_rate = self.encoder.getRate()
+        # feedback for users, but not used by the control program
+        self.l_encoder_pos = self.left_encoder.getPosition()
+        self.l_encoder_rate = self.left_encoder.getVelocity()
+        self.r_encoder_pos = self.right_encoder.getPosition()
+        self.r_encoder_rate = self.right_encoder.getVelocity()
+
+    def teleopInit(self):
+        print('Robot in operator control mode')
 
     def teleopPeriodic(self):
-        self.motors.set(-self.joystick.getY())
-        print(self.encoder.getDistance())
-        print(f'Rate: {self.encoder.getRate()}')
+        self.drive.arcadeDrive(-self.joystick.getY(), self.joystick.getX())
+        print(f'Left Distance: {self.left_encoder.getPosition()}')
+
+    def autonomousInit(self):
+        print('Robot in autonomous mode')
+
+    # If you wish to just use your own robot program to use with the data logging
+    # program, you only need to copy/paste the logic below into your code and
+    # ensure it gets called periodically in autonomous mode
+
+    # Additionally, you need to set NetworkTables update rate to 10ms using the
+    # setUpdateRate call.
 
     def autonomousPeriodic(self):
+        # Retrieve values to send back before telling the motors to do somethin
 
-        # // Retrieve values to send back before telling the motors to do something
         now = wpilib.Timer.getFPGATimestamp()
 
-        position = self.encoder.getDistance()
-        rate = self.encoder.getRate()
+        leftPosition = self.left_encoder.getPosition()
+        leftRate = self.left_encoder.getVelocity()
+
+        rightPosition = self.right_encoder.getPosition()
+        rightRate = self.right_encoder.getVelocity()
 
         battery = wpilib.RobotController.getInputVoltage()
+        motorVolts = battery * abs(self.prior_autospeed)
 
-        motorVolts = battery * abs(self.priorAutospeed)
+        leftMotorVolts = motorVolts
+        rightMotorVolts = motorVolts
 
-        # // Retrieve the commanded speed from NetworkTables
-        autospeed = self.autoSpeedEntry
-        self.priorAutospeed = autospeed
+        # Retrieve the commanded speed from NetworkTables
+        autospeed = self.auto_speed_entry
+        self.prior_autospeed = autospeed
 
-        self.motors.set(autospeed)
+        # command motors to do things
+        self.drive.tankDrive((-1 if self.rotate_entry else 1) * autospeed, autospeed, False)
 
-        self.telemetryEntry = [
-            now, battery, autospeed,
-            motorVolts, position, rate
+        # send telemetry data array back to NT
+        number_array = [
+            now, battery, autospeed, leftMotorVolts, rightMotorVolts,
+            leftPosition, rightPosition, leftRate, rightRate,
+            math.radians(-self.gyro.getAngle())
         ]
+
+        self.telemetry_entry = number_array
 
 if __name__ == '__main__':
     wpilib.run(Robot)

@@ -8,7 +8,7 @@ from networktables.util import ntproperty
 from rev.color import ColorMatch, ColorSensorV3
 from wpilib import DoubleSolenoid, Ultrasonic, Joystick
 
-from common.rev import CANSparkMax
+from common.ctre import WPI_VictorSPX
 from .drive import Drive
 
 
@@ -42,7 +42,7 @@ COLORS = {
 
 
 class ControlPanel:
-    cp_motor: CANSparkMax
+    cp_motor: WPI_VictorSPX
     cp_solenoid: wpilib.DoubleSolenoid
     colorSensor: ColorSensorV3
     drive: Drive

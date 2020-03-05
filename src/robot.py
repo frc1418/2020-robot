@@ -114,13 +114,11 @@ class Robot(magicbot.MagicRobot):
         # Set up Speed Controller Groups
         self.left_motors = wpilib.SpeedControllerGroup(
             self.master_left,
-            CANSparkMax(2, MotorType.kBrushless),
-            CANSparkMax(3, MotorType.kBrushless)
+            CANSparkMax(2, MotorType.kBrushless)
         )
 
         self.right_motors = wpilib.SpeedControllerGroup(
             self.master_right,
-            CANSparkMax(5, MotorType.kBrushless),
             CANSparkMax(6, MotorType.kBrushless)
         )
 
@@ -130,13 +128,12 @@ class Robot(magicbot.MagicRobot):
         # Winch
         self.winch_motors = wpilib.SpeedControllerGroup(CANSparkMax(8, MotorType.kBrushless), CANSparkMax(9, MotorType.kBrushless))
         self.scissor_solenoid = wpilib.DoubleSolenoid(6, 7)
-        self.hook_motor = CANSparkMax(12, MotorType.kBrushed)
+        self.hook_motor = WPI_VictorSPX(3)
 
         # Control Panel Spinner
         self.colorSensor = ColorSensorV3(wpilib.I2C.Port.kOnboard)
         self.cp_solenoid = wpilib.DoubleSolenoid(5, 4)  # Reversed numbers so kForward is extended
-        self.cp_motor = CANSparkMax(10, MotorType.kBrushed)
-        self.cp_motor.setIdleMode(IdleMode.kBrake)
+        self.cp_motor = WPI_VictorSPX(2)
         self.ultrasonic = Ultrasonic(3, 4)
         self.ultrasonic.setAutomaticMode(True)
         self.ultrasonic.setEnabled(True)
@@ -149,18 +146,20 @@ class Robot(magicbot.MagicRobot):
         # Launcher
         # self.launcher_spark = CANSparkMax(40, MotorType.kBrushed)
         # self.launcher_spark.setInverted(True)
-        self.launcher_motors = wpilib.SpeedControllerGroup(WPI_VictorSPX(2), WPI_VictorSPX(3))
+        self.launcher_motor = CANSparkMax(10, MotorType.kBrushed)
+        self.launcher_motor.setClosedLoopRampRate(2)
+        self.launcher_motor.setInverted(True)
+        self.launcher_motor_follower = CANSparkMax(12, MotorType.kBrushed)
+        self.launcher_motor_follower.follow(self.launcher_motor)
         self.launcher_solenoid = wpilib.Solenoid(0)
         # Don't use index pin and change to k1X encoding to decrease rate measurement jitter
-        self.launcher_encoder = wpilib.Encoder(7, 8, True, encodingType=wpilib.Encoder.EncodingType.k1X)
-        self.encoderConstant = (1 / (self.ENCODER_PULSES_PER_REV))
-        self.launcher_encoder.setSamplesToAverage(15)
-        self.launcher_encoder.setDistancePerPulse(self.encoderConstant)
+        self.launcher_encoder = self.launcher_motor.getEncoder(CANEncoder.EncoderType.kQuadrature, 8192)
+        self.rpm_controller = self.launcher_motor.getPIDController()
         self.launcher_sensor = wpilib.Ultrasonic(0, 1)
         self.launcher_sensor.setAutomaticMode(True)
         self.launcher_sensor.setEnabled(True)
 
-        self.launcher_encoder.reset()
+        self.launcher_encoder.setPosition(0)
 
         # NavX (purple board on top of the RoboRIO)
         self.navx = navx.AHRS.create_spi()
@@ -266,7 +265,8 @@ class Robot(magicbot.MagicRobot):
             if self.limelight.targetExists():
                 self.launcher.setVelocityFromDistance(self.limelight.pitch_angle, 4670)
         elif self.btn_launcher_idle.get():
-            self.launcher.setVelocity(2500)
+            self.launcher.setVelocity(1500)
+        self.launcher.setVelocity(1500)
 
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()
