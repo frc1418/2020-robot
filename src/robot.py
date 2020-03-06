@@ -266,7 +266,6 @@ class Robot(magicbot.MagicRobot):
                 self.launcher.setVelocityFromDistance(self.limelight.pitch_angle, 4670)
         elif self.btn_launcher_idle.get():
             self.launcher.setVelocity(1500)
-        self.launcher.setVelocity(1500)
 
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()

@@ -15,8 +15,10 @@ except ImportError:
     ])})
     ControlType = type('ControlType', (), {'kVelocity': 0, 'kVoltage': 1})
     IdleMode = type('IdleMode', (), {'kBrake': 0, 'kCoast': 1})
+
     class CANEncoder(Encoder):
         EncoderType = type('EncoderType', (), {'kQuadrature': 0, 'kHallSensor': 1})
+
     class CANPIDController:
         def setReference(self, value: float, ctrl: ControlType):
             pass
