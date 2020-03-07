@@ -32,9 +32,9 @@ class Drive:
     rotational_constant = will_reset_to(0.8)
     squared_inputs = False
 
-    angle_p = ntproperty('/align/kp', 0.06)
+    angle_p = ntproperty('/align/kp', 0.04)
     angle_i = ntproperty('/align/ki', 0)
-    angle_d = ntproperty('/align/kd', 0.004)
+    angle_d = ntproperty('/align/kd', 0.005)
     angle_reported = ntproperty('/align/angle', 0)
     angle_to = ntproperty('/align/angle_to', 0)
 
@@ -101,9 +101,9 @@ class Drive:
 
         if self.aligning and self.angle_setpoint is not None:
             self.right_motors.setInverted(False)
-            if self.angle_controller.atSetpoint() and self.calculated_pid:
-                self.train.arcadeDrive(0, 0, squareInputs=False)
-                return
+            # if self.angle_controller.atSetpoint() and self.calculated_pid:
+            #     self.train.arcadeDrive(0, 0, squareInputs=False)
+            #     return
 
             # Use new network tables variables for testing
             self.angle_controller.setP(self.angle_p)
