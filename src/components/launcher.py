@@ -28,17 +28,18 @@ class Launcher:
     target_rpm = tunable(0)
     flywheel_rpm = tunable(0)
     filtered_rpm = tunable(0)
+    RPM_applied_voltage = tunable(0)
 
     speed = will_reset_to(0)
     decimal = will_reset_to(0)
     control_velocity = will_reset_to(False)
     shoot = will_reset_to(False)
 
-    RPM_KP = tunable(0)
-    RPM_KI = tunable(0)
-    RPM_KD = tunable(0)
-    RPM_IZONE = tunable(0)
-    RPM_FF = tunable(0.0002)
+    RPM_KP = tunable(0.0008)
+    RPM_KI = tunable(0.0)
+    RPM_KD = tunable(0.0)
+    RPM_IZONE = tunable(0.0)
+    RPM_FF = tunable(0.000211)
 
     def setup(self):
         self.range_filter = wpilib.MedianFilter(3)
@@ -49,6 +50,8 @@ class Launcher:
         self.rpm_controller.setFF(self.RPM_FF)
         self.old_kp = self.RPM_KP
         self.old_ff = self.RPM_FF
+        self.old_ki = self.RPM_KI
+        self.old_izone = self.RPM_IZONE
 
     def setVelocity(self, speed):
         """
@@ -90,7 +93,7 @@ class Launcher:
         self.filtered_rpm = self.launcher_encoder.getVelocity()
 
         if self.control_velocity:
-            if self.RPM_FF != self.old_ff or self.RPM_KP != self.old_kp:
+            if self.RPM_FF != self.old_ff or self.RPM_KP != self.old_kp or self.RPM_KI != self.old_ki or self.RPM_IZONE != self.old_izone:
                 self.rpm_controller.setP(self.RPM_KP)
                 self.rpm_controller.setI(self.RPM_KI)
                 self.rpm_controller.setD(self.RPM_KD)
@@ -98,7 +101,10 @@ class Launcher:
                 self.rpm_controller.setFF(self.RPM_FF)
                 self.old_ff = self.RPM_FF
                 self.old_kp = self.RPM_KP
+                self.old_izone = self.RPM_IZONE
+                self.old_ki = self.RPM_KI
             self.rpm_controller.setReference(self.speed, ControlType.kVelocity)
+            self.RPM_applied_voltage = self.launcher_motor.getAppliedOutput() * self.launcher_motor.getBusVoltage()
         else:
             self.launcher_motor.set(self.decimal)
             self.target_rpm = 0

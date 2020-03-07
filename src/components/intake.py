@@ -3,15 +3,17 @@ from networktables.util import ntproperty
 from wpilib.interfaces import SpeedController
 from magicbot import will_reset_to
 from common.ctre import WPI_VictorSPX
+from common.rev import CANSparkMax
 
 
 class Intake:
     intake_motor: WPI_VictorSPX
+    intake_motor_lower: CANSparkMax
     intake_switch: wpilib.DigitalInput
     intake_solenoid: wpilib.DoubleSolenoid
 
     balls_collected = ntproperty("/components/intake/ballsCollected", 0)
-    speed = will_reset_to(0)
+    speed = will_reset_to(0.0)
     solenoid_state = will_reset_to(wpilib.DoubleSolenoid.Value.kForward)
 
     previous_limit = False

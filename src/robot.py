@@ -140,6 +140,7 @@ class Robot(magicbot.MagicRobot):
 
         # Intake
         self.intake_motor = WPI_VictorSPX(1)
+        self.intake_motor_lower = CANSparkMax(40, MotorType.kBrushed)
         self.intake_solenoid = wpilib.DoubleSolenoid(2, 1)
         self.intake_switch = wpilib.DigitalInput(2)
 
@@ -220,10 +221,7 @@ class Robot(magicbot.MagicRobot):
 
         # Align (Overrides self.drive.move() because it's placed after)
         if self.btn_align.get() and self.limelight.targetExists():
-            offset = 0
-            if self.limelight.pitch_angle < 1:
-                offset = 2
-            self.drive.set_target(self.limelight.getYaw() - offset, relative=True)
+            self.drive.set_target(self.limelight.getYaw(), relative=True)
 
         if self.btn_align.get():
             self.limelight.TurnLightOn(True)
@@ -259,7 +257,7 @@ class Robot(magicbot.MagicRobot):
         if self.btn_launcher_motor.get():
             self.launcher.setVelocity(4630)
         elif self.btn_launcher_motor_close.get():
-            self.launcher.setVelocity(4440)
+            self.launcher.setVelocity(3900)
         elif self.btn_launcher_motor_dynamic.get():
             self.limelight.TurnLightOn(True)
             if self.limelight.targetExists():
