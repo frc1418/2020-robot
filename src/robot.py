@@ -114,7 +114,7 @@ class Robot(magicbot.MagicRobot):
         # Set up Speed Controller Groups
         self.left_motors = wpilib.SpeedControllerGroup(
             self.master_left,
-            CANSparkMax(2, MotorType.kBrushless)
+            CANSparkMax(3, MotorType.kBrushless)
         )
 
         self.right_motors = wpilib.SpeedControllerGroup(
@@ -263,7 +263,7 @@ class Robot(magicbot.MagicRobot):
             if self.limelight.targetExists():
                 self.launcher.setVelocityFromDistance(self.limelight.pitch_angle, 4670)
         elif self.btn_launcher_idle.get():
-            self.launcher.setVelocity(1500)
+            self.launcher.setPercentOutput(1)
 
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()

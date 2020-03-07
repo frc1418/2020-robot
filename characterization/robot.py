@@ -35,7 +35,7 @@ class Robot(wpilib.IterativeRobot):
         # Set up Speed Controller Groups
         self.left_motors = wpilib.SpeedControllerGroup(
             self.left_motor_master,
-            CANSparkMax(2, MotorType.kBrushless)
+            CANSparkMax(3, MotorType.kBrushless)
         )
 
         self.right_motors = wpilib.SpeedControllerGroup(
