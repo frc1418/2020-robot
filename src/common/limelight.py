@@ -42,7 +42,7 @@ class Limelight():
             return direct_distance
 
     def getYaw(self):
-        return self.yaw_angle - 3
+        return self.yaw_angle
 
     def setLightMode(self, mode: int):
         # 0: LED mode in pipeline
