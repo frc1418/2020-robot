@@ -87,7 +87,7 @@ class Launcher:
         return self.range_filter.calculate(self.launcher_sensor.getRangeInches()) <= 3
 
     def at_setpoint(self, tolerance=50):
-        return self.calculated_pid and abs(self.launcher_encoder.getVelocity()) < tolerance
+        return abs(self.target_rpm - self.launcher_encoder.getVelocity()) < tolerance
 
     def execute(self):
         self.filtered_rpm = self.launcher_encoder.getVelocity()

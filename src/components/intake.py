@@ -14,11 +14,19 @@ class Intake:
 
     balls_collected = ntproperty("/components/intake/ballsCollected", 0)
     speed = will_reset_to(0.0)
+    speed_lower = will_reset_to(0.0)
     solenoid_state = will_reset_to(wpilib.DoubleSolenoid.Value.kForward)
 
     previous_limit = False
 
-    def spin(self, speed: float):
+    def spin(self, speed, speed_lower: float):
+        self.spin_inside(speed)
+        self.spin_lower(speed_lower)
+
+    def spin_lower(self, speed_lower: float):
+        self.speed_lower = speed_lower
+
+    def spin_inside(self, speed: float):
         self.speed = speed
 
     def extend(self):
@@ -32,6 +40,7 @@ class Intake:
 
     def execute(self):
         self.intake_motor.set(self.speed)
+        self.intake_motor_lower.set(self.speed_lower)
 
         if self.intake_switch.get():
             if self.intake_switch.get() is not self.previous_limit:
