@@ -75,7 +75,7 @@ class Robot(magicbot.MagicRobot):
 
         # Buttons
         self.btn_launcher_solenoid = JoystickButton(self.joystick_alt, 1)
-        self.btn_manual_launcher_solenoid = JoystickButton(self.joystick_alt, 5)
+        self.btn_intake_ = JoystickButton(self.joystick_alt, 5)
         self.btn_align = JoystickButton(self.joystick_left, 1)
         self.btn_intake_in = JoystickButton(self.joystick_alt, 3)
         self.btn_intake_out = JoystickButton(self.joystick_alt, 4)
@@ -87,13 +87,13 @@ class Robot(magicbot.MagicRobot):
         self.btn_launcher_motor_close = JoystickButton(self.joystick_alt, 11)  # Initiation Line
         self.btn_launcher_motor_dynamic = JoystickButton(self.joystick_alt, 9)
         self.btn_slow_movement = JoystickButton(self.joystick_right, 1)
-        self.btn_intake_solenoid = Toggle(self.joystick_right, 5)
+        self.btn_intake_solenoid = Toggle(self.joystick_alt, 2)
         self.btn_scissor_extend = Toggle(self.joystick_alt, 7)
         self.btn_color_sensor = JoystickButton(self.joystick_left, 5)
         self.btn_cp_stop = JoystickButton(self.joystick_left, 2)
         self.btn_invert_y_axis = JoystickButton(self.joystick_left, 6)
         self.btn_rotation_sensitivity = JoystickButton(self.joystick_right, 1)
-        self.btn_test_launcher_rpm = JoystickButton(self.joystick_alt, 6)
+        self.btn_intake_bottom_out = JoystickButton(self.joystick_alt, 6)
 
         # Set up motors for encoders
         self.master_left = CANSparkMax(1, MotorType.kBrushless)
@@ -148,7 +148,6 @@ class Robot(magicbot.MagicRobot):
         # self.launcher_spark = CANSparkMax(40, MotorType.kBrushed)
         # self.launcher_spark.setInverted(True)
         self.launcher_motor = CANSparkMax(10, MotorType.kBrushed)
-        self.launcher_motor.setClosedLoopRampRate(2)
         self.launcher_motor.setInverted(True)
         self.launcher_motor_follower = CANSparkMax(12, MotorType.kBrushed)
         self.launcher_motor_follower.follow(self.launcher_motor)
@@ -259,25 +258,26 @@ class Robot(magicbot.MagicRobot):
         elif self.btn_launcher_motor_close.get():
             self.launcher.setVelocity(3900)
         elif self.btn_launcher_motor_dynamic.get():
-            self.limelight.TurnLightOn(True)
-            if self.limelight.targetExists():
-                self.launcher.setVelocityFromDistance(self.limelight.pitch_angle, 4670)
+            # self.limelight.TurnLightOn(True)
+            self.launcher.setVelocity(self.ds_velocity_setpoint)
+            # if self.limelight.targetExists():
+            #     self.launcher.setVelocityFromDistance(self.limelight.pitch_angle, 4670)
         elif self.btn_launcher_idle.get():
             self.launcher.setPercentOutput(1)
 
         if self.btn_launcher_solenoid.get():
             self.auto_launcher.fire_when_ready()
-        elif self.btn_manual_launcher_solenoid.get():
-            self.launcher.fire()
 
         if self.btn_cp_stop.get():
             self.panel_spinner.done()
 
         # Intake
         if self.btn_intake_out.get():
-            self.intake.spin(1)
+            self.intake.spin_inside(1)
         elif self.btn_intake_in.get():
-            self.intake.spin(-1)
+            self.intake.spin(-1, 0.4)
+        elif self.btn_intake_bottom_out.get():
+            self.intake.spin_lower(-0.4)
 
         if self.btn_intake_solenoid.get():
             self.intake_solenoid.set(wpilib.DoubleSolenoid.Value.kReverse)
@@ -297,6 +297,9 @@ class Robot(magicbot.MagicRobot):
             self.hook_motor.set(-0.5)
         else:
             self.hook_motor.set(0)
+
+        if self.joystick_alt.getPOV(0) == 0:
+            self.launcher.fire()
 
         # slow movement using POV on joystick_alt
         # if self.joystick_alt.getPOV() == 0:
