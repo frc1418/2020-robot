@@ -34,7 +34,7 @@ class Drive:
 
     angle_p = ntproperty('/align/kp', 0.04)
     angle_i = ntproperty('/align/ki', 0)
-    angle_d = ntproperty('/align/kd', 0.005)
+    angle_d = ntproperty('/align/kd', 0.0)
     angle_reported = ntproperty('/align/angle', 0)
     angle_to = ntproperty('/align/angle_to', 0)
 
