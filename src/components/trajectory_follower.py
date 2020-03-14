@@ -16,7 +16,7 @@ class Follower:
     drive: Drive
     use_pid = tunable(True)
     trajectory = will_reset_to(None)
-    sample_time = will_reset_to(0)
+    sample_time = will_reset_to(0.0)
 
     def setup(self):
         self.trajectory_name = None
@@ -50,7 +50,8 @@ class Follower:
             return
         self.sample_time = sample_time
 
-        if self.trajectory_name != trajectory_name:
+        # Check if trajectory was restarted or if a new one has begun
+        if sample_time <= self.prev_time or trajectory_name != self.trajectory_name:
             self.setup_trajectory(self.trajectory)
 
         self.trajectory_name = trajectory_name
