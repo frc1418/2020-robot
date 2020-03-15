@@ -101,9 +101,9 @@ class Drive:
 
         if self.aligning and self.angle_setpoint is not None:
             self.right_motors.setInverted(False)
-            # if self.angle_controller.atSetpoint() and self.calculated_pid:
-            #     self.train.arcadeDrive(0, 0, squareInputs=False)
-            #     return
+            if self.angle_controller.atSetpoint() and self.calculated_pid:
+                self.train.arcadeDrive(0, 0, squareInputs=False)
+                return
 
             # Use new network tables variables for testing
             self.angle_controller.setP(self.angle_p)
