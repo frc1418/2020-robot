@@ -19,8 +19,8 @@ class Drive:
     left_motors: wpilib.SpeedControllerGroup
     right_motors: wpilib.SpeedControllerGroup
 
-    y = will_reset_to(0)
-    rot = will_reset_to(0)
+    y = will_reset_to(0.0)
+    rot = will_reset_to(0.0)
     aligning = will_reset_to(False)
     deadband = will_reset_to(0.1)
 

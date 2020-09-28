@@ -1,11 +1,17 @@
 from wpilib.interfaces import SpeedController
 from wpilib import Encoder
 import traceback
+from .fake_impl import FakeImpl
 
 try:
     from rev import CANEncoder, CANSparkMax, MotorType, IdleMode, ControlType, CANPIDController
 except ImportError:
-    CANSparkMax = type('CANSparkMax', (SpeedController,), {})
+    class CANSparkMaxLowLevel(SpeedController, FakeImpl):
+        def __init__(self, deviceID: int, type: 'MotorType') -> None:
+            super().__init__()
+            self.deviceID = deviceID
+            self.type = type
+    CANSparkMax = type('CANSparkMax', (CANSparkMaxLowLevel, FakeImpl), {})
     MotorType = type('MotorType', (), {'kBrushless': 0, 'kBrushed': 1})
     FaultID = type('FaultId', (), {k: i for i, k in enumerate([
         'kBrownout', 'kCANRX', 'kCANTX', 'kDRVFault', 'kEEPROMCRC',

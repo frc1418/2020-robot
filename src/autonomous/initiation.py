@@ -1,12 +1,13 @@
 import wpilib
-from magicbot import AutonomousStateMachine, default_state, timed_state, state
+from magicbot import AutonomousStateMachine, default_state, state, timed_state
 from networktables.util import ntproperty
 
-from entry_points.trajectory_generator import StartingPosition, TRAJECTORIES
-from common.rev import CANSparkMax
 from common.limelight import Limelight
-from components import Align, Drive, Odometry, Follower, Intake, Launcher
-from . import follower_state
+from common.rev import CANSparkMax
+from components import Align, Drive, Follower, Intake, Launcher, Odometry
+from entry_points.trajectory_generator import TRAJECTORIES, StartingPosition
+
+from . import StateFunction, follower_state
 
 
 class Initiation(AutonomousStateMachine):
@@ -30,13 +31,13 @@ class Initiation(AutonomousStateMachine):
         super().on_enable()
 
     @follower_state(trajectory_name='trench-far', next_state='trench_move_return')
-    def trench_move(self, tm, state_tm, initial_call):
+    def trench_move(self, tm: float, state_tm: float, initial_call: bool) -> None:
         self.shot_count = 0
         self.completed_trench = True
-        self.intake.spin(-1)
-
+        self.intake.spin(-1, 0.5)
+    
     @follower_state(trajectory_name='trench-far-return', next_state='align')
-    def trench_move_return(self, tm, state_tm, initial_call):
+    def trench_move_return(self, tm: float, state_tm: float, initial_call: bool) -> None:
         pass
 
     # @state
@@ -85,7 +86,7 @@ class Initiation(AutonomousStateMachine):
                 return
 
         if self.shot_count >= 1:
-            self.intake.spin(-1)
+            self.intake.spin(-1, 0.8)
 
         # Wait until shooter motor is ready
         self.launcher.setVelocity(4630 if self.completed_trench else 4430)
@@ -102,4 +103,4 @@ class Initiation(AutonomousStateMachine):
         if state_tm < 0.25:
             self.launcher.fire()
         elif self.shot_count >= 1:
-            self.intake.spin(-1)
+            self.intake.spin(-1, 0.8)
