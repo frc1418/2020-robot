@@ -1,4 +1,3 @@
-from math import floor
 import magicbot
 import wpilib
 from magicbot import tunable
