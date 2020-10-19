@@ -35,7 +35,7 @@ class Initiation(AutonomousStateMachine):
         self.shot_count = 0
         self.completed_trench = True
         self.intake.spin(-1, 0.5)
-    
+
     @follower_state(trajectory_name='trench-far-return', next_state='align')
     def trench_move_return(self, tm: float, state_tm: float, initial_call: bool) -> None:
         pass

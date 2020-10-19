@@ -8,6 +8,6 @@ class FakeImpl:
 
     def __getattribute__(self, attr):
         return FakeImpl()
-   
+
     def __call__(self, *args, **kwargs):
         return FakeImpl(*args, **kwargs)

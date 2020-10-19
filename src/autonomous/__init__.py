@@ -11,14 +11,16 @@ from components import Follower
 class FollowerComponent(Protocol):
     follower: Follower
 
+
 T = TypeVar('T', bound=FollowerComponent)
 StateFunction = Callable[[T, float, float, bool], None]
 
+
 def follower_state(
-    *, 
-    trajectory_name: str, 
-    next_state: Optional[str] = None, 
-    first: bool = False, 
+    *,
+    trajectory_name: str,
+    next_state: Optional[str] = None,
+    first: bool = False,
     must_finish: bool = False
 ) -> Callable[[StateFunction], StateFunction]:
     def decorator(f: StateFunction) -> StateFunction:

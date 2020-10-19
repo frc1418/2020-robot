@@ -7,7 +7,9 @@ except ImportError:
     class WPI_TalonSRX(SpeedController, FakeImpl):
         def __init__(self, id):
             super().__init__()
+
     class WPI_VictorSPX(SpeedController, FakeImpl):
         def __init__(self, id):
             super().__init__()
-    #WPI_VictorSPX = type('WPI_VictorSPX', (SpeedController,), {})
+
+    # WPI_VictorSPX = type('WPI_VictorSPX', (SpeedController,), {})
